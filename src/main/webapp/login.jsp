@@ -12,7 +12,7 @@
         <div class="login-container">
             <h1>RashikMart</h1>
             <h2>Login</h2>
-            <form action="LoginServlet" method="post">
+            <form action="login" method="post">
                 <label>Email</label><br />
                 <input type="email" name="email" placeholder="Enter your email" required/>
                 <br/><br/>
