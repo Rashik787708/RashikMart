@@ -14,7 +14,7 @@
             <h2>Register</h2>
             <form action="RegisterServlet" method="post">
                 <label>Full Name</label><br />
-                <input type="text" name="fullName" placeholder="Enter your full name" required/>
+                <input type="text" name="name" placeholder="Enter your full name" required/>
                 <br/><br/>
                 <label>Email</label><br />
                 <input type="email" name="email" placeholder="Enter your email" required/>
