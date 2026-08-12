@@ -1,4 +1,4 @@
-package com.rashik.rashikmart.servlet;
+package com.rashik.rashikmart.controller;
 
 import com.rashik.rashikmart.config.DatabaseConfig;
 
@@ -21,51 +21,82 @@ public class RegisterServlet extends HttpServlet {
                           HttpServletResponse response)
             throws ServletException, IOException {
 
+        // Get values from register.jsp
         String name = request.getParameter("name");
         String email = request.getParameter("email");
         String password = request.getParameter("password");
-        String role = request.getParameter("role");
+        String confirmPassword = request.getParameter("confirmPassword");
+
+        // For now, role is automatically assigned.
+        String role = "USER";
+
+        // Validate required fields
         if (name == null || name.isBlank()
                 || email == null || email.isBlank()
                 || password == null || password.isBlank()
-                || role == null || role.isBlank()) {
+                || confirmPassword == null || confirmPassword.isBlank()) {
 
-            response.sendRedirect("register.jsp?error=Please+fill+all+fields");
+            response.sendRedirect(
+                    "register.jsp?error=Please+fill+all+fields"
+            );
+            return;
+        }
+
+        // Check password confirmation
+        if (!password.equals(confirmPassword)) {
+
+            response.sendRedirect(
+                    "register.jsp?error=Passwords+do+not+match"
+            );
             return;
         }
 
         String sql = """
-                INSERT INTO users (name, email, password, role)
+                INSERT INTO userss (name, email, password, role)
                 VALUES (?, ?, ?, ?)
                 """;
 
-        try (Connection connection =
-                     DatabaseConfig.getDataSource().getConnection();
-             PreparedStatement statement =
-                     connection.prepareStatement(sql)) {
+        try (
+                Connection connection =
+                        DatabaseConfig.getDataSource().getConnection();
 
-            statement.setString(1, name);
-            statement.setString(2, email);
+                PreparedStatement statement =
+                        connection.prepareStatement(sql)
+        ) {
+
+            statement.setString(1, name.trim());
+            statement.setString(2, email.trim());
             statement.setString(3, password);
             statement.setString(4, role);
 
-            statement.executeUpdate();
+            int rowsInserted = statement.executeUpdate();
 
-            response.sendRedirect("login.jsp?success=Registration+successful");
+            System.out.println(
+                    "Registration INSERT completed. Rows inserted: "
+                            + rowsInserted
+            );
+
+            response.sendRedirect(
+                    "login.jsp?success=Registration+successful"
+            );
 
         } catch (SQLException e) {
 
+            e.printStackTrace();
+
             // Duplicate email
-            if (e.getMessage() != null &&
-                    e.getMessage().toLowerCase().contains("unique")) {
+            if (e.getMessage() != null
+                    && e.getMessage().toLowerCase().contains("unique")) {
 
                 response.sendRedirect(
                         "register.jsp?error=Email+already+exists"
                 );
 
             } else {
+
                 throw new ServletException(
-                        "Registration failed", e
+                        "Registration failed",
+                        e
                 );
             }
         }
