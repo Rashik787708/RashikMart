@@ -1,105 +1,214 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-
 <!DOCTYPE html>
-<html lang="en">
-
+<html>
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-    <title>RashikMart | Register</title>
+    <title>Register - RashikMart</title>
 
-    <link rel="stylesheet" href="css/style.css">
+    <!-- IMPORTANT -->
+    <link rel="stylesheet"
+          href="<%= request.getContextPath() %>/css/style.css">
+
 </head>
 
 <body>
 
-<div class="login-container">
 
-    <h1>RashikMart</h1>
+<header class="navbar">
 
-    <h2>Register</h2>
+    <div class="brand">
+        RashikMart
+    </div>
 
-    <%
-        String error = request.getParameter("error");
+    <nav>
 
-        if (error != null) {
-    %>
+        <a href="login.jsp" class="nav-link">
+            Login
+        </a>
 
-        <p style="color: red;">
-            <%= error %>
-        </p>
-
-    <%
-        }
-    %>
-
-    <form action="RegisterServlet" method="post">
-
-        <label>Full Name</label>
-        <br/>
-
-        <input
-                type="text"
-                name="name"
-                placeholder="Enter your full name"
-                required
-        />
-
-        <br/>
-        <br/>
-
-        <label>Email</label>
-        <br/>
-
-        <input
-                type="email"
-                name="email"
-                placeholder="Enter your email"
-                required
-        />
-
-        <br/>
-        <br/>
-
-        <label>Password</label>
-        <br/>
-
-        <input
-                type="password"
-                name="password"
-                placeholder="Create a password"
-                required
-        />
-
-        <br/>
-        <br/>
-
-        <label>Confirm Password</label>
-        <br/>
-
-        <input
-                type="password"
-                name="confirmPassword"
-                placeholder="Confirm your password"
-                required
-        />
-
-        <br/>
-        <br/>
-
-        <button type="submit">
+        <a href="register.jsp" class="nav-link active">
             Register
-        </button>
+        </a>
 
-    </form>
+    </nav>
 
-    <p>
-        Already have an account?
-        <a href="login.jsp">Login</a>
-    </p>
+</header>
 
-</div>
+
+
+<main class="page">
+
+    <div class="auth-card register-card">
+
+
+        <div class="auth-header">
+
+            <div class="eyebrow">
+                JOIN RASHIKMART
+            </div>
+
+            <h1>Create Account</h1>
+
+            <p>
+                Choose your account type and get started
+            </p>
+
+        </div>
+
+
+
+        <%
+            String error = request.getParameter("error");
+
+            if (error != null) {
+        %>
+
+            <div class="message error">
+                <%= error %>
+            </div>
+
+        <%
+            }
+        %>
+
+
+
+        <form action="RegisterServlet" method="post">
+
+
+            <div class="form-group">
+
+                <label for="name">
+                    Name
+                </label>
+
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    placeholder="Enter your name"
+                    required
+                >
+
+            </div>
+
+
+
+            <div class="form-group">
+
+                <label for="email">
+                    Email
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="Enter your email"
+                    required
+                >
+
+            </div>
+
+
+
+            <div class="form-group">
+
+                <label for="password">
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Create a password"
+                    required
+                >
+
+            </div>
+
+
+
+            <!-- ROLE SELECTOR -->
+
+            <div class="form-group">
+
+                <label>
+                    Register as
+                </label>
+
+
+                <div class="role-selector">
+
+                    <input
+                        type="radio"
+                        id="registerBuyer"
+                        name="role"
+                        value="BUYER"
+                        checked
+                    >
+
+                    <label for="registerBuyer">
+                        Buyer
+                    </label>
+
+
+                    <input
+                        type="radio"
+                        id="registerSeller"
+                        name="role"
+                        value="SELLER"
+                    >
+
+                    <label for="registerSeller">
+                        Seller
+                    </label>
+
+
+                    <div class="role-slider"></div>
+
+                </div>
+
+            </div>
+
+
+
+            <button
+                type="submit"
+                class="primary-button">
+
+                Create Account
+
+            </button>
+
+
+        </form>
+
+
+
+        <div class="auth-footer">
+
+            Already have an account?
+
+            <a href="login.jsp">
+                Login
+            </a>
+
+        </div>
+
+
+    </div>
+
+</main>
+
+
+
+<footer class="footer">
+
+    © 2026 RashikMart
+
+</footer>
+
 
 </body>
 </html>

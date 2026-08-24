@@ -10,12 +10,7 @@ public class DatabaseConfig {
     static {
         HikariConfig config = new HikariConfig();
 
-        String dbPath = System.getProperty("catalina.base")
-                + "\\data\\rashikmart";
-
-        System.out.println("H2 Database: " + dbPath);
-
-        config.setJdbcUrl("jdbc:h2:file:" + dbPath);
+        config.setJdbcUrl("jdbc:h2:./data/rashikmart");
         config.setUsername("sa");
         config.setPassword("WE");
         config.setDriverClassName("org.h2.Driver");

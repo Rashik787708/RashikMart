@@ -10,12 +10,44 @@ import java.sql.SQLException;
 
 public class UserDAO {
 
-    public User findByEmail(String email) throws SQLException {
+    public boolean registerUser(User user) {
+
+        String sql = """
+                INSERT INTO users
+                (name, email, password, role)
+                VALUES (?, ?, ?, ?)
+                """;
+
+        try (
+                Connection connection =
+                        DatabaseConfig.getDataSource().getConnection();
+
+                PreparedStatement statement =
+                        connection.prepareStatement(sql)
+        ) {
+
+            statement.setString(1, user.getName());
+            statement.setString(2, user.getEmail());
+            statement.setString(3, user.getPassword());
+            statement.setString(4, user.getRole());
+
+            int rows = statement.executeUpdate();
+
+            return rows > 0;
+
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public User loginUser(String email, String password) {
 
         String sql = """
                 SELECT id, name, email, password, role
-                FROM userss
-                WHERE email = ?
+                FROM users
+                WHERE email = ? AND password = ?
                 """;
 
         try (
@@ -27,22 +59,26 @@ public class UserDAO {
         ) {
 
             statement.setString(1, email);
+            statement.setString(2, password);
 
-            try (ResultSet resultSet = statement.executeQuery()) {
+            ResultSet resultSet = statement.executeQuery();
 
-                if (resultSet.next()) {
+            if (resultSet.next()) {
 
-                    return new User(
-                            resultSet.getInt("id"),
-                            resultSet.getString("name"),
-                            resultSet.getString("email"),
-                            resultSet.getString("password"),
-                            resultSet.getString("role")
-                    );
-                }
-
-                return null;
+                return new User(
+                        resultSet.getInt("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("email"),
+                        resultSet.getString("password"),
+                        resultSet.getString("role")
+                );
             }
+
+        } catch (SQLException e) {
+
+            e.printStackTrace();
         }
+
+        return null;
     }
 }
