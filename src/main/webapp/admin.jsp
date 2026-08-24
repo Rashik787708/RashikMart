@@ -14,7 +14,8 @@
 
 <head>
     <title>Admin Dashboard - RashikMart</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet"
+          href="<%= request.getContextPath() %>/css/style.css">
 </head>
 
 <body>
@@ -36,7 +37,10 @@
 
     <h3>Admin Dashboard</h3>
 
-    <p>User management and other admin features will be added later.</p>
+    <p>
+        User management and other admin features
+        will be added later.
+    </p>
 
     <a href="logout">Logout</a>
 

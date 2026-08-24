@@ -32,7 +32,6 @@ public class UserDAO {
             statement.setString(4, user.getRole());
 
             int rows = statement.executeUpdate();
-
             return rows > 0;
 
         } catch (SQLException e) {

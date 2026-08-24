@@ -51,8 +51,12 @@ public class DatabaseContextListener implements ServletContextListener {
     public void contextDestroyed(ServletContextEvent sce) {
 
         if (DatabaseConfig.getDataSource() != null) {
+
             DatabaseConfig.getDataSource().close();
-            System.out.println("HikariCP connection pool closed.");
+
+            System.out.println(
+                    "HikariCP connection pool closed."
+            );
         }
     }
 }

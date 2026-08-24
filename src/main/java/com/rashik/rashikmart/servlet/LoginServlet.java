@@ -81,7 +81,9 @@ public class LoginServlet extends HttpServlet {
 
         } else {
 
-            response.sendRedirect("login.jsp?error=Invalid+user+role");
+            response.sendRedirect(
+                    "login.jsp?error=Invalid+user+role"
+            );
         }
     }
 }

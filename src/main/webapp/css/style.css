@@ -1,574 +1,325 @@
 /* =========================================================
-   RASHIKMART
-   BLACK & WHITE AUTHENTICATION UI
+   FINAL LOGIN FIX
    ========================================================= */
-
-
-/* ---------- RESET ---------- */
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-
-/* ---------- BODY ---------- */
 
 body {
-    font-family: Arial, Helvetica, sans-serif;
+    margin: 0 !important;
+    padding: 0 !important;
+    min-height: 100vh !important;
+    background: #f5f5f5 !important;
+    color: #111 !important;
 
-    background: #f5f5f5;
-
-    color: #111111;
-
-    min-height: 100vh;
-
-    display: flex;
-    flex-direction: column;
+    display: flex !important;
+    flex-direction: column !important;
 }
 
 
-/* =========================================================
-   NAVBAR
-   ========================================================= */
+/* NAVBAR */
 
 .navbar {
+    width: 100% !important;
+    height: 72px !important;
 
-    height: 72px;
+    flex-shrink: 0 !important;
 
-    background: #000000;
+    background: #000 !important;
+    color: #fff !important;
 
-    color: #ffffff;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
 
-    display: flex;
+    padding: 0 45px !important;
 
-    align-items: center;
-
-    justify-content: space-between;
-
-    padding: 0 45px;
-
-    border-bottom: 1px solid #222222;
+    box-sizing: border-box !important;
 }
 
 
-.brand {
-
-    font-size: 23px;
-
-    font-weight: 700;
-
-    letter-spacing: -0.5px;
-}
-
-
-.navbar nav {
-
-    display: flex;
-
-    gap: 8px;
-}
-
-
-.nav-link {
-
-    color: #ffffff;
-
-    text-decoration: none;
-
-    padding: 10px 18px;
-
-    border: 1px solid transparent;
-
-    border-radius: 6px;
-
-    font-size: 14px;
-
-    transition: all 0.2s ease;
-}
-
-
-.nav-link:hover {
-
-    border-color: #ffffff;
-
-    background: #ffffff;
-
-    color: #000000;
-}
-
-
-.nav-link.active {
-
-    background: #ffffff;
-
-    color: #000000;
-}
-
-
-/* =========================================================
-   PAGE
-   ========================================================= */
+/* PAGE */
 
 .page {
+    width: 100% !important;
 
-    flex: 1;
+    flex: 1 1 auto !important;
 
-    display: flex;
+    min-height: 0 !important;
 
-    justify-content: center;
+    display: flex !important;
 
-    align-items: center;
+    align-items: center !important;
+    justify-content: center !important;
 
-    padding: 50px 20px;
+    padding: 50px 20px !important;
+
+    box-sizing: border-box !important;
 }
 
 
-/* =========================================================
-   AUTH CARD
-   ========================================================= */
+/* LOGIN CARD */
 
 .auth-card {
+    display: block !important;
 
-    width: 430px;
+    width: 430px !important;
+    max-width: 100% !important;
 
-    max-width: 100%;
+    margin: 0 auto !important;
 
-    background: #ffffff;
+    padding: 38px !important;
 
-    border: 1px solid #d9d9d9;
+    background: #fff !important;
 
-    border-radius: 12px;
+    border: 1px solid #d9d9d9 !important;
 
-    padding: 38px;
+    border-radius: 12px !important;
 
-    box-shadow:
-        0 12px 35px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 12px 35px rgba(0,0,0,.08) !important;
+
+    box-sizing: border-box !important;
 }
 
 
-.register-card {
-
-    width: 470px;
-}
-
-
-/* =========================================================
-   HEADER
-   ========================================================= */
+/* HEADER */
 
 .auth-header {
+    display: block !important;
 
-    margin-bottom: 30px;
+    margin-bottom: 30px !important;
 }
-
-
-.eyebrow {
-
-    font-size: 11px;
-
-    font-weight: 700;
-
-    letter-spacing: 2px;
-
-    color: #666666;
-
-    margin-bottom: 10px;
-}
-
 
 .auth-header h1 {
+    margin: 0 0 8px 0 !important;
 
-    font-size: 32px;
+    font-size: 32px !important;
+    font-weight: 700 !important;
 
-    font-weight: 700;
-
-    color: #000000;
-
-    margin-bottom: 8px;
+    color: #000 !important;
 }
-
 
 .auth-header p {
+    margin: 0 !important;
 
-    font-size: 14px;
+    font-size: 14px !important;
 
-    color: #666666;
-
-    line-height: 1.5;
+    color: #666 !important;
 }
 
 
-/* =========================================================
-   FORM
-   ========================================================= */
+/* FORM */
+
+.auth-card form {
+    display: block !important;
+
+    width: 100% !important;
+}
 
 .form-group {
+    display: block !important;
 
-    margin-bottom: 20px;
+    width: 100% !important;
+
+    margin-bottom: 20px !important;
 }
-
 
 .form-group > label {
+    display: block !important;
 
-    display: block;
+    margin-bottom: 8px !important;
 
-    font-size: 13px;
+    font-size: 13px !important;
 
-    font-weight: 600;
+    font-weight: 600 !important;
 
-    margin-bottom: 8px;
-
-    color: #111111;
+    color: #111 !important;
 }
 
 
-/* =========================================================
-   INPUTS
-   ========================================================= */
+/* INPUT */
 
-input[type="text"],
-input[type="email"],
-input[type="password"] {
+.auth-card input[type="email"],
+.auth-card input[type="password"] {
+    display: block !important;
 
-    width: 100%;
+    width: 100% !important;
 
-    height: 48px;
+    height: 48px !important;
 
-    padding: 0 14px;
+    padding: 0 14px !important;
 
-    border: 1px solid #bdbdbd;
+    border: 1px solid #bdbdbd !important;
 
-    border-radius: 6px;
+    border-radius: 6px !important;
 
-    background: #ffffff;
+    background: #fff !important;
 
-    color: #000000;
+    color: #000 !important;
 
-    font-size: 14px;
+    font-size: 14px !important;
 
-    outline: none;
+    box-sizing: border-box !important;
 
-    transition:
-        border-color 0.2s ease,
-        box-shadow 0.2s ease;
+    outline: none !important;
 }
 
 
-input[type="text"]:focus,
-input[type="email"]:focus,
-input[type="password"]:focus {
-
-    border-color: #000000;
-
-    box-shadow:
-        0 0 0 2px rgba(0, 0, 0, 0.08);
-}
-
-
-input::placeholder {
-
-    color: #999999;
-}
-
-
-/* =========================================================
-   ROLE SELECTOR
-   ========================================================= */
+/* ROLE */
 
 .role-selector {
+    position: relative !important;
 
-    position: relative;
+    width: 100% !important;
 
-    display: grid;
+    height: 48px !important;
 
-    grid-template-columns: 1fr 1fr;
+    display: grid !important;
 
-    height: 48px;
+    grid-template-columns: 1fr 1fr !important;
 
-    padding: 3px;
+    padding: 3px !important;
 
-    background: #eeeeee;
+    background: #eee !important;
 
-    border: 1px solid #d0d0d0;
+    border: 1px solid #d0d0d0 !important;
 
-    border-radius: 7px;
+    border-radius: 7px !important;
 
-    overflow: hidden;
+    overflow: hidden !important;
+
+    box-sizing: border-box !important;
 }
-
-
-/* Hide actual radio buttons */
 
 .role-selector input[type="radio"] {
+    position: absolute !important;
 
-    position: absolute;
+    opacity: 0 !important;
 
-    opacity: 0;
-
-    pointer-events: none;
+    pointer-events: none !important;
 }
-
-
-/* Labels */
 
 .role-selector label {
+    position: relative !important;
 
-    position: relative;
+    z-index: 2 !important;
 
-    z-index: 2;
+    display: flex !important;
 
-    display: flex;
+    align-items: center !important;
+    justify-content: center !important;
 
-    align-items: center;
+    margin: 0 !important;
 
-    justify-content: center;
+    cursor: pointer !important;
 
-    cursor: pointer;
+    font-size: 13px !important;
+    font-weight: 600 !important;
 
-    font-size: 13px;
-
-    font-weight: 600;
-
-    color: #555555;
-
-    transition: color 0.2s ease;
+    color: #555 !important;
 }
-
-
-/* Sliding white background */
 
 .role-slider {
+    position: absolute !important;
 
-    position: absolute;
+    z-index: 1 !important;
 
-    z-index: 1;
+    top: 3px !important;
+    left: 3px !important;
 
-    top: 3px;
+    width: calc(50% - 3px) !important;
 
-    left: 3px;
+    height: calc(100% - 6px) !important;
 
-    width: calc(50% - 3px);
+    background: #fff !important;
 
-    height: calc(100% - 6px);
+    border: 1px solid #000 !important;
 
-    background: #ffffff;
+    border-radius: 5px !important;
 
-    border: 1px solid #000000;
+    transition: transform .25s ease !important;
 
-    border-radius: 5px;
+    pointer-events: none !important;
+}
 
-    transition: transform 0.25s ease;
-
-    pointer-events: none;
+#seller:checked ~ .role-slider {
+    transform: translateX(100%) !important;
 }
 
 
-/* Seller selected */
-
-#seller:checked ~ .role-slider,
-#registerSeller:checked ~ .role-slider {
-
-    transform: translateX(100%);
-}
-
-
-/* Selected text */
-
-#buyer:checked + label,
-#registerBuyer:checked + label {
-
-    color: #000000;
-}
-
-
-#seller:checked + label,
-#registerSeller:checked + label {
-
-    color: #000000;
-}
-
-
-/* =========================================================
-   BUTTON
-   ========================================================= */
+/* BUTTON */
 
 .primary-button {
+    display: block !important;
 
-    width: 100%;
+    width: 100% !important;
 
-    height: 48px;
+    height: 48px !important;
 
-    margin-top: 8px;
+    margin-top: 8px !important;
 
-    border: 1px solid #000000;
+    border: 1px solid #000 !important;
 
-    border-radius: 6px;
+    border-radius: 6px !important;
 
-    background: #000000;
+    background: #000 !important;
 
-    color: #ffffff;
+    color: #fff !important;
 
-    font-size: 14px;
+    font-size: 14px !important;
 
-    font-weight: 700;
+    font-weight: 700 !important;
 
-    cursor: pointer;
-
-    transition: all 0.2s ease;
+    cursor: pointer !important;
 }
-
 
 .primary-button:hover {
+    background: #fff !important;
 
-    background: #ffffff;
-
-    color: #000000;
+    color: #000 !important;
 }
 
 
-.primary-button:active {
-
-    transform: translateY(1px);
-}
-
-
-/* =========================================================
-   MESSAGES
-   ========================================================= */
-
-.message {
-
-    padding: 11px 13px;
-
-    margin-bottom: 20px;
-
-    border-radius: 6px;
-
-    font-size: 13px;
-
-    text-align: center;
-}
-
-
-.error {
-
-    background: #ffffff;
-
-    color: #000000;
-
-    border: 1px solid #000000;
-}
-
-
-.success {
-
-    background: #000000;
-
-    color: #ffffff;
-
-    border: 1px solid #000000;
-}
-
-
-/* =========================================================
-   FOOTER LINK
-   ========================================================= */
+/* FOOTER LINK */
 
 .auth-footer {
+    display: block !important;
 
-    margin-top: 25px;
+    margin-top: 25px !important;
 
-    padding-top: 20px;
+    padding-top: 20px !important;
 
-    border-top: 1px solid #eeeeee;
+    border-top: 1px solid #eee !important;
 
-    text-align: center;
+    text-align: center !important;
 
-    font-size: 13px;
+    font-size: 13px !important;
 
-    color: #666666;
+    color: #666 !important;
 }
-
 
 .auth-footer a {
+    color: #000 !important;
 
-    color: #000000;
-
-    font-weight: 700;
-
-    text-decoration: underline;
-
-    text-underline-offset: 3px;
+    font-weight: 700 !important;
 }
 
 
-.auth-footer a:hover {
-
-    text-decoration: none;
-}
-
-
-/* =========================================================
-   FOOTER
-   ========================================================= */
+/* PAGE FOOTER */
 
 .footer {
+    width: 100% !important;
 
-    padding: 20px;
+    flex-shrink: 0 !important;
 
-    text-align: center;
+    padding: 20px !important;
 
-    font-size: 12px;
+    text-align: center !important;
 
-    color: #777777;
+    font-size: 12px !important;
 
-    border-top: 1px solid #dddddd;
+    color: #777 !important;
 
-    background: #ffffff;
-}
+    background: #fff !important;
 
+    border-top: 1px solid #ddd !important;
 
-/* =========================================================
-   MOBILE
-   ========================================================= */
-
-@media (max-width: 600px) {
-
-    .navbar {
-
-        height: auto;
-
-        padding: 18px 20px;
-
-        flex-direction: column;
-
-        gap: 15px;
-
-    }
-
-
-    .page {
-
-        padding: 30px 15px;
-
-        align-items: flex-start;
-
-    }
-
-
-    .auth-card {
-
-        padding: 28px 22px;
-
-    }
-
-
-    .auth-header h1 {
-
-        font-size: 28px;
-
-    }
-
+    box-sizing: border-box !important;
 }

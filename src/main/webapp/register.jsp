@@ -1,214 +1,102 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - RashikMart</title>
-
-    <!-- IMPORTANT -->
-    <link rel="stylesheet"
-          href="<%= request.getContextPath() %>/css/style.css">
-
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=3">
 </head>
-
 <body>
 
-
-<header class="navbar">
-
-    <div class="brand">
-        RashikMart
-    </div>
-
-    <nav>
-
-        <a href="login.jsp" class="nav-link">
+<!-- ================= NAVBAR ================= -->
+<nav class="navbar">
+    <div class="nav-brand">RashikMart</div>
+    <div class="nav-links">
+        <a href="${pageContext.request.contextPath}/login.jsp" class="nav-link">
             Login
         </a>
-
-        <a href="register.jsp" class="nav-link active">
+        <a href="${pageContext.request.contextPath}/register.jsp" class="nav-link active">
             Register
         </a>
+    </div>
+</nav>
 
-    </nav>
+<!-- ================= MAIN ================= -->
+<main class="page-wrapper">
+    <div class="register-card">
 
-</header>
-
-
-
-<main class="page">
-
-    <div class="auth-card register-card">
-
-
-        <div class="auth-header">
-
-            <div class="eyebrow">
-                JOIN RASHIKMART
-            </div>
-
+        <div class="card-header">
+            <span class="eyebrow">JOIN RASHIKMART</span>
             <h1>Create Account</h1>
-
-            <p>
-                Choose your account type and get started
-            </p>
-
+            <p class="subtitle">Choose your account type and get started</p>
         </div>
 
-
-
+        <!-- ================= ERROR MESSAGE ================= -->
         <%
             String error = request.getParameter("error");
-
-            if (error != null) {
+            if (error != null && !error.trim().isEmpty()) {
         %>
-
-            <div class="message error">
-                <%= error %>
-            </div>
-
+            <div class="message error"><%= error %></div>
         <%
             }
         %>
 
-
-
-        <form action="RegisterServlet" method="post">
-
+        <!-- ================= REGISTER FORM ================= -->
+        <form action="${pageContext.request.contextPath}/RegisterServlet"
+              method="post"
+              class="register-form">
 
             <div class="form-group">
-
-                <label for="name">
-                    Name
-                </label>
-
-                <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    placeholder="Enter your name"
-                    required
-                >
-
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name"
+                       placeholder="Enter your name" autocomplete="name" required>
             </div>
 
-
-
             <div class="form-group">
-
-                <label for="email">
-                    Email
-                </label>
-
-                <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    placeholder="Enter your email"
-                    required
-                >
-
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email"
+                       placeholder="Enter your email" autocomplete="email" required>
             </div>
 
-
-
             <div class="form-group">
-
-                <label for="password">
-                    Password
-                </label>
-
-                <input
-                    type="password"
-                    id="password"
-                    name="password"
-                    placeholder="Create a password"
-                    required
-                >
-
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password"
+                       placeholder="Create a password" autocomplete="new-password" required>
             </div>
 
+            <!-- ================= ROLE ================= -->
+            <div class="form-group role-group">
+                <label class="role-title">Register as</label>
 
+                <div class="role-slider">
+                    <input type="radio" id="buyer" name="role" value="BUYER" checked>
+                    <input type="radio" id="seller" name="role" value="SELLER">
 
-            <!-- ROLE SELECTOR -->
-
-            <div class="form-group">
-
-                <label>
-                    Register as
-                </label>
-
-
-                <div class="role-selector">
-
-                    <input
-                        type="radio"
-                        id="registerBuyer"
-                        name="role"
-                        value="BUYER"
-                        checked
-                    >
-
-                    <label for="registerBuyer">
-                        Buyer
-                    </label>
-
-
-                    <input
-                        type="radio"
-                        id="registerSeller"
-                        name="role"
-                        value="SELLER"
-                    >
-
-                    <label for="registerSeller">
-                        Seller
-                    </label>
-
-
-                    <div class="role-slider"></div>
-
+                    <div class="role-track">
+                        <span class="role-indicator"></span>
+                        <label for="buyer" class="role-option buyer-option">Buyer</label>
+                        <label for="seller" class="role-option seller-option">Seller</label>
+                    </div>
                 </div>
-
             </div>
 
-
-
-            <button
-                type="submit"
-                class="primary-button">
-
-                Create Account
-
-            </button>
-
+            <button type="submit" class="register-button">Create Account</button>
 
         </form>
 
-
-
-        <div class="auth-footer">
-
+        <div class="account-link">
             Already have an account?
-
-            <a href="login.jsp">
-                Login
-            </a>
-
+            <a href="${pageContext.request.contextPath}/login.jsp">Login</a>
         </div>
 
-
     </div>
-
 </main>
 
-
-
 <footer class="footer">
-
     © 2026 RashikMart
-
 </footer>
-
 
 </body>
 </html>

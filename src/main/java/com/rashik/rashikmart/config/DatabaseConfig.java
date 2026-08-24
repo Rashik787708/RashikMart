@@ -8,6 +8,7 @@ public class DatabaseConfig {
     private static final HikariDataSource dataSource;
 
     static {
+
         HikariConfig config = new HikariConfig();
 
         config.setJdbcUrl("jdbc:h2:./data/rashikmart");
