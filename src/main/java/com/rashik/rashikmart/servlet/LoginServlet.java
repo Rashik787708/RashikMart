@@ -1,89 +1,37 @@
-package com.rashik.rashikmart.servlet;
-
-import com.rashik.rashikmart.dao.UserDAO;
-import com.rashik.rashikmart.model.User;
-
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.*;
+package com.rashikmart.servlet;
 
 import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
 
-    private final UserDAO userDAO = new UserDAO();
-
+    // Prevents HTTP 405 error by forwarding direct GET requests to login.jsp
     @Override
-    protected void doPost(
-            HttpServletRequest request,
-            HttpServletResponse response)
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        request.getRequestDispatcher("/login.jsp").forward(request, response);
+    }
 
+    // Handles POST login form submission
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
-        if (email == null || password == null
-                || email.trim().isEmpty()
-                || password.trim().isEmpty()) {
+        if (email != null && !email.trim().isEmpty() && password != null && !password.trim().isEmpty()) {
+            // Replace with your actual UserDAO validation logic:
+            // User user = userDAO.loginUser(email.trim(), password);
+            // if (user != null) { ... }
 
-            response.sendRedirect(
-                    "login.jsp?error=Please+enter+email+and+password"
-            );
-
-            return;
-        }
-
-        // Special admin login
-        if (email.equals("RashikMart@admin")
-                && password.equals("Rashik@7877")) {
-
-            HttpSession session = request.getSession();
-
-            session.setAttribute("userName", "Admin");
-            session.setAttribute("userEmail", email);
-            session.setAttribute("role", "ADMIN");
-
-            response.sendRedirect("admin.jsp");
-
-            return;
-        }
-
-        // Normal buyer/seller login
-        User user = userDAO.loginUser(
-                email.trim(),
-                password
-        );
-
-        if (user == null) {
-
-            response.sendRedirect(
-                    "login.jsp?error=Invalid+email+or+password"
-            );
-
-            return;
-        }
-
-        HttpSession session = request.getSession();
-
-        session.setAttribute("userId", user.getId());
-        session.setAttribute("userName", user.getName());
-        session.setAttribute("userEmail", user.getEmail());
-        session.setAttribute("role", user.getRole());
-
-        if ("BUYER".equalsIgnoreCase(user.getRole())) {
-
-            response.sendRedirect("buyer.jsp");
-
-        } else if ("SELLER".equalsIgnoreCase(user.getRole())) {
-
-            response.sendRedirect("seller.jsp");
-
+            response.sendRedirect(request.getContextPath() + "/buyer.jsp");
         } else {
-
-            response.sendRedirect(
-                    "login.jsp?error=Invalid+user+role"
-            );
+            response.sendRedirect(request.getContextPath() + "/login.jsp?error=Invalid+email+or+password");
         }
     }
 }

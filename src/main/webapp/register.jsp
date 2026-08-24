@@ -1,102 +1,76 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - RashikMart</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=3">
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=20260824">
 </head>
 <body>
 
-<!-- ================= NAVBAR ================= -->
-<nav class="navbar">
-    <div class="nav-brand">RashikMart</div>
-    <div class="nav-links">
-        <a href="${pageContext.request.contextPath}/login.jsp" class="nav-link">
-            Login
-        </a>
-        <a href="${pageContext.request.contextPath}/register.jsp" class="nav-link active">
-            Register
-        </a>
-    </div>
-</nav>
+    <header class="navbar">
+        <a href="${pageContext.request.contextPath}/" class="brand">RashikMart</a>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="${pageContext.request.contextPath}/login.jsp" class="nav-link">Login</a></li>
+                <li><a href="${pageContext.request.contextPath}/register.jsp" class="nav-link active">Register</a></li>
+            </ul>
+        </nav>
+    </header>
 
-<!-- ================= MAIN ================= -->
-<main class="page-wrapper">
-    <div class="register-card">
-
-        <div class="card-header">
-            <span class="eyebrow">JOIN RASHIKMART</span>
-            <h1>Create Account</h1>
-            <p class="subtitle">Choose your account type and get started</p>
-        </div>
-
-        <!-- ================= ERROR MESSAGE ================= -->
-        <%
-            String error = request.getParameter("error");
-            if (error != null && !error.trim().isEmpty()) {
-        %>
-            <div class="message error"><%= error %></div>
-        <%
-            }
-        %>
-
-        <!-- ================= REGISTER FORM ================= -->
-        <form action="${pageContext.request.contextPath}/RegisterServlet"
-              method="post"
-              class="register-form">
-
-            <div class="form-group">
-                <label for="name">Name</label>
-                <input type="text" id="name" name="name"
-                       placeholder="Enter your name" autocomplete="name" required>
+    <main class="page">
+        <div class="auth-card">
+            <div class="auth-header">
+                <span class="eyebrow">Get Started</span>
+                <h2>Create Account</h2>
             </div>
 
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email"
-                       placeholder="Enter your email" autocomplete="email" required>
-            </div>
+            <%
+                String error = request.getParameter("error");
+                if (error != null) {
+                    String safeError = error.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;");
+            %>
+                <div class="message error"><%= safeError %></div>
+            <% } %>
 
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password"
-                       placeholder="Create a password" autocomplete="new-password" required>
-            </div>
+            <form action="${pageContext.request.contextPath}/RegisterServlet" method="post">
 
-            <!-- ================= ROLE ================= -->
-            <div class="form-group role-group">
-                <label class="role-title">Register as</label>
-
-                <div class="role-slider">
-                    <input type="radio" id="buyer" name="role" value="BUYER" checked>
-                    <input type="radio" id="seller" name="role" value="SELLER">
-
-                    <div class="role-track">
-                        <span class="role-indicator"></span>
-                        <label for="buyer" class="role-option buyer-option">Buyer</label>
-                        <label for="seller" class="role-option seller-option">Seller</label>
+                <div class="role-selector">
+                    <div class="role-option">
+                        <input type="radio" id="role-buyer" name="role" value="BUYER" checked>
+                        <label for="role-buyer">Buyer</label>
+                    </div>
+                    <div class="role-option">
+                        <input type="radio" id="role-seller" name="role" value="SELLER">
+                        <label for="role-seller">Seller</label>
                     </div>
                 </div>
+
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" placeholder="enter your full name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="enter your email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="create a password" required>
+                </div>
+
+                <button type="submit" class="primary-button">Create Account</button>
+            </form>
+
+            <div class="auth-footer">
+                <p>Already have an account? <a href="${pageContext.request.contextPath}/login.jsp">Login here</a></p>
             </div>
-
-            <button type="submit" class="register-button">Create Account</button>
-
-        </form>
-
-        <div class="account-link">
-            Already have an account?
-            <a href="${pageContext.request.contextPath}/login.jsp">Login</a>
         </div>
-
-    </div>
-</main>
-
-<footer class="footer">
-    © 2026 RashikMart
-</footer>
+    </main>
 
 </body>
 </html>
