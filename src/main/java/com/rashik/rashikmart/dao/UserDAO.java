@@ -10,22 +10,25 @@ import java.sql.SQLException;
 
 public class UserDAO {
 
-    // ==========================================
+    // =====================================================
     // FIND USER BY EMAIL
-    // ==========================================
+    // =====================================================
 
     public User findByEmail(String email) {
 
-        String sql =
-                "SELECT id, name, email, password_hash, role " +
-                        "FROM users " +
-                        "WHERE email = ?";
+        String sql = """
+                SELECT id, name, email, password, role
+                FROM users
+                WHERE email = ?
+                """;
 
-        try (Connection connection =
-                     DatabaseConfig.getDataSource().getConnection();
+        try (
+                Connection connection =
+                        DatabaseConfig.getDataSource().getConnection();
 
-             PreparedStatement statement =
-                     connection.prepareStatement(sql)) {
+                PreparedStatement statement =
+                        connection.prepareStatement(sql)
+        ) {
 
             statement.setString(1, email);
 
@@ -33,29 +36,13 @@ public class UserDAO {
 
                 if (resultSet.next()) {
 
-                    User user = new User();
-
-                    user.setId(
-                            resultSet.getInt("id")
-                    );
-
-                    user.setName(
-                            resultSet.getString("name")
-                    );
-
-                    user.setEmail(
-                            resultSet.getString("email")
-                    );
-
-                    user.setPasswordHash(
-                            resultSet.getString("password_hash")
-                    );
-
-                    user.setRole(
+                    return new User(
+                            resultSet.getInt("id"),
+                            resultSet.getString("name"),
+                            resultSet.getString("email"),
+                            resultSet.getString("password"),
                             resultSet.getString("role")
                     );
-
-                    return user;
                 }
             }
 
@@ -73,42 +60,30 @@ public class UserDAO {
     }
 
 
-    // ==========================================
+    // =====================================================
     // REGISTER USER
-    // ==========================================
+    // =====================================================
 
     public boolean registerUser(User user) {
 
-        String sql =
-                "INSERT INTO users " +
-                        "(name, email, password_hash, role) " +
-                        "VALUES (?, ?, ?, ?)";
+        String sql = """
+                INSERT INTO users
+                (name, email, password, role)
+                VALUES (?, ?, ?, ?)
+                """;
 
-        try (Connection connection =
-                     DatabaseConfig.getDataSource().getConnection();
+        try (
+                Connection connection =
+                        DatabaseConfig.getDataSource().getConnection();
 
-             PreparedStatement statement =
-                     connection.prepareStatement(sql)) {
+                PreparedStatement statement =
+                        connection.prepareStatement(sql)
+        ) {
 
-            statement.setString(
-                    1,
-                    user.getName()
-            );
-
-            statement.setString(
-                    2,
-                    user.getEmail()
-            );
-
-            statement.setString(
-                    3,
-                    user.getPasswordHash()
-            );
-
-            statement.setString(
-                    4,
-                    user.getRole()
-            );
+            statement.setString(1, user.getName());
+            statement.setString(2, user.getEmail());
+            statement.setString(3, user.getPassword());
+            statement.setString(4, user.getRole());
 
             int rows = statement.executeUpdate();
 
@@ -128,23 +103,20 @@ public class UserDAO {
     }
 
 
-    // ==========================================
+    // =====================================================
     // VERIFY PASSWORD
-    // ==========================================
+    // =====================================================
 
     public boolean verifyPassword(
-            String plainPassword,
-            String passwordHash) {
+            String enteredPassword,
+            String storedPassword) {
 
-        if (plainPassword == null
-                || passwordHash == null) {
+        if (enteredPassword == null
+                || storedPassword == null) {
 
             return false;
         }
 
-        // Week 1 implementation.
-        // Password hashing can be added later.
-
-        return plainPassword.equals(passwordHash);
+        return enteredPassword.equals(storedPassword);
     }
 }

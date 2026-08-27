@@ -5,23 +5,30 @@ public class User {
     private int id;
     private String name;
     private String email;
-    private String passwordHash;
+    private String password;
     private String role;
 
     public User() {
     }
 
-    public User(
-            String name,
-            String email,
-            String passwordHash,
-            String role) {
-
+    public User(String name, String email, String password, String role) {
         this.name = name;
         this.email = email;
-        this.passwordHash = passwordHash;
+        this.password = password;
         this.role = role;
     }
+
+    public User(int id, String name, String email, String password, String role) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
+
+    // =========================
+    // ID
+    // =========================
 
     public int getId() {
         return id;
@@ -31,6 +38,10 @@ public class User {
         this.id = id;
     }
 
+    // =========================
+    // NAME
+    // =========================
+
     public String getName() {
         return name;
     }
@@ -38,6 +49,10 @@ public class User {
     public void setName(String name) {
         this.name = name;
     }
+
+    // =========================
+    // EMAIL
+    // =========================
 
     public String getEmail() {
         return email;
@@ -47,13 +62,21 @@ public class User {
         this.email = email;
     }
 
-    public String getPasswordHash() {
-        return passwordHash;
+    // =========================
+    // PASSWORD
+    // =========================
+
+    public String getPassword() {
+        return password;
     }
 
-    public void setPasswordHash(String passwordHash) {
-        this.passwordHash = passwordHash;
+    public void setPassword(String password) {
+        this.password = password;
     }
+
+    // =========================
+    // ROLE
+    // =========================
 
     public String getRole() {
         return role;

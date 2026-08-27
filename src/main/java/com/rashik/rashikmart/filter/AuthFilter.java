@@ -3,86 +3,163 @@ package com.rashik.rashikmart.filter;
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.*;
+
 import java.io.IOException;
 
 @WebFilter(urlPatterns = {
-        "/buyer/*",
-        "/seller/*",
-        "/admin/*"
+        "/buyer.jsp",
+        "/seller.jsp",
+        "/admin.jsp"
 })
 public class AuthFilter implements Filter {
 
+
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-        System.out.println("AuthFilter initialized");
+    public void init(
+            FilterConfig filterConfig)
+            throws ServletException {
+
+        System.out.println(
+                "AuthFilter initialized"
+        );
     }
+
 
     @Override
     public void doFilter(
             ServletRequest request,
             ServletResponse response,
-            FilterChain chain
-    ) throws IOException, ServletException {
+            FilterChain chain)
+            throws IOException, ServletException {
 
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
-        HttpServletResponse httpResponse = (HttpServletResponse) response;
+        HttpServletRequest httpRequest =
+                (HttpServletRequest) request;
 
-        HttpSession session = httpRequest.getSession(false);
+        HttpServletResponse httpResponse =
+                (HttpServletResponse) response;
 
-        boolean loggedIn = session != null
-                && session.getAttribute("user") != null;
+
+        // =====================================================
+        // GET SESSION
+        // =====================================================
+
+        HttpSession session =
+                httpRequest.getSession(false);
+
+
+        // =====================================================
+        // CHECK LOGIN
+        // =====================================================
+
+        boolean loggedIn =
+                session != null
+                        && session.getAttribute("userId") != null
+                        && session.getAttribute("role") != null;
+
 
         if (!loggedIn) {
+
             httpResponse.sendRedirect(
                     httpRequest.getContextPath()
                             + "/login.jsp?error=Please+login+first"
             );
+
             return;
         }
 
-        String requestURI = httpRequest.getRequestURI();
-        String contextPath = httpRequest.getContextPath();
 
-        String path = requestURI.substring(contextPath.length());
+        // =====================================================
+        // GET ROLE
+        // =====================================================
 
-        String role = (String) session.getAttribute("role");
+        String role =
+                String.valueOf(
+                        session.getAttribute("role")
+                );
 
-        if (path.startsWith("/buyer/")) {
 
-            if (!"BUYER".equals(role)) {
+        String requestURI =
+                httpRequest.getRequestURI();
+
+        String contextPath =
+                httpRequest.getContextPath();
+
+        String path =
+                requestURI.substring(
+                        contextPath.length()
+                );
+
+
+        // =====================================================
+        // BUYER PAGE
+        // =====================================================
+
+        if (path.equals("/buyer.jsp")) {
+
+            if (!"BUYER".equalsIgnoreCase(role)) {
+
                 httpResponse.sendError(
                         HttpServletResponse.SC_FORBIDDEN,
                         "Access denied. Buyer role required."
                 );
-                return;
-            }
 
-        } else if (path.startsWith("/seller/")) {
-
-            if (!"SELLER".equals(role)) {
-                httpResponse.sendError(
-                        HttpServletResponse.SC_FORBIDDEN,
-                        "Access denied. Seller role required."
-                );
-                return;
-            }
-
-        } else if (path.startsWith("/admin/")) {
-
-            if (!"ADMIN".equals(role)) {
-                httpResponse.sendError(
-                        HttpServletResponse.SC_FORBIDDEN,
-                        "Access denied. Admin role required."
-                );
                 return;
             }
         }
 
-        chain.doFilter(request, response);
+
+        // =====================================================
+        // SELLER PAGE
+        // =====================================================
+
+        if (path.equals("/seller.jsp")) {
+
+            if (!"SELLER".equalsIgnoreCase(role)) {
+
+                httpResponse.sendError(
+                        HttpServletResponse.SC_FORBIDDEN,
+                        "Access denied. Seller role required."
+                );
+
+                return;
+            }
+        }
+
+
+        // =====================================================
+        // ADMIN PAGE
+        // =====================================================
+
+        if (path.equals("/admin.jsp")) {
+
+            if (!"ADMIN".equalsIgnoreCase(role)) {
+
+                httpResponse.sendError(
+                        HttpServletResponse.SC_FORBIDDEN,
+                        "Access denied. Admin role required."
+                );
+
+                return;
+            }
+        }
+
+
+        // =====================================================
+        // ALLOW REQUEST
+        // =====================================================
+
+        chain.doFilter(
+                request,
+                response
+        );
     }
+
 
     @Override
     public void destroy() {
-        System.out.println("AuthFilter destroyed");
+
+        System.out.println(
+                "AuthFilter destroyed"
+        );
     }
 }

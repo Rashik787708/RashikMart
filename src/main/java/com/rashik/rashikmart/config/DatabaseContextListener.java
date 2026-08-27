@@ -9,10 +9,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 @WebListener
-public class DatabaseContextListener implements ServletContextListener {
+public class DatabaseContextListener
+        implements ServletContextListener {
+
 
     @Override
-    public void contextInitialized(ServletContextEvent sce) {
+    public void contextInitialized(
+            ServletContextEvent sce) {
 
         String sql = """
                 CREATE TABLE IF NOT EXISTS users (
@@ -24,9 +27,12 @@ public class DatabaseContextListener implements ServletContextListener {
                 )
                 """;
 
+
         try (
                 Connection connection =
-                        DatabaseConfig.getDataSource().getConnection();
+                        DatabaseConfig
+                                .getDataSource()
+                                .getConnection();
 
                 Statement statement =
                         connection.createStatement()
@@ -34,25 +40,43 @@ public class DatabaseContextListener implements ServletContextListener {
 
             statement.executeUpdate(sql);
 
-            System.out.println("=================================");
-            System.out.println("H2 DATABASE INITIALIZED");
-            System.out.println("Users table ready");
-            System.out.println("=================================");
+
+            System.out.println(
+                    "================================="
+            );
+
+            System.out.println(
+                    "H2 DATABASE INITIALIZED"
+            );
+
+            System.out.println(
+                    "Users table ready"
+            );
+
+            System.out.println(
+                    "================================="
+            );
 
         } catch (SQLException e) {
 
             throw new RuntimeException(
-                    "Database initialization failed", e
+                    "Database initialization failed",
+                    e
             );
         }
     }
 
+
     @Override
-    public void contextDestroyed(ServletContextEvent sce) {
+    public void contextDestroyed(
+            ServletContextEvent sce) {
 
-        if (DatabaseConfig.getDataSource() != null) {
+        if (DatabaseConfig
+                .getDataSource() != null) {
 
-            DatabaseConfig.getDataSource().close();
+            DatabaseConfig
+                    .getDataSource()
+                    .close();
 
             System.out.println(
                     "HikariCP connection pool closed."

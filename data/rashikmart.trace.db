@@ -19,3 +19,9 @@ SELECT * FROM userss [42104-232]
 2026-08-11 21:30:04.784869+05:30 jdbc[4]: exception
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "USERSS" not found (this database is empty); SQL statement:
 SELECT * FROM userss [42104-232]
+2026-08-27 20:04:32.424688+05:30 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "USERS" not found (this database is empty); SQL statement:
+DELETE FROM USERS [42104-232]
+2026-08-27 20:04:45.188401+05:30 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "USERS" not found (this database is empty); SQL statement:
+DELETE FROM Users [42104-232]
