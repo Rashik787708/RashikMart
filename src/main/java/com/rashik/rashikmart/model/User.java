@@ -5,24 +5,21 @@ public class User {
     private int id;
     private String name;
     private String email;
-    private String password;
+    private String passwordHash;
     private String role;
 
     public User() {
     }
 
-    public User(String name, String email, String password, String role) {
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.role = role;
-    }
+    public User(
+            String name,
+            String email,
+            String passwordHash,
+            String role) {
 
-    public User(int id, String name, String email, String password, String role) {
-        this.id = id;
         this.name = name;
         this.email = email;
-        this.password = password;
+        this.passwordHash = passwordHash;
         this.role = role;
     }
 
@@ -50,12 +47,12 @@ public class User {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
+    public String getPasswordHash() {
+        return passwordHash;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
 
     public String getRole() {

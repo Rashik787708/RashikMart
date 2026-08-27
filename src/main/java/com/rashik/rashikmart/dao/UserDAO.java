@@ -10,74 +10,141 @@ import java.sql.SQLException;
 
 public class UserDAO {
 
-    public boolean registerUser(User user) {
+    // ==========================================
+    // FIND USER BY EMAIL
+    // ==========================================
 
-        String sql = """
-                INSERT INTO users
-                (name, email, password, role)
-                VALUES (?, ?, ?, ?)
-                """;
+    public User findByEmail(String email) {
 
-        try (
-                Connection connection =
-                        DatabaseConfig.getDataSource().getConnection();
+        String sql =
+                "SELECT id, name, email, password_hash, role " +
+                        "FROM users " +
+                        "WHERE email = ?";
 
-                PreparedStatement statement =
-                        connection.prepareStatement(sql)
-        ) {
+        try (Connection connection =
+                     DatabaseConfig.getDataSource().getConnection();
 
-            statement.setString(1, user.getName());
-            statement.setString(2, user.getEmail());
-            statement.setString(3, user.getPassword());
-            statement.setString(4, user.getRole());
-
-            int rows = statement.executeUpdate();
-            return rows > 0;
-
-        } catch (SQLException e) {
-
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    public User loginUser(String email, String password) {
-
-        String sql = """
-                SELECT id, name, email, password, role
-                FROM users
-                WHERE email = ? AND password = ?
-                """;
-
-        try (
-                Connection connection =
-                        DatabaseConfig.getDataSource().getConnection();
-
-                PreparedStatement statement =
-                        connection.prepareStatement(sql)
-        ) {
+             PreparedStatement statement =
+                     connection.prepareStatement(sql)) {
 
             statement.setString(1, email);
-            statement.setString(2, password);
 
-            ResultSet resultSet = statement.executeQuery();
+            try (ResultSet resultSet = statement.executeQuery()) {
 
-            if (resultSet.next()) {
+                if (resultSet.next()) {
 
-                return new User(
-                        resultSet.getInt("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("email"),
-                        resultSet.getString("password"),
-                        resultSet.getString("role")
-                );
+                    User user = new User();
+
+                    user.setId(
+                            resultSet.getInt("id")
+                    );
+
+                    user.setName(
+                            resultSet.getString("name")
+                    );
+
+                    user.setEmail(
+                            resultSet.getString("email")
+                    );
+
+                    user.setPasswordHash(
+                            resultSet.getString("password_hash")
+                    );
+
+                    user.setRole(
+                            resultSet.getString("role")
+                    );
+
+                    return user;
+                }
             }
 
         } catch (SQLException e) {
+
+            System.err.println(
+                    "Error finding user by email: "
+                            + e.getMessage()
+            );
 
             e.printStackTrace();
         }
 
         return null;
+    }
+
+
+    // ==========================================
+    // REGISTER USER
+    // ==========================================
+
+    public boolean registerUser(User user) {
+
+        String sql =
+                "INSERT INTO users " +
+                        "(name, email, password_hash, role) " +
+                        "VALUES (?, ?, ?, ?)";
+
+        try (Connection connection =
+                     DatabaseConfig.getDataSource().getConnection();
+
+             PreparedStatement statement =
+                     connection.prepareStatement(sql)) {
+
+            statement.setString(
+                    1,
+                    user.getName()
+            );
+
+            statement.setString(
+                    2,
+                    user.getEmail()
+            );
+
+            statement.setString(
+                    3,
+                    user.getPasswordHash()
+            );
+
+            statement.setString(
+                    4,
+                    user.getRole()
+            );
+
+            int rows = statement.executeUpdate();
+
+            return rows > 0;
+
+        } catch (SQLException e) {
+
+            System.err.println(
+                    "Error registering user: "
+                            + e.getMessage()
+            );
+
+            e.printStackTrace();
+
+            return false;
+        }
+    }
+
+
+    // ==========================================
+    // VERIFY PASSWORD
+    // ==========================================
+
+    public boolean verifyPassword(
+            String plainPassword,
+            String passwordHash) {
+
+        if (plainPassword == null
+                || passwordHash == null) {
+
+            return false;
+        }
+
+        // Week 1 implementation.
+        // Password hashing can be added later.
+
+        return plainPassword.equals(passwordHash);
     }
 }
