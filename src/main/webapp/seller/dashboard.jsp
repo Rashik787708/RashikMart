@@ -1,136 +1,560 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="com.rashik.rashikmart.model.User" %>
-<%@ page import="com.rashik.rashikmart.model.Product" %>
-<%@ page import="com.rashik.rashikmart.dao.ProductDAO" %>
-<%@ page import="java.util.List" %>
 
 <%
     User user = (User) session.getAttribute("user");
-    if (user == null) {
-        response.sendRedirect(request.getContextPath() + "/login.jsp?error=Please+login+first");
-        return;
-    }
-    String userName = user.getName();
-    String role = user.getRole();
-    if (role == null || !"SELLER".equalsIgnoreCase(role)) {
-        response.sendRedirect(request.getContextPath() + "/login.jsp?error=Seller+access+required");
-        return;
-    }
-    String success = request.getParameter("success");
-    String error = request.getParameter("error");
 
-    ProductDAO productDAO = new ProductDAO();
-    List<Product> products = productDAO.findBySellerId(user.getId());
-    int productCount = (products != null) ? products.size() : 0;
-    int totalStock = 0;
-    if (products != null) {
-        for (Product p : products) totalStock += p.getQuantity();
+    if (user == null) {
+        response.sendRedirect(
+                request.getContextPath() + "/login.jsp?error=Please+login+first"
+        );
+        return;
+    }
+
+    String role = user.getRole();
+
+    if (role == null || !"SELLER".equalsIgnoreCase(role)) {
+        response.sendRedirect(
+                request.getContextPath() + "/login.jsp?error=Access+denied"
+        );
+        return;
+    }
+
+    String userName = user.getName();
+
+    if (userName == null || userName.trim().isEmpty()) {
+        userName = "Seller";
     }
 %>
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seller Dashboard - RashikMart</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/seller.css">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Seller Dashboard | RashikMart</title>
+
+    <link rel="stylesheet"
+          href="<%= request.getContextPath() %>/css/style.css">
+
 </head>
-<body class="seller-body">
+
+
+<body class="seller-dashboard-page">
+
+
+<!-- ================= NAVBAR ================= -->
 
 <header class="seller-navbar">
-    <a href="<%= request.getContextPath() %>/seller/dashboard.jsp" class="seller-brand">RashikMart</a>
-    <nav class="seller-nav">
-        <a href="<%= request.getContextPath() %>/seller/dashboard.jsp" class="active">Dashboard</a>
-        <a href="<%= request.getContextPath() %>/seller/add-product.jsp">Add Product</a>
-        <a href="<%= request.getContextPath() %>/seller/products.jsp">My Products</a>
-        <a href="<%= request.getContextPath() %>/logout">Logout</a>
-    </nav>
+
+    <div class="seller-navbar-inner">
+
+        <a href="<%= request.getContextPath() %>/seller/dashboard.jsp"
+           class="seller-logo">
+            RASHIK<span>MART</span>
+        </a>
+
+
+        <nav class="seller-nav">
+
+            <a href="<%= request.getContextPath() %>/seller/dashboard.jsp"
+               class="seller-nav-link active">
+                Dashboard
+            </a>
+
+            <a href="<%= request.getContextPath() %>/seller/add-product.jsp"
+               class="seller-nav-link">
+                Products
+            </a>
+
+            <a href="#orders"
+               class="seller-nav-link">
+                Orders
+            </a>
+
+        </nav>
+
+
+        <div class="seller-profile">
+
+            <div class="seller-avatar">
+                <%= userName.substring(0, 1).toUpperCase() %>
+            </div>
+
+            <div class="seller-profile-info">
+
+                <strong>
+                    <%= userName %>
+                </strong>
+
+                <span>
+                    Seller
+                </span>
+
+            </div>
+
+
+            <a href="<%= request.getContextPath() %>/logout"
+               class="logout-link">
+                Logout
+            </a>
+
+        </div>
+
+    </div>
+
 </header>
+
+
+<!-- ================= MAIN ================= -->
 
 <main class="seller-main">
 
-    <div class="seller-header-row">
+
+    <!-- ================= PAGE HEADER ================= -->
+
+    <section class="seller-page-header">
+
         <div>
-            <div class="seller-eyebrow">SELLER PANEL</div>
-            <h1>Welcome, <%= userName %></h1>
-            <p class="seller-subtitle">Manage your agricultural products, pricing and stock for the marketplace.</p>
-            <div class="seller-role-badge">ACCOUNT TYPE · SELLER</div>
-        </div>
-        <div class="status-pill"><span class="status-dot"></span> ACTIVE</div>
-    </div>
 
-    <% if (success != null && !success.trim().isEmpty()) { %>
-        <div class="message success"><%= success %></div>
-    <% } %>
-    <% if (error != null && !error.trim().isEmpty()) { %>
-        <div class="message error"><%= error %></div>
-    <% } %>
+            <p class="seller-overline">
+                SELLER DASHBOARD
+            </p>
 
-    <div class="stats-grid">
-        <div class="stat-card">
-            <div class="stat-label">TOTAL PRODUCTS</div>
-            <div class="stat-value"><%= productCount %></div>
-            <div class="stat-hint">Listings in your catalog</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-label">TOTAL STOCK</div>
-            <div class="stat-value"><%= totalStock %></div>
-            <div class="stat-hint">Units available for buyers</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-label">MARKETPLACE</div>
-            <div class="stat-value" style="font-size:22px;padding-top:6px;">Live</div>
-            <div class="stat-hint">Visible to buyers now</div>
-        </div>
-    </div>
+            <h1>
+                Welcome back, <%= userName %>.
+            </h1>
 
-    <section class="product-section">
-        <div class="section-top">
-            <div>
-                <div class="seller-eyebrow">PRODUCT MANAGEMENT</div>
-                <h2>Start selling on RashikMart</h2>
-                <p class="section-desc">Add agricultural products, set pricing and keep stock updated.</p>
+            <p class="seller-page-description">
+                Manage your products, monitor your marketplace activity
+                and keep your listings up to date.
+            </p>
+
+        </div>
+
+
+        <a href="<%= request.getContextPath() %>/seller/add-product.jsp"
+           class="seller-primary-button">
+
+            <span>+</span>
+            Add Product
+
+        </a>
+
+    </section>
+
+
+
+    <!-- ================= STATS ================= -->
+
+    <section class="seller-stats">
+
+
+        <div class="seller-stat">
+
+            <div class="stat-top">
+
+                <span class="stat-label">
+                    PRODUCTS
+                </span>
+
+                <span class="stat-icon">
+                    P
+                </span>
+
             </div>
-            <a href="<%= request.getContextPath() %>/seller/add-product.jsp" class="btn-primary">ADD NEW PRODUCT</a>
+
+            <strong class="stat-value">
+                0
+            </strong>
+
+            <p>
+                Active listings
+            </p>
+
         </div>
 
-        <div class="feature-grid">
-            <article class="feature-card">
-                <div class="feature-number">01</div>
-                <h3>Add Products</h3>
-                <p>Create product listings with name, category, price and quantity.</p>
-            </article>
-            <article class="feature-card">
-                <div class="feature-number">02</div>
-                <h3>Manage Stock</h3>
-                <p>Keep track of the quantity available for buyers at any time.</p>
-            </article>
-            <article class="feature-card">
-                <div class="feature-number">03</div>
-                <h3>Reach Buyers</h3>
-                <p>Your products become available in the buyer marketplace instantly.</p>
-            </article>
+
+
+        <div class="seller-stat">
+
+            <div class="stat-top">
+
+                <span class="stat-label">
+                    ORDERS
+                </span>
+
+                <span class="stat-icon">
+                    O
+                </span>
+
+            </div>
+
+            <strong class="stat-value">
+                0
+            </strong>
+
+            <p>
+                Orders received
+            </p>
+
         </div>
 
-        <div class="products-panel">
-            <div class="products-panel-header">
+
+
+        <div class="seller-stat">
+
+            <div class="stat-top">
+
+                <span class="stat-label">
+                    SALES
+                </span>
+
+                <span class="stat-icon">
+                    ₹
+                </span>
+
+            </div>
+
+            <strong class="stat-value">
+                ₹0
+            </strong>
+
+            <p>
+                Total sales
+            </p>
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- ================= CONTENT GRID ================= -->
+
+    <section class="seller-content-grid">
+
+
+        <!-- QUICK ACTIONS -->
+
+        <div class="seller-panel">
+
+            <div class="panel-heading">
+
                 <div>
-                    <h3>Your products</h3>
-                    <p>
-                        <% if (productCount == 0) { %>
-                            No listings yet — add your first product to get started.
-                        <% } else { %>
-                            Showing <%= productCount %> listing<%= productCount == 1 ? "" : "s" %> from your catalog.
-                        <% } %>
+
+                    <p class="seller-overline">
+                        GET STARTED
                     </p>
+
+                    <h2>
+                        Quick actions
+                    </h2>
+
                 </div>
-                <% if (productCount > 0) { %>
-                    <a href="<%= request.getContextPath() %>/seller/products.jsp" class="muted-link">View all products</a>
-                <% } %>
+
             </div>
 
-            <% if (productCount == 0) { %>
-                <div class="empty-state">
-                    <h3>No products yet</h3>
-                    <p>Add your first agricultural product with name, category, price and stock quantity.</p>
-                    <a href="<%=
+
+            <div class="quick-actions">
+
+
+                <a href="<%= request.getContextPath() %>/seller/add-product.jsp"
+                   class="quick-action">
+
+                    <div class="quick-action-icon">
+                        +
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Add a product
+                        </strong>
+
+                        <span>
+                            Create a new marketplace listing
+                        </span>
+
+                    </div>
+
+                    <span class="action-arrow">
+                        →
+                    </span>
+
+                </a>
+
+
+
+                <a href="#products"
+                   class="quick-action">
+
+                    <div class="quick-action-icon">
+                        P
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Manage products
+                        </strong>
+
+                        <span>
+                            View and update your listings
+                        </span>
+
+                    </div>
+
+                    <span class="action-arrow">
+                        →
+                    </span>
+
+                </a>
+
+
+
+                <a href="#orders"
+                   class="quick-action">
+
+                    <div class="quick-action-icon">
+                        O
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            View orders
+                        </strong>
+
+                        <span>
+                            Track incoming buyer orders
+                        </span>
+
+                    </div>
+
+                    <span class="action-arrow">
+                        →
+                    </span>
+
+                </a>
+
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ACCOUNT OVERVIEW -->
+
+        <div class="seller-panel account-panel">
+
+            <div class="panel-heading">
+
+                <div>
+
+                    <p class="seller-overline">
+                        ACCOUNT
+                    </p>
+
+                    <h2>
+                        Seller profile
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <div class="account-details">
+
+
+                <div class="account-row">
+
+                    <span>
+                        Name
+                    </span>
+
+                    <strong>
+                        <%= userName %>
+                    </strong>
+
+                </div>
+
+
+                <div class="account-row">
+
+                    <span>
+                        Email
+                    </span>
+
+                    <strong>
+                        <%= user.getEmail() %>
+                    </strong>
+
+                </div>
+
+
+                <div class="account-row">
+
+                    <span>
+                        Account type
+                    </span>
+
+                    <strong>
+                        <%= role %>
+                    </strong>
+
+                </div>
+
+
+                <div class="account-row">
+
+                    <span>
+                        Status
+                    </span>
+
+                    <strong class="account-status">
+                        Active
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- ================= PRODUCTS ================= -->
+
+    <section class="seller-panel products-panel"
+             id="products">
+
+        <div class="panel-heading products-heading">
+
+            <div>
+
+                <p class="seller-overline">
+                    INVENTORY
+                </p>
+
+                <h2>
+                    Your products
+                </h2>
+
+            </div>
+
+
+            <a href="<%= request.getContextPath() %>/seller/add-product.jsp"
+               class="panel-link">
+
+                Add product →
+
+            </a>
+
+        </div>
+
+
+        <div class="empty-products">
+
+            <div class="empty-icon">
+                +
+            </div>
+
+            <h3>
+                No products yet
+            </h3>
+
+            <p>
+                Your products will appear here once you create
+                your first listing.
+            </p>
+
+            <a href="<%= request.getContextPath() %>/seller/add-product.jsp"
+               class="seller-secondary-button">
+
+                Create your first product
+
+            </a>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ================= ORDERS ================= -->
+
+    <section class="seller-panel orders-panel"
+             id="orders">
+
+        <div class="panel-heading">
+
+            <div>
+
+                <p class="seller-overline">
+                    SALES
+                </p>
+
+                <h2>
+                    Recent orders
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <div class="empty-orders">
+
+            <p>
+                No orders have been received yet.
+            </p>
+
+        </div>
+
+    </section>
+
+
+</main>
+
+
+
+<!-- ================= FOOTER ================= -->
+
+<footer class="seller-footer">
+
+    <div>
+
+        <strong>
+            RASHIKMART
+        </strong>
+
+        <span>
+            Seller Portal
+        </span>
+
+    </div>
+
+
+    <p>
+        © 2026 RashikMart. All rights reserved.
+    </p>
+
+</footer>
+
+
+</body>
+
+</html>
