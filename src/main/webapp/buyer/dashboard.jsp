@@ -37,10 +37,13 @@
 
     <!-- Navigation Bar -->
     <header class="navbar">
-        <a href="${pageContext.request.contextPath}/buyer/dashboard.jsp" class="brand">RashikMart</a>
+        <a href="${pageContext.request.contextPath}/buyer/marketplace" class="brand">RashikMart</a>
         <nav>
             <ul class="nav-links">
                 <li><a href="${pageContext.request.contextPath}/buyer/dashboard.jsp" class="nav-link active">Dashboard</a></li>
+                <li><a href="${pageContext.request.contextPath}/buyer/marketplace" class="nav-link">Marketplace</a></li>
+                <li><a href="${pageContext.request.contextPath}/buyer/cart" class="nav-link">My Cart</a></li>
+                <li><a href="${pageContext.request.contextPath}/buyer/orders" class="nav-link">My Orders</a></li>
                 <li><a href="${pageContext.request.contextPath}/logout" class="nav-link">Logout</a></li>
             </ul>
         </nav>
@@ -65,9 +68,14 @@
                 <div>
                     <span class="eyebrow">MARKETPLACE</span>
                     <h2>Browse Marketplace Products</h2>
-                    <p>Product catalog browsing, searching, and cart features are being integrated into the marketplace.</p>
+                    <p>Explore products listed by sellers, add items to your cart, and place orders directly.</p>
                 </div>
-                <span class="status-badge">ACTIVE</span>
+                <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                    <a href="${pageContext.request.contextPath}/buyer/marketplace" class="seller-primary-button">
+                        Browse Marketplace →
+                    </a>
+                    <span class="status-badge">ACTIVE</span>
+                </div>
             </section>
 
         </div>

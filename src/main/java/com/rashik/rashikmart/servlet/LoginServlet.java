@@ -152,7 +152,7 @@ public class LoginServlet extends HttpServlet {
 
             response.sendRedirect(
                     request.getContextPath()
-                            + "/buyer/dashboard.jsp"
+                            + "/buyer/marketplace"
             );
 
         } else if ("SELLER".equalsIgnoreCase(role)) {

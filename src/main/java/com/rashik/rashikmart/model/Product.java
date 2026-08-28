@@ -1,6 +1,7 @@
 package com.rashik.rashikmart.model;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 
 public class Product {
 
@@ -14,6 +15,7 @@ public class Product {
     private BigDecimal price;
     private int quantity;
     private String imageUrl = "default-product.svg";
+    private Timestamp createdAt;
 
     public Product() {
     }
@@ -92,8 +94,30 @@ public class Product {
         this.imageUrl = (imageUrl != null && !imageUrl.trim().isEmpty()) ? imageUrl : "default-product.svg";
     }
 
+    public Product(
+            int id,
+            int sellerId,
+            String name,
+            String description,
+            String category,
+            BigDecimal price,
+            int quantity,
+            String imageUrl,
+            Timestamp createdAt
+    ) {
+        this.id = id;
+        this.sellerId = sellerId;
+        this.name = name;
+        this.description = description;
+        this.category = category;
+        this.price = price;
+        this.quantity = quantity;
+        this.imageUrl = (imageUrl != null && !imageUrl.trim().isEmpty()) ? imageUrl : "default-product.svg";
+        this.createdAt = createdAt;
+    }
+
     // =========================
-    // ID
+    // GETTERS & SETTERS
     // =========================
 
     public int getId() {
@@ -104,10 +128,6 @@ public class Product {
         this.id = id;
     }
 
-    // =========================
-    // SELLER ID
-    // =========================
-
     public int getSellerId() {
         return sellerId;
     }
@@ -115,10 +135,6 @@ public class Product {
     public void setSellerId(int sellerId) {
         this.sellerId = sellerId;
     }
-
-    // =========================
-    // NAME
-    // =========================
 
     public String getName() {
         return name;
@@ -128,10 +144,6 @@ public class Product {
         this.name = name;
     }
 
-    // =========================
-    // DESCRIPTION
-    // =========================
-
     public String getDescription() {
         return description;
     }
@@ -139,10 +151,6 @@ public class Product {
     public void setDescription(String description) {
         this.description = description;
     }
-
-    // =========================
-    // CATEGORY
-    // =========================
 
     public String getCategory() {
         return category;
@@ -152,10 +160,6 @@ public class Product {
         this.category = category;
     }
 
-    // =========================
-    // PRICE
-    // =========================
-
     public BigDecimal getPrice() {
         return price;
     }
@@ -163,10 +167,6 @@ public class Product {
     public void setPrice(BigDecimal price) {
         this.price = price;
     }
-
-    // =========================
-    // QUANTITY
-    // =========================
 
     public int getQuantity() {
         return quantity;
@@ -176,9 +176,14 @@ public class Product {
         this.quantity = quantity;
     }
 
-    // =========================
-    // IMAGE URL
-    // =========================
+    // Alias methods for stock
+    public int getStock() {
+        return quantity;
+    }
+
+    public void setStock(int stock) {
+        this.quantity = stock;
+    }
 
     public String getImageUrl() {
         return imageUrl;
@@ -186,5 +191,13 @@ public class Product {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = (imageUrl != null && !imageUrl.trim().isEmpty()) ? imageUrl : "default-product.svg";
+    }
+
+    public Timestamp getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAt = createdAt;
     }
 }

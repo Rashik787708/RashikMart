@@ -13,8 +13,12 @@ import java.util.List;
 public class ProductDAO {
 
     // =========================
-    // ADD PRODUCT (CREATE)
+    // ADD / CREATE PRODUCT
     // =========================
+
+    public boolean createProduct(Product product) {
+        return addProduct(product);
+    }
 
     public boolean addProduct(Product product) {
 
@@ -69,7 +73,8 @@ public class ProductDAO {
                        category,
                        price,
                        quantity,
-                       image_url
+                       image_url,
+                       created_at
                 FROM products
                 WHERE id = ?
                 """;
@@ -120,7 +125,8 @@ public class ProductDAO {
                        category,
                        price,
                        quantity,
-                       image_url
+                       image_url,
+                       created_at
                 FROM products
                 WHERE id = ? AND seller_id = ?
                 """;
@@ -172,7 +178,8 @@ public class ProductDAO {
                        category,
                        price,
                        quantity,
-                       image_url
+                       image_url,
+                       created_at
                 FROM products
                 WHERE seller_id = ?
                 ORDER BY id DESC
@@ -228,7 +235,8 @@ public class ProductDAO {
                        category,
                        price,
                        quantity,
-                       image_url
+                       image_url,
+                       created_at
                 FROM products
                 ORDER BY id DESC
                 """;
@@ -351,6 +359,44 @@ public class ProductDAO {
     }
 
     // =========================
+    // UPDATE STOCK
+    // =========================
+
+    public boolean updateStock(int productId, int newQuantity) {
+
+        String sql = """
+                UPDATE products
+                SET quantity = ?
+                WHERE id = ?
+                """;
+
+        try (
+                Connection connection =
+                        DatabaseConfig.getDataSource().getConnection();
+
+                PreparedStatement statement =
+                        connection.prepareStatement(sql)
+        ) {
+
+            statement.setInt(1, newQuantity);
+            statement.setInt(2, productId);
+
+            return statement.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+
+            System.err.println(
+                    "Error updating product stock: "
+                            + e.getMessage()
+            );
+
+            e.printStackTrace();
+
+            return false;
+        }
+    }
+
+    // =========================
     // MAP RESULT SET
     // =========================
 
@@ -366,6 +412,11 @@ public class ProductDAO {
             }
         } catch (SQLException ignored) {}
 
+        java.sql.Timestamp createdAt = null;
+        try {
+            createdAt = resultSet.getTimestamp("created_at");
+        } catch (SQLException ignored) {}
+
         return new Product(
                 resultSet.getInt("id"),
                 resultSet.getInt("seller_id"),
@@ -374,7 +425,8 @@ public class ProductDAO {
                 resultSet.getString("category"),
                 resultSet.getBigDecimal("price"),
                 resultSet.getInt("quantity"),
-                img
+                img,
+                createdAt
         );
     }
 }
