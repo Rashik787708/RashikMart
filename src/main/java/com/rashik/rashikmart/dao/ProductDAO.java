@@ -13,15 +13,15 @@ import java.util.List;
 public class ProductDAO {
 
     // =========================
-    // ADD PRODUCT
+    // ADD PRODUCT (CREATE)
     // =========================
 
     public boolean addProduct(Product product) {
 
         String sql = """
                 INSERT INTO products
-                (seller_id, name, description, category, price, quantity)
-                VALUES (?, ?, ?, ?, ?, ?)
+                (seller_id, name, description, category, price, quantity, image_url)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
                 """;
 
         try (
@@ -38,6 +38,7 @@ public class ProductDAO {
             statement.setString(4, product.getCategory());
             statement.setBigDecimal(5, product.getPrice());
             statement.setInt(6, product.getQuantity());
+            statement.setString(7, product.getImageUrl());
 
             return statement.executeUpdate() > 0;
 
@@ -55,7 +56,7 @@ public class ProductDAO {
     }
 
     // =========================
-    // FIND PRODUCT BY ID
+    // FIND PRODUCT BY ID (READ)
     // =========================
 
     public Product findById(int id) {
@@ -67,7 +68,8 @@ public class ProductDAO {
                        description,
                        category,
                        price,
-                       quantity
+                       quantity,
+                       image_url
                 FROM products
                 WHERE id = ?
                 """;
@@ -104,6 +106,56 @@ public class ProductDAO {
         return null;
     }
 
+    // ============================================
+    // FIND PRODUCT BY ID AND SELLER ID (READ/AUTH)
+    // ============================================
+
+    public Product findByIdAndSellerId(int id, int sellerId) {
+
+        String sql = """
+                SELECT id,
+                       seller_id,
+                       name,
+                       description,
+                       category,
+                       price,
+                       quantity,
+                       image_url
+                FROM products
+                WHERE id = ? AND seller_id = ?
+                """;
+
+        try (
+                Connection connection =
+                        DatabaseConfig.getDataSource().getConnection();
+
+                PreparedStatement statement =
+                        connection.prepareStatement(sql)
+        ) {
+
+            statement.setInt(1, id);
+            statement.setInt(2, sellerId);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+
+                if (resultSet.next()) {
+                    return mapProduct(resultSet);
+                }
+            }
+
+        } catch (SQLException e) {
+
+            System.err.println(
+                    "Error finding product by id and seller: "
+                            + e.getMessage()
+            );
+
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
     // =========================
     // FIND PRODUCTS BY SELLER
     // =========================
@@ -119,7 +171,8 @@ public class ProductDAO {
                        description,
                        category,
                        price,
-                       quantity
+                       quantity,
+                       image_url
                 FROM products
                 WHERE seller_id = ?
                 ORDER BY id DESC
@@ -174,7 +227,8 @@ public class ProductDAO {
                        description,
                        category,
                        price,
-                       quantity
+                       quantity,
+                       image_url
                 FROM products
                 ORDER BY id DESC
                 """;
@@ -211,12 +265,106 @@ public class ProductDAO {
     }
 
     // =========================
+    // UPDATE PRODUCT (UPDATE)
+    // =========================
+
+    public boolean updateProduct(Product product) {
+
+        String sql = """
+                UPDATE products
+                SET name = ?,
+                    description = ?,
+                    category = ?,
+                    price = ?,
+                    quantity = ?,
+                    image_url = ?
+                WHERE id = ? AND seller_id = ?
+                """;
+
+        try (
+                Connection connection =
+                        DatabaseConfig.getDataSource().getConnection();
+
+                PreparedStatement statement =
+                        connection.prepareStatement(sql)
+        ) {
+
+            statement.setString(1, product.getName());
+            statement.setString(2, product.getDescription());
+            statement.setString(3, product.getCategory());
+            statement.setBigDecimal(4, product.getPrice());
+            statement.setInt(5, product.getQuantity());
+            statement.setString(6, product.getImageUrl());
+            statement.setInt(7, product.getId());
+            statement.setInt(8, product.getSellerId());
+
+            return statement.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+
+            System.err.println(
+                    "Error updating product: "
+                            + e.getMessage()
+            );
+
+            e.printStackTrace();
+
+            return false;
+        }
+    }
+
+    // =========================
+    // DELETE PRODUCT (DELETE)
+    // =========================
+
+    public boolean deleteProduct(int id, int sellerId) {
+
+        String sql = """
+                DELETE FROM products
+                WHERE id = ? AND seller_id = ?
+                """;
+
+        try (
+                Connection connection =
+                        DatabaseConfig.getDataSource().getConnection();
+
+                PreparedStatement statement =
+                        connection.prepareStatement(sql)
+        ) {
+
+            statement.setInt(1, id);
+            statement.setInt(2, sellerId);
+
+            return statement.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+
+            System.err.println(
+                    "Error deleting product: "
+                            + e.getMessage()
+            );
+
+            e.printStackTrace();
+
+            return false;
+        }
+    }
+
+    // =========================
     // MAP RESULT SET
     // =========================
 
     private Product mapProduct(
             ResultSet resultSet
     ) throws SQLException {
+
+        String img = "default-product.svg";
+        try {
+            String dbImg = resultSet.getString("image_url");
+            if (dbImg != null && !dbImg.trim().isEmpty()) {
+                img = dbImg.trim();
+            }
+        } catch (SQLException ignored) {}
 
         return new Product(
                 resultSet.getInt("id"),
@@ -225,7 +373,8 @@ public class ProductDAO {
                 resultSet.getString("description"),
                 resultSet.getString("category"),
                 resultSet.getBigDecimal("price"),
-                resultSet.getInt("quantity")
+                resultSet.getInt("quantity"),
+                img
         );
     }
 }

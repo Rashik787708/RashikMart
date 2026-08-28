@@ -1,382 +1,223 @@
-<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="com.rashik.rashikmart.model.User" %>
+<%@ page import="com.rashik.rashikmart.model.Product" %>
+<%@ page import="com.rashik.rashikmart.dao.UserDAO" %>
+<%@ page import="com.rashik.rashikmart.dao.ProductDAO" %>
+<%@ page import="java.util.List" %>
 
 <%
-    /*
-     * ==============================
-     * AUTHENTICATION CHECK
-     * ==============================
-     */
+    User user = (User) session.getAttribute("user");
 
-    if (session.getAttribute("user") == null) {
-        response.sendRedirect(
-                request.getContextPath()
-                        + "/login.jsp?error=Please+login+first"
-        );
+    if (user == null) {
+        response.sendRedirect(request.getContextPath() + "/login.jsp?error=Please+login+first");
         return;
     }
 
-    /*
-     * ==============================
-     * SESSION DATA
-     * ==============================
-     */
+    String role = user.getRole();
+    if (role == null || !"ADMIN".equalsIgnoreCase(role)) {
+        response.sendRedirect(request.getContextPath() + "/login.jsp?error=Admin+access+required");
+        return;
+    }
 
-    String role = (String) session.getAttribute("role");
-
-    String userName = (String) session.getAttribute("userName");
-
-    /*
-     * Some versions of the login system may store the
-     * logged-in user object instead of userName.
-     *
-     * Therefore, try to obtain the name from the user object
-     * if userName is not available.
-     */
-
+    String userName = user.getName();
     if (userName == null || userName.trim().isEmpty()) {
+        userName = "Administrator";
+    }
 
-        Object userObject = session.getAttribute("user");
+    UserDAO userDAO = new UserDAO();
+    ProductDAO productDAO = new ProductDAO();
 
-        if (userObject != null) {
-            try {
-                java.lang.reflect.Method method =
-                        userObject.getClass().getMethod("getName");
+    List<User> allUsers = userDAO.findAll();
+    List<Product> allProducts = productDAO.findAll();
 
-                Object nameObject = method.invoke(userObject);
+    int totalUsers = allUsers != null ? allUsers.size() : 0;
+    int totalSellers = 0;
+    int totalBuyers = 0;
 
-                if (nameObject != null) {
-                    userName = nameObject.toString();
-                }
-
-            } catch (Exception ignored) {
-                // Keep fallback value below.
+    if (allUsers != null) {
+        for (User u : allUsers) {
+            if ("SELLER".equalsIgnoreCase(u.getRole())) {
+                totalSellers++;
+            } else if ("BUYER".equalsIgnoreCase(u.getRole())) {
+                totalBuyers++;
             }
         }
     }
 
-    if (userName == null || userName.trim().isEmpty()) {
-        userName = "Seller";
-    }
-
-    if (role == null || role.trim().isEmpty()) {
-        role = "SELLER";
-    }
+    int totalProducts = allProducts != null ? allProducts.size() : 0;
 %>
 
-
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
-    <title>Seller Dashboard - RashikMart</title>
-
-    <link rel="stylesheet"
-          href="${pageContext.request.contextPath}/css/style.css">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - RashikMart</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=20260828_3">
 </head>
-
-
 <body>
 
+    <!-- Navigation Bar -->
+    <header class="navbar">
+        <a href="${pageContext.request.contextPath}/admin/dashboard.jsp" class="brand">RashikMart</a>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="${pageContext.request.contextPath}/admin/dashboard.jsp" class="nav-link active">Admin Dashboard</a></li>
+                <li><a href="${pageContext.request.contextPath}/logout" class="nav-link">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
 
-<!-- =====================================================
-     NAVIGATION BAR
-     ===================================================== -->
+    <!-- Main Content -->
+    <main class="seller-page">
+        <div class="seller-container">
 
-<header class="navbar">
+            <section class="seller-header">
+                <div class="seller-introduction">
+                    <span class="eyebrow">ADMINISTRATOR CONTROL PANEL</span>
+                    <h1>Welcome, <%= userName %></h1>
+                    <p>Global oversight of registered users, seller catalogs, and marketplace listings.</p>
+                </div>
+                <div class="seller-role-badge">
+                    ROLE: <%= role %>
+                </div>
+            </section>
 
-    <a href="${pageContext.request.contextPath}/"
-       class="brand">
-        RashikMart
-    </a>
-
-
-    <nav>
-
-        <ul class="nav-links">
-
-            <li>
-                <a href="${pageContext.request.contextPath}/seller/dashboard.jsp"
-                   class="nav-link active">
-                    Dashboard
-                </a>
-            </li>
-
-
-            <li>
-                <a href="#product-management"
-                   class="nav-link">
-                    Products
-                </a>
-            </li>
-
-
-            <li>
-                <a href="${pageContext.request.contextPath}/logout"
-                   class="nav-link">
-                    Logout
-                </a>
-            </li>
-
-        </ul>
-
-    </nav>
-
-</header>
-
-
-
-<!-- =====================================================
-     MAIN SELLER PAGE
-     ===================================================== -->
-
-<main class="seller-page">
-
-
-    <div class="seller-container">
-
-
-        <!-- =================================================
-             SELLER HEADER
-             ================================================= -->
-
-        <section class="seller-header">
-
-
-            <div class="seller-introduction">
-
-                <span class="eyebrow">
-                    Seller Panel
-                </span>
-
-
-                <h1>
-                    Welcome, <%= userName %>
-                </h1>
-
-
-                <p>
-                    Manage your products and marketplace listings.
-                </p>
-
-            </div>
-
-
-            <div class="seller-role">
-
-                <span>
-                    ROLE
-                </span>
-
-                <strong>
-                    <%= role %>
-                </strong>
-
-            </div>
-
-
-        </section>
-
-
-
-        <!-- =================================================
-             PRODUCT MANAGEMENT
-             ================================================= -->
-
-        <section class="seller-section"
-                 id="product-management">
-
-
-            <div class="section-heading">
-
-
-                <div>
-
-                    <span class="eyebrow">
-                        Product Management
-                    </span>
-
-
-                    <h2>
-                        Start selling on RashikMart
-                    </h2>
-
-
-                    <p>
-                        Create product listings, set pricing
-                        and manage available stock.
-                    </p>
-
+            <!-- Stats Overview -->
+            <div class="seller-stats-grid">
+                <div class="seller-stat-card">
+                    <div class="seller-stat-label">Total Users</div>
+                    <div class="seller-stat-value"><%= totalUsers %></div>
+                    <div class="seller-stat-hint"><%= totalSellers %> Sellers &bull; <%= totalBuyers %> Buyers</div>
                 </div>
 
+                <div class="seller-stat-card">
+                    <div class="seller-stat-label">Marketplace Products</div>
+                    <div class="seller-stat-value"><%= totalProducts %></div>
+                    <div class="seller-stat-hint">Active items across all sellers</div>
+                </div>
 
-                <!--
-                    This link will be connected to the
-                    Add Product JSP when we create it.
-                -->
-
-                <a href="${pageContext.request.contextPath}/seller/add-product.jsp"
-                   class="seller-primary-button">
-                    Add New Product
-                </a>
-
-
+                <div class="seller-stat-card">
+                    <div class="seller-stat-label">System Status</div>
+                    <div class="seller-stat-value" style="font-size: 1.8rem; padding-top: 5px;">ONLINE</div>
+                    <div class="seller-stat-hint">H2 Database connection verified</div>
+                </div>
             </div>
 
-
-
-            <!-- =================================================
-                 SELLER FEATURE CARDS
-                 ================================================= -->
-
-            <div class="seller-feature-grid">
-
-
-                <!-- CARD 01 -->
-
-                <article class="seller-feature-card">
-
-
-                    <span class="feature-number">
-                        01
-                    </span>
-
-
-                    <h3>
-                        Add Products
-                    </h3>
-
-
-                    <p>
-                        Create product listings with name,
-                        category, price and quantity.
-                    </p>
-
-
-                </article>
-
-
-
-                <!-- CARD 02 -->
-
-                <article class="seller-feature-card">
-
-
-                    <span class="feature-number">
-                        02
-                    </span>
-
-
-                    <h3>
-                        Manage Stock
-                    </h3>
-
-
-                    <p>
-                        Keep track of the quantity
-                        available for buyers.
-                    </p>
-
-
-                </article>
-
-
-
-                <!-- CARD 03 -->
-
-                <article class="seller-feature-card">
-
-
-                    <span class="feature-number">
-                        03
-                    </span>
-
-
-                    <h3>
-                        Reach Buyers
-                    </h3>
-
-
-                    <p>
-                        Your products will become available
-                        in the buyer marketplace.
-                    </p>
-
-
-                </article>
-
-
-            </div>
-
-
-        </section>
-
-
-
-        <!-- =================================================
-             WEEK 2 STATUS
-             ================================================= -->
-
-        <section class="seller-status-card">
-
-
-            <div>
-
-                <span class="eyebrow">
-                    Week 2
-                </span>
-
-
-                <h2>
-                    Product Management
-                </h2>
-
-
-                <p>
-                    Build the seller product workflow:
-                    create products, store them in the database
-                    and display them in the seller dashboard.
-                </p>
-
-
-            </div>
-
-
-            <div class="status-badge">
-                IN PROGRESS
-            </div>
-
-
-        </section>
-
-
-    </div>
-
-
-</main>
-
-
-
-<!-- =====================================================
-     FOOTER
-     ===================================================== -->
-
-<footer class="footer">
-
-    <p>
-        © 2026 RashikMart. All rights reserved.
-    </p>
-
-</footer>
-
+            <!-- Users Section -->
+            <section class="seller-section">
+                <div class="section-heading">
+                    <div>
+                        <span class="eyebrow">USER MANAGEMENT</span>
+                        <h2>Registered Accounts</h2>
+                        <p>All buyers, sellers, and administrators registered in the system.</p>
+                    </div>
+                </div>
+
+                <div class="products-panel">
+                    <div class="products-table-wrapper">
+                        <table class="products-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Full Name</th>
+                                    <th>Email Address</th>
+                                    <th>Account Role</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (allUsers != null) {
+                                    for (User u : allUsers) {
+                                %>
+                                    <tr>
+                                        <td>#<%= u.getId() %></td>
+                                        <td><strong><%= u.getName() %></strong></td>
+                                        <td><%= u.getEmail() %></td>
+                                        <td>
+                                            <span class="category-chip" style="<%= "ADMIN".equalsIgnoreCase(u.getRole()) ? "background: #000; color: #fff;" : "" %>">
+                                                <%= u.getRole() %>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                <% }} %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Products Section -->
+            <section class="seller-section">
+                <div class="section-heading">
+                    <div>
+                        <span class="eyebrow">ALL LISTINGS</span>
+                        <h2>Marketplace Products</h2>
+                        <p>All items created by sellers across the platform.</p>
+                    </div>
+                </div>
+
+                <div class="products-panel">
+                    <div class="products-table-wrapper">
+                        <table class="products-table">
+                            <thead>
+                                <tr>
+                                    <th>Photo</th>
+                                    <th>ID</th>
+                                    <th>Seller ID</th>
+                                    <th>Product Name</th>
+                                    <th>Category</th>
+                                    <th>Price</th>
+                                    <th>Stock</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (allProducts == null || allProducts.isEmpty()) { %>
+                                    <tr>
+                                        <td colspan="7" style="text-align: center; padding: 2rem; color: #777;">
+                                            No products listed in the marketplace yet.
+                                        </td>
+                                    </tr>
+                                <% } else {
+                                    for (Product p : allProducts) {
+                                        String pImg = "default-product.svg";
+                                        try {
+                                            if (p.getImageUrl() != null && !p.getImageUrl().trim().isEmpty()) {
+                                                pImg = p.getImageUrl().trim();
+                                            }
+                                        } catch (Throwable t) {
+                                            pImg = "default-product.svg";
+                                        }
+                                        String imgSrc = pImg.startsWith("default-") ? request.getContextPath() + "/images/" + pImg : request.getContextPath() + "/images/products/" + pImg;
+                                %>
+                                    <tr>
+                                        <td style="width: 50px;">
+                                            <img src="<%= imgSrc %>" 
+                                                 alt="<%= p.getName() %>" 
+                                                 class="product-thumb"
+                                                 onerror="this.src='${pageContext.request.contextPath}/images/default-product.svg';">
+                                        </td>
+                                        <td>#<%= p.getId() %></td>
+                                        <td>Seller #<%= p.getSellerId() %></td>
+                                        <td><strong><%= p.getName() %></strong></td>
+                                        <td><span class="category-chip"><%= p.getCategory() %></span></td>
+                                        <td><strong>₹<%= p.getPrice() %></strong></td>
+                                        <td><%= p.getQuantity() %> units</td>
+                                    </tr>
+                                <% }} %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2026 RashikMart. All rights reserved.</p>
+    </footer>
 
 </body>
-
 </html>

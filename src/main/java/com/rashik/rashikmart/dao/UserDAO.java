@@ -7,6 +7,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserDAO {
 
@@ -100,6 +102,55 @@ public class UserDAO {
 
             return false;
         }
+    }
+
+
+    // =====================================================
+    // FIND ALL USERS
+    // =====================================================
+
+    public List<User> findAll() {
+
+        List<User> users = new ArrayList<>();
+
+        String sql = """
+                SELECT id, name, email, password, role
+                FROM users
+                ORDER BY id ASC
+                """;
+
+        try (
+                Connection connection =
+                        DatabaseConfig.getDataSource().getConnection();
+
+                PreparedStatement statement =
+                        connection.prepareStatement(sql);
+
+                ResultSet resultSet = statement.executeQuery()
+        ) {
+
+            while (resultSet.next()) {
+
+                users.add(new User(
+                        resultSet.getInt("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("email"),
+                        resultSet.getString("password"),
+                        resultSet.getString("role")
+                ));
+            }
+
+        } catch (SQLException e) {
+
+            System.err.println(
+                    "Error finding all users: "
+                            + e.getMessage()
+            );
+
+            e.printStackTrace();
+        }
+
+        return users;
     }
 
 

@@ -1,9 +1,13 @@
 package com.rashik.rashikmart.config;
 
+import com.rashik.rashikmart.dao.UserDAO;
+import com.rashik.rashikmart.model.User;
+
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -33,11 +37,16 @@ public class DatabaseContextListener implements ServletContextListener {
                     category VARCHAR(100) NOT NULL,
                     price DECIMAL(12,2) NOT NULL,
                     quantity INT NOT NULL,
+                    image_url VARCHAR(255) DEFAULT 'default-product.svg',
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     CONSTRAINT fk_products_seller
                         FOREIGN KEY (seller_id)
                         REFERENCES users(id)
                 )
+                """;
+
+        String alterProductsImage = """
+                ALTER TABLE products ADD COLUMN IF NOT EXISTS image_url VARCHAR(255) DEFAULT 'default-product.svg'
                 """;
 
         try (
@@ -50,11 +59,35 @@ public class DatabaseContextListener implements ServletContextListener {
 
             statement.executeUpdate(usersTable);
             statement.executeUpdate(productsTable);
+            try {
+                statement.executeUpdate(alterProductsImage);
+            } catch (SQLException ignored) {}
+
+            // Ensure images/products directory exists
+            String productsImgPath = sce.getServletContext().getRealPath("/images/products");
+            if (productsImgPath != null) {
+                File dir = new File(productsImgPath);
+                if (!dir.exists()) {
+                    dir.mkdirs();
+                }
+            }
+
+            // Seed default admin account if not exists
+            UserDAO userDAO = new UserDAO();
+            if (userDAO.findByEmail("admin@rashikmart.com") == null) {
+                userDAO.registerUser(new User(
+                        "System Administrator",
+                        "admin@rashikmart.com",
+                        "admin123",
+                        "ADMIN"
+                ));
+                System.out.println("Default admin user created: admin@rashikmart.com / admin123");
+            }
 
             System.out.println("=================================");
             System.out.println("H2 DATABASE INITIALIZED");
             System.out.println("Users table ready");
-            System.out.println("Products table ready");
+            System.out.println("Products table ready (with photo support)");
             System.out.println("=================================");
 
         } catch (SQLException e) {

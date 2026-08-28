@@ -5,17 +5,26 @@ import com.rashik.rashikmart.model.Product;
 import com.rashik.rashikmart.model.User;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.Part;
 
+import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Locale;
+import java.nio.file.Paths;
+import java.util.UUID;
 
 @WebServlet("/seller/add-product")
+@MultipartConfig(
+        fileSizeThreshold = 1024 * 1024,       // 1MB
+        maxFileSize = 1024 * 1024 * 5,          // 5MB
+        maxRequestSize = 1024 * 1024 * 10       // 10MB
+)
 public class AddProductServlet extends HttpServlet {
 
     private ProductDAO productDAO;
@@ -133,8 +142,8 @@ public class AddProductServlet extends HttpServlet {
             if (price.compareTo(BigDecimal.ZERO) <= 0) {
 
                 response.sendRedirect(
-                        request.getContextPath()
-                                + "/seller/add-product.jsp?error=Price+must+be+greater+than+zero"
+                    request.getContextPath()
+                            + "/seller/add-product.jsp?error=Price+must+be+greater+than+zero"
                 );
 
                 return;
@@ -182,6 +191,43 @@ public class AddProductServlet extends HttpServlet {
         }
 
         // =========================
+        // IMAGE UPLOAD HANDLING
+        // =========================
+
+        String imageUrl = "default-product.svg";
+
+        try {
+            Part filePart = request.getPart("image");
+            if (filePart != null && filePart.getSize() > 0) {
+                String submittedName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
+                if (submittedName != null && !submittedName.trim().isEmpty()) {
+                    String extension = "";
+                    int dotIndex = submittedName.lastIndexOf('.');
+                    if (dotIndex >= 0) {
+                        extension = submittedName.substring(dotIndex).toLowerCase();
+                    }
+
+                    if (extension.equals(".jpg") || extension.equals(".jpeg") || extension.equals(".png") || extension.equals(".webp") || extension.equals(".svg")) {
+                        String uniqueFileName = UUID.randomUUID().toString() + extension;
+                        String uploadPath = getServletContext().getRealPath("/images/products");
+
+                        if (uploadPath != null) {
+                            File uploadDir = new File(uploadPath);
+                            if (!uploadDir.exists()) {
+                                uploadDir.mkdirs();
+                            }
+
+                            filePart.write(uploadPath + File.separator + uniqueFileName);
+                            imageUrl = uniqueFileName;
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error processing product image upload: " + e.getMessage());
+        }
+
+        // =========================
         // CREATE PRODUCT
         // =========================
 
@@ -194,7 +240,8 @@ public class AddProductServlet extends HttpServlet {
                                 : description.trim(),
                         category.trim(),
                         price,
-                        quantity
+                        quantity,
+                        imageUrl
                 );
 
         // =========================

@@ -13,6 +13,7 @@ public class Product {
 
     private BigDecimal price;
     private int quantity;
+    private String imageUrl = "default-product.svg";
 
     public Product() {
     }
@@ -31,6 +32,25 @@ public class Product {
         this.category = category;
         this.price = price;
         this.quantity = quantity;
+        this.imageUrl = "default-product.svg";
+    }
+
+    public Product(
+            int sellerId,
+            String name,
+            String description,
+            String category,
+            BigDecimal price,
+            int quantity,
+            String imageUrl
+    ) {
+        this.sellerId = sellerId;
+        this.name = name;
+        this.description = description;
+        this.category = category;
+        this.price = price;
+        this.quantity = quantity;
+        this.imageUrl = (imageUrl != null && !imageUrl.trim().isEmpty()) ? imageUrl : "default-product.svg";
     }
 
     public Product(
@@ -49,6 +69,27 @@ public class Product {
         this.category = category;
         this.price = price;
         this.quantity = quantity;
+        this.imageUrl = "default-product.svg";
+    }
+
+    public Product(
+            int id,
+            int sellerId,
+            String name,
+            String description,
+            String category,
+            BigDecimal price,
+            int quantity,
+            String imageUrl
+    ) {
+        this.id = id;
+        this.sellerId = sellerId;
+        this.name = name;
+        this.description = description;
+        this.category = category;
+        this.price = price;
+        this.quantity = quantity;
+        this.imageUrl = (imageUrl != null && !imageUrl.trim().isEmpty()) ? imageUrl : "default-product.svg";
     }
 
     // =========================
@@ -133,5 +174,17 @@ public class Product {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    // =========================
+    // IMAGE URL
+    // =========================
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = (imageUrl != null && !imageUrl.trim().isEmpty()) ? imageUrl : "default-product.svg";
     }
 }

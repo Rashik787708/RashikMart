@@ -1,54 +1,82 @@
-<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="com.rashik.rashikmart.model.User" %>
 
 <%
-    if (session.getAttribute("user") == null) {
-        response.sendRedirect(
-                request.getContextPath()
-                        + "/login.jsp?error=Please+login+first"
-        );
+    User user = (User) session.getAttribute("user");
+
+    if (user == null) {
+        response.sendRedirect(request.getContextPath() + "/login.jsp?error=Please+login+first");
         return;
     }
 
-    String role = (String) session.getAttribute("role");
+    String role = user.getRole();
+    if (role == null || !"BUYER".equalsIgnoreCase(role)) {
+        response.sendRedirect(request.getContextPath() + "/login.jsp?error=Buyer+access+required");
+        return;
+    }
+
+    String userName = user.getName();
+    if (userName == null || userName.trim().isEmpty()) {
+        userName = (String) session.getAttribute("userName");
+    }
+    if (userName == null || userName.trim().isEmpty()) {
+        userName = "Buyer";
+    }
 %>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Buyer Dashboard - RashikMart</title>
-
-    <link rel="stylesheet"
-          href="${pageContext.request.contextPath}/css/style.css">
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=20260828">
 </head>
-
 <body>
 
-<div class="container">
+    <!-- Navigation Bar -->
+    <header class="navbar">
+        <a href="${pageContext.request.contextPath}/buyer/dashboard.jsp" class="brand">RashikMart</a>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="${pageContext.request.contextPath}/buyer/dashboard.jsp" class="nav-link active">Dashboard</a></li>
+                <li><a href="${pageContext.request.contextPath}/logout" class="nav-link">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
 
-    <h1>RashikMart</h1>
+    <!-- Main Content -->
+    <main class="seller-page">
+        <div class="seller-container">
 
-    <h2>Buyer Dashboard</h2>
+            <section class="seller-header">
+                <div class="seller-introduction">
+                    <span class="eyebrow">BUYER PANEL</span>
+                    <h1>Welcome, <%= userName %></h1>
+                    <p>Explore agricultural listings, connect with verified sellers, and manage your orders.</p>
+                </div>
+                <div class="seller-role-badge">
+                    ROLE: <%= role %>
+                </div>
+            </section>
 
-    <p>
-        Welcome to RashikMart.
-    </p>
+            <section class="seller-status-card">
+                <div>
+                    <span class="eyebrow">MARKETPLACE</span>
+                    <h2>Browse Marketplace Products</h2>
+                    <p>Product catalog browsing, searching, and cart features are being integrated into the marketplace.</p>
+                </div>
+                <span class="status-badge">ACTIVE</span>
+            </section>
 
-    <p>
-        Role:
-        <strong><%= role %></strong>
-    </p>
+        </div>
+    </main>
 
-    <hr>
-
-    <p>
-        Product browsing and cart features will be added in Week 2.
-    </p>
-
-    <a href="<%= request.getContextPath() %>/logout">
-        Logout
-    </a>
-
-</div>
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2026 RashikMart. All rights reserved.</p>
+    </footer>
 
 </body>
 </html>
