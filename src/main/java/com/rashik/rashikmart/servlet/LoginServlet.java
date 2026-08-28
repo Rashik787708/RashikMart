@@ -1,4 +1,4 @@
-package com.rashik.rashikmart;
+package com.rashik.rashikmart.servlet;
 
 import com.rashik.rashikmart.dao.UserDAO;
 import com.rashik.rashikmart.model.User;

@@ -7,21 +7,19 @@ import javax.servlet.http.*;
 import java.io.IOException;
 
 @WebFilter(urlPatterns = {
-        "/buyer.jsp",
-        "/seller.jsp",
-        "/admin.jsp"
+        "/buyer/*",
+        "/seller/*",
+        "/admin/*"
 })
 public class AuthFilter implements Filter {
 
-
     @Override
-    public void init(
-            FilterConfig filterConfig)
+    public void init(FilterConfig filterConfig)
             throws ServletException {
 
-        System.out.println(
-                "AuthFilter initialized"
-        );
+        System.out.println("=================================");
+        System.out.println("AuthFilter initialized");
+        System.out.println("=================================");
     }
 
 
@@ -39,25 +37,26 @@ public class AuthFilter implements Filter {
                 (HttpServletResponse) response;
 
 
-        // =====================================================
-        // GET SESSION
-        // =====================================================
+        /*
+         * ========================================================
+         * GET EXISTING SESSION
+         * ========================================================
+         */
 
         HttpSession session =
                 httpRequest.getSession(false);
 
 
-        // =====================================================
-        // CHECK LOGIN
-        // =====================================================
+        /*
+         * ========================================================
+         * CHECK WHETHER USER IS LOGGED IN
+         * ========================================================
+         */
 
-        boolean loggedIn =
-                session != null
-                        && session.getAttribute("userId") != null
-                        && session.getAttribute("role") != null;
-
-
-        if (!loggedIn) {
+        if (session == null
+                || session.getAttribute("user") == null
+                || session.getAttribute("userId") == null
+                || session.getAttribute("role") == null) {
 
             httpResponse.sendRedirect(
                     httpRequest.getContextPath()
@@ -68,15 +67,23 @@ public class AuthFilter implements Filter {
         }
 
 
-        // =====================================================
-        // GET ROLE
-        // =====================================================
+        /*
+         * ========================================================
+         * GET USER ROLE
+         * ========================================================
+         */
 
         String role =
                 String.valueOf(
                         session.getAttribute("role")
                 );
 
+
+        /*
+         * ========================================================
+         * GET REQUEST PATH
+         * ========================================================
+         */
 
         String requestURI =
                 httpRequest.getRequestURI();
@@ -90,11 +97,13 @@ public class AuthFilter implements Filter {
                 );
 
 
-        // =====================================================
-        // BUYER PAGE
-        // =====================================================
+        /*
+         * ========================================================
+         * BUYER ACCESS
+         * ========================================================
+         */
 
-        if (path.equals("/buyer.jsp")) {
+        if (path.startsWith("/buyer/")) {
 
             if (!"BUYER".equalsIgnoreCase(role)) {
 
@@ -108,11 +117,13 @@ public class AuthFilter implements Filter {
         }
 
 
-        // =====================================================
-        // SELLER PAGE
-        // =====================================================
+        /*
+         * ========================================================
+         * SELLER ACCESS
+         * ========================================================
+         */
 
-        if (path.equals("/seller.jsp")) {
+        if (path.startsWith("/seller/")) {
 
             if (!"SELLER".equalsIgnoreCase(role)) {
 
@@ -126,11 +137,13 @@ public class AuthFilter implements Filter {
         }
 
 
-        // =====================================================
-        // ADMIN PAGE
-        // =====================================================
+        /*
+         * ========================================================
+         * ADMIN ACCESS
+         * ========================================================
+         */
 
-        if (path.equals("/admin.jsp")) {
+        if (path.startsWith("/admin/")) {
 
             if (!"ADMIN".equalsIgnoreCase(role)) {
 
@@ -144,22 +157,20 @@ public class AuthFilter implements Filter {
         }
 
 
-        // =====================================================
-        // ALLOW REQUEST
-        // =====================================================
+        /*
+         * ========================================================
+         * USER IS AUTHORIZED
+         * ========================================================
+         */
 
-        chain.doFilter(
-                request,
-                response
-        );
+        chain.doFilter(request, response);
     }
 
 
     @Override
     public void destroy() {
 
-        System.out.println(
-                "AuthFilter destroyed"
-        );
+        System.out.println("AuthFilter destroyed");
+
     }
 }
