@@ -12,9 +12,9 @@ import java.util.List;
 
 public class ProductDAO {
 
-    // =========================
-    // ADD / CREATE PRODUCT
-    // =========================
+    // =========================================================
+    // CREATE PRODUCT
+    // =========================================================
 
     public boolean createProduct(Product product) {
         return addProduct(product);
@@ -59,9 +59,9 @@ public class ProductDAO {
         }
     }
 
-    // =========================
-    // FIND PRODUCT BY ID (READ)
-    // =========================
+    // =========================================================
+    // FIND PRODUCT BY ID
+    // =========================================================
 
     public Product findById(int id) {
 
@@ -93,7 +93,6 @@ public class ProductDAO {
                          statement.executeQuery()) {
 
                 if (resultSet.next()) {
-
                     return mapProduct(resultSet);
                 }
             }
@@ -111,11 +110,14 @@ public class ProductDAO {
         return null;
     }
 
-    // ============================================
-    // FIND PRODUCT BY ID AND SELLER ID (READ/AUTH)
-    // ============================================
+    // =========================================================
+    // FIND PRODUCT BY ID + SELLER
+    // =========================================================
 
-    public Product findByIdAndSellerId(int id, int sellerId) {
+    public Product findByIdAndSellerId(
+            int id,
+            int sellerId
+    ) {
 
         String sql = """
                 SELECT id,
@@ -128,7 +130,8 @@ public class ProductDAO {
                        image_url,
                        created_at
                 FROM products
-                WHERE id = ? AND seller_id = ?
+                WHERE id = ?
+                  AND seller_id = ?
                 """;
 
         try (
@@ -142,7 +145,8 @@ public class ProductDAO {
             statement.setInt(1, id);
             statement.setInt(2, sellerId);
 
-            try (ResultSet resultSet = statement.executeQuery()) {
+            try (ResultSet resultSet =
+                         statement.executeQuery()) {
 
                 if (resultSet.next()) {
                     return mapProduct(resultSet);
@@ -152,7 +156,7 @@ public class ProductDAO {
         } catch (SQLException e) {
 
             System.err.println(
-                    "Error finding product by id and seller: "
+                    "Error finding seller product: "
                             + e.getMessage()
             );
 
@@ -162,13 +166,16 @@ public class ProductDAO {
         return null;
     }
 
-    // =========================
-    // FIND PRODUCTS BY SELLER
-    // =========================
+    // =========================================================
+    // FIND SELLER PRODUCTS
+    // =========================================================
 
-    public List<Product> findBySellerId(int sellerId) {
+    public List<Product> findBySellerId(
+            int sellerId
+    ) {
 
-        List<Product> products = new ArrayList<>();
+        List<Product> products =
+                new ArrayList<>();
 
         String sql = """
                 SELECT id,
@@ -219,13 +226,14 @@ public class ProductDAO {
         return products;
     }
 
-    // =========================
+    // =========================================================
     // FIND ALL PRODUCTS
-    // =========================
+    // =========================================================
 
     public List<Product> findAll() {
 
-        List<Product> products = new ArrayList<>();
+        List<Product> products =
+                new ArrayList<>();
 
         String sql = """
                 SELECT id,
@@ -272,11 +280,68 @@ public class ProductDAO {
         return products;
     }
 
-    // =========================
-    // UPDATE PRODUCT (UPDATE)
-    // =========================
+    // =========================================================
+    // FIND AVAILABLE PRODUCTS
+    // =========================================================
 
-    public boolean updateProduct(Product product) {
+    public List<Product> findAllAvailable() {
+
+        List<Product> products =
+                new ArrayList<>();
+
+        String sql = """
+                SELECT id,
+                       seller_id,
+                       name,
+                       description,
+                       category,
+                       price,
+                       quantity,
+                       image_url,
+                       created_at
+                FROM products
+                WHERE quantity > 0
+                ORDER BY id DESC
+                """;
+
+        try (
+                Connection connection =
+                        DatabaseConfig.getDataSource().getConnection();
+
+                PreparedStatement statement =
+                        connection.prepareStatement(sql);
+
+                ResultSet resultSet =
+                        statement.executeQuery()
+        ) {
+
+            while (resultSet.next()) {
+
+                products.add(
+                        mapProduct(resultSet)
+                );
+            }
+
+        } catch (SQLException e) {
+
+            System.err.println(
+                    "Error finding available products: "
+                            + e.getMessage()
+            );
+
+            e.printStackTrace();
+        }
+
+        return products;
+    }
+
+    // =========================================================
+    // UPDATE PRODUCT
+    // =========================================================
+
+    public boolean updateProduct(
+            Product product
+    ) {
 
         String sql = """
                 UPDATE products
@@ -286,7 +351,8 @@ public class ProductDAO {
                     price = ?,
                     quantity = ?,
                     image_url = ?
-                WHERE id = ? AND seller_id = ?
+                WHERE id = ?
+                  AND seller_id = ?
                 """;
 
         try (
@@ -321,15 +387,19 @@ public class ProductDAO {
         }
     }
 
-    // =========================
-    // DELETE PRODUCT (DELETE)
-    // =========================
+    // =========================================================
+    // DELETE PRODUCT
+    // =========================================================
 
-    public boolean deleteProduct(int id, int sellerId) {
+    public boolean deleteProduct(
+            int id,
+            int sellerId
+    ) {
 
         String sql = """
                 DELETE FROM products
-                WHERE id = ? AND seller_id = ?
+                WHERE id = ?
+                  AND seller_id = ?
                 """;
 
         try (
@@ -358,11 +428,14 @@ public class ProductDAO {
         }
     }
 
-    // =========================
+    // =========================================================
     // UPDATE STOCK
-    // =========================
+    // =========================================================
 
-    public boolean updateStock(int productId, int newQuantity) {
+    public boolean updateStock(
+            int productId,
+            int newQuantity
+    ) {
 
         String sql = """
                 UPDATE products
@@ -396,26 +469,41 @@ public class ProductDAO {
         }
     }
 
-    // =========================
-    // MAP RESULT SET
-    // =========================
+    // =========================================================
+    // MAP PRODUCT
+    // =========================================================
 
     private Product mapProduct(
             ResultSet resultSet
     ) throws SQLException {
 
-        String img = "default-product.svg";
+        String imageUrl =
+                "default-product.svg";
+
         try {
-            String dbImg = resultSet.getString("image_url");
-            if (dbImg != null && !dbImg.trim().isEmpty()) {
-                img = dbImg.trim();
+
+            String databaseImage =
+                    resultSet.getString("image_url");
+
+            if (databaseImage != null
+                    && !databaseImage.trim().isEmpty()) {
+
+                imageUrl =
+                        databaseImage.trim();
             }
-        } catch (SQLException ignored) {}
+
+        } catch (SQLException ignored) {
+        }
 
         java.sql.Timestamp createdAt = null;
+
         try {
-            createdAt = resultSet.getTimestamp("created_at");
-        } catch (SQLException ignored) {}
+
+            createdAt =
+                    resultSet.getTimestamp("created_at");
+
+        } catch (SQLException ignored) {
+        }
 
         return new Product(
                 resultSet.getInt("id"),
@@ -425,7 +513,7 @@ public class ProductDAO {
                 resultSet.getString("category"),
                 resultSet.getBigDecimal("price"),
                 resultSet.getInt("quantity"),
-                img,
+                imageUrl,
                 createdAt
         );
     }
