@@ -2,6 +2,7 @@ package com.rashik.rashikmart.dao;
 
 import com.rashik.rashikmart.config.DatabaseConfig;
 import com.rashik.rashikmart.model.User;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -74,6 +75,14 @@ public class UserDAO {
                 VALUES (?, ?, ?, ?)
                 """;
 
+        String passwordToStore = user.getPassword();
+        if (passwordToStore != null
+                && !passwordToStore.startsWith("$2a$")
+                && !passwordToStore.startsWith("$2b$")
+                && !passwordToStore.startsWith("$2y$")) {
+            passwordToStore = BCrypt.hashpw(passwordToStore, BCrypt.gensalt(12));
+        }
+
         try (
                 Connection connection =
                         DatabaseConfig.getDataSource().getConnection();
@@ -84,7 +93,7 @@ public class UserDAO {
 
             statement.setString(1, user.getName());
             statement.setString(2, user.getEmail());
-            statement.setString(3, user.getPassword());
+            statement.setString(3, passwordToStore);
             statement.setString(4, user.getRole());
 
             int rows = statement.executeUpdate();
@@ -166,6 +175,16 @@ public class UserDAO {
                 || storedPassword == null) {
 
             return false;
+        }
+
+        if (storedPassword.startsWith("$2a$")
+                || storedPassword.startsWith("$2b$")
+                || storedPassword.startsWith("$2y$")) {
+            try {
+                return BCrypt.checkpw(enteredPassword, storedPassword);
+            } catch (Exception e) {
+                return false;
+            }
         }
 
         return enteredPassword.equals(storedPassword);

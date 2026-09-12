@@ -104,7 +104,9 @@
                                     </div>
                                 </div>
                                 <div>
-                                    <span style="font-size: 0.9rem; font-weight: 800;">Order #<%= order.getId() %></span>
+                                    <a href="${pageContext.request.contextPath}/buyer/order?id=<%= order.getId() %>" style="font-size: 0.9rem; font-weight: 800; color: #000; text-decoration: underline;">
+                                        Order #<%= order.getId() %> →
+                                    </a>
                                 </div>
                             </div>
 

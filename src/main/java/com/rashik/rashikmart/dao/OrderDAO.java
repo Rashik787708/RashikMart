@@ -4,6 +4,7 @@ import com.rashik.rashikmart.config.DatabaseConfig;
 import com.rashik.rashikmart.model.Order;
 import com.rashik.rashikmart.model.OrderItem;
 import com.rashik.rashikmart.model.Product;
+import com.rashik.rashikmart.model.SellerOrderItem;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -406,5 +407,166 @@ public class OrderDAO {
         }
 
         return items;
+    }
+
+    // =====================================================
+    // 5. FIND SELLER ORDERS (STRICT SELLER ISOLATION)
+    // =====================================================
+
+    public List<SellerOrderItem> findSellerOrders(int sellerId) {
+        List<SellerOrderItem> items = new ArrayList<>();
+
+        String sql = """
+                SELECT o.id AS order_id,
+                       o.created_at AS order_date,
+                       o.status AS order_status,
+                       u.name AS buyer_name,
+                       u.email AS buyer_email,
+                       oi.product_id,
+                       oi.quantity,
+                       oi.price AS unit_price,
+                       p.name AS product_name,
+                       p.category AS product_category,
+                       p.image_url AS product_image
+                FROM order_items oi
+                JOIN products p ON oi.product_id = p.id
+                JOIN orders o ON oi.order_id = o.id
+                JOIN users u ON o.buyer_id = u.id
+                WHERE p.seller_id = ?
+                ORDER BY o.id DESC, oi.id ASC
+                """;
+
+        try (
+                Connection connection =
+                        DatabaseConfig.getDataSource().getConnection();
+                PreparedStatement statement =
+                        connection.prepareStatement(sql)
+        ) {
+            statement.setInt(1, sellerId);
+
+            try (ResultSet rs = statement.executeQuery()) {
+                while (rs.next()) {
+                    SellerOrderItem item = new SellerOrderItem(
+                            rs.getInt("order_id"),
+                            rs.getTimestamp("order_date"),
+                            rs.getString("order_status"),
+                            rs.getString("buyer_name"),
+                            rs.getString("buyer_email"),
+                            rs.getInt("product_id"),
+                            rs.getString("product_name"),
+                            rs.getString("product_category"),
+                            rs.getString("product_image"),
+                            rs.getInt("quantity"),
+                            rs.getBigDecimal("unit_price")
+                    );
+                    items.add(item);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error finding seller orders: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return items;
+    }
+
+    public BigDecimal getSellerRevenue(int sellerId) {
+        String sql = """
+                SELECT SUM(oi.quantity * oi.price) AS total_revenue
+                FROM order_items oi
+                JOIN products p ON oi.product_id = p.id
+                WHERE p.seller_id = ?
+                """;
+
+        try (
+                Connection connection =
+                        DatabaseConfig.getDataSource().getConnection();
+                PreparedStatement statement =
+                        connection.prepareStatement(sql)
+        ) {
+            statement.setInt(1, sellerId);
+            try (ResultSet rs = statement.executeQuery()) {
+                if (rs.next()) {
+                    BigDecimal rev = rs.getBigDecimal("total_revenue");
+                    return rev != null ? rev : BigDecimal.ZERO;
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error calculating seller revenue: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return BigDecimal.ZERO;
+    }
+
+    public int getSellerTotalOrders(int sellerId) {
+        String sql = """
+                SELECT COUNT(DISTINCT oi.order_id) AS total_orders
+                FROM order_items oi
+                JOIN products p ON oi.product_id = p.id
+                WHERE p.seller_id = ?
+                """;
+
+        try (
+                Connection connection =
+                        DatabaseConfig.getDataSource().getConnection();
+                PreparedStatement statement =
+                        connection.prepareStatement(sql)
+        ) {
+            statement.setInt(1, sellerId);
+            try (ResultSet rs = statement.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("total_orders");
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error counting seller orders: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+
+    // =====================================================
+    // 6. PLATFORM STATISTICS (FOR ADMIN)
+    // =====================================================
+
+    public BigDecimal getPlatformTotalRevenue() {
+        String sql = "SELECT SUM(total_amount) AS platform_revenue FROM orders";
+        try (
+                Connection connection =
+                        DatabaseConfig.getDataSource().getConnection();
+                PreparedStatement statement =
+                        connection.prepareStatement(sql);
+                ResultSet rs = statement.executeQuery()
+        ) {
+            if (rs.next()) {
+                BigDecimal rev = rs.getBigDecimal("platform_revenue");
+                return rev != null ? rev : BigDecimal.ZERO;
+            }
+        } catch (SQLException e) {
+            System.err.println("Error calculating platform revenue: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return BigDecimal.ZERO;
+    }
+
+    public int getPlatformTotalOrders() {
+        String sql = "SELECT COUNT(*) AS total_count FROM orders";
+        try (
+                Connection connection =
+                        DatabaseConfig.getDataSource().getConnection();
+                PreparedStatement statement =
+                        connection.prepareStatement(sql);
+                ResultSet rs = statement.executeQuery()
+        ) {
+            if (rs.next()) {
+                return rs.getInt("total_count");
+            }
+        } catch (SQLException e) {
+            System.err.println("Error counting platform orders: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return 0;
     }
 }

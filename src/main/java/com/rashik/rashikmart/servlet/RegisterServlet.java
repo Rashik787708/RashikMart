@@ -11,11 +11,18 @@ import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-@WebServlet("/RegisterServlet")
+@WebServlet({"/RegisterServlet", "/register"})
 public class RegisterServlet extends HttpServlet {
 
     private final UserDAO userDAO = new UserDAO();
 
+    @Override
+    protected void doGet(
+            HttpServletRequest request,
+            HttpServletResponse response)
+            throws ServletException, IOException {
+        response.sendRedirect(request.getContextPath() + "/register.jsp");
+    }
 
     @Override
     protected void doPost(

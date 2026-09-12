@@ -19,7 +19,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-@WebServlet({"/buyer/checkout", "/buyer/orders", "/buyer/place-order", "/OrderServlet"})
+@WebServlet({"/buyer/checkout", "/buyer/orders", "/buyer/order", "/buyer/place-order", "/OrderServlet"})
 public class OrderServlet extends HttpServlet {
 
     private OrderDAO orderDAO;
@@ -57,6 +57,32 @@ public class OrderServlet extends HttpServlet {
             List<Order> orders = orderDAO.findOrdersByBuyerId(user.getId());
             request.setAttribute("orders", orders);
             request.getRequestDispatcher("/buyer/orders.jsp").forward(request, response);
+            return;
+        }
+
+        if (uri.endsWith("/order")) {
+            String idText = request.getParameter("id");
+            if (idText == null || idText.trim().isEmpty()) {
+                response.sendRedirect(request.getContextPath() + "/buyer/orders?error=Order+ID+required");
+                return;
+            }
+
+            int orderId;
+            try {
+                orderId = Integer.parseInt(idText.trim());
+            } catch (NumberFormatException e) {
+                response.sendRedirect(request.getContextPath() + "/buyer/orders?error=Invalid+Order+ID");
+                return;
+            }
+
+            Order order = orderDAO.findOrderById(orderId, user.getId());
+            if (order == null) {
+                response.sendRedirect(request.getContextPath() + "/buyer/orders?error=Order+not+found+or+unauthorized");
+                return;
+            }
+
+            request.setAttribute("order", order);
+            request.getRequestDispatcher("/buyer/order-details.jsp").forward(request, response);
             return;
         }
 

@@ -659,4 +659,31 @@ public class ProductDAO {
 
         return product;
     }
+
+    // =========================================================
+    // TOGGLE PRODUCT ACTIVE STATUS (FOR ADMIN)
+    // =========================================================
+
+    public boolean toggleProductActive(int productId, boolean active) {
+        String sql = """
+                UPDATE products
+                SET active = ?
+                WHERE id = ?
+                """;
+
+        try (
+                Connection connection =
+                        DatabaseConfig.getDataSource().getConnection();
+                PreparedStatement statement =
+                        connection.prepareStatement(sql)
+        ) {
+            statement.setBoolean(1, active);
+            statement.setInt(2, productId);
+            return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Error toggling product active status: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

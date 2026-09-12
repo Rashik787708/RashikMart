@@ -25,27 +25,13 @@ public class ProductListServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request,
                          HttpServletResponse response)
             throws ServletException, IOException {
-
-        try {
-            List<Product> products = productDAO.findAllAvailable();
-
-            request.setAttribute("products", products);
-
-            request.getRequestDispatcher("/buyer/products.jsp")
-                    .forward(request, response);
-
-        } catch (Exception e) {
-            throw new ServletException(
-                    "Unable to load products.", e
-            );
-        }
+        response.sendRedirect(request.getContextPath() + "/buyer/marketplace");
     }
 
     @Override
     protected void doPost(HttpServletRequest request,
                           HttpServletResponse response)
             throws ServletException, IOException {
-
         doGet(request, response);
     }
 }

@@ -2,9 +2,11 @@
 <%@ page import="com.rashik.rashikmart.model.User" %>
 <%@ page import="com.rashik.rashikmart.model.Product" %>
 <%@ page import="com.rashik.rashikmart.dao.ProductDAO" %>
+<%@ page import="com.rashik.rashikmart.dao.OrderDAO" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Set" %>
 <%@ page import="java.util.HashSet" %>
+<%@ page import="java.math.BigDecimal" %>
 
 <%
     User user = (User) session.getAttribute("user");
@@ -46,6 +48,10 @@
             }
         }
     }
+
+    OrderDAO orderDAO = new OrderDAO();
+    int totalSellerOrders = orderDAO.getSellerTotalOrders(user.getId());
+    BigDecimal totalSellerRevenue = orderDAO.getSellerRevenue(user.getId());
 %>
 
 <!DOCTYPE html>
@@ -67,6 +73,7 @@
                 <li><a href="${pageContext.request.contextPath}/seller/dashboard.jsp" class="nav-link active">Dashboard</a></li>
                 <li><a href="${pageContext.request.contextPath}/seller/add-product.jsp" class="nav-link">Add Product</a></li>
                 <li><a href="${pageContext.request.contextPath}/seller/products.jsp" class="nav-link">My Products</a></li>
+                <li><a href="${pageContext.request.contextPath}/seller/orders" class="nav-link">Customer Orders</a></li>
                 <li><a href="${pageContext.request.contextPath}/logout" class="nav-link">Logout</a></li>
             </ul>
         </nav>
@@ -116,9 +123,15 @@
                 </div>
 
                 <div class="seller-stat-card">
-                    <div class="seller-stat-label">Active Categories</div>
-                    <div class="seller-stat-value"><%= categories.size() %></div>
-                    <div class="seller-stat-hint">Distinct product types listed</div>
+                    <div class="seller-stat-label">Customer Orders</div>
+                    <div class="seller-stat-value"><%= totalSellerOrders %></div>
+                    <div class="seller-stat-hint">Orders containing your products</div>
+                </div>
+
+                <div class="seller-stat-card">
+                    <div class="seller-stat-label">Sales Revenue</div>
+                    <div class="seller-stat-value">₹<%= totalSellerRevenue %></div>
+                    <div class="seller-stat-hint">Total earnings from sales</div>
                 </div>
             </div>
 

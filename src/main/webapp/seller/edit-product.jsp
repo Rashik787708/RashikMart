@@ -65,6 +65,7 @@
                 <li><a href="${pageContext.request.contextPath}/seller/dashboard.jsp" class="nav-link">Dashboard</a></li>
                 <li><a href="${pageContext.request.contextPath}/seller/add-product.jsp" class="nav-link">Add Product</a></li>
                 <li><a href="${pageContext.request.contextPath}/seller/products.jsp" class="nav-link">My Products</a></li>
+                <li><a href="${pageContext.request.contextPath}/seller/orders" class="nav-link">Customer Orders</a></li>
                 <li><a href="${pageContext.request.contextPath}/logout" class="nav-link">Logout</a></li>
             </ul>
         </nav>
