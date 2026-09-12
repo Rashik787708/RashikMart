@@ -63,6 +63,11 @@ public class ProductDetailsServlet extends HttpServlet {
             return;
         }
 
+        if (!product.isActive()) {
+            response.sendRedirect(request.getContextPath() + "/buyer/marketplace?error=Product+is+no+longer+available");
+            return;
+        }
+
         request.setAttribute("product", product);
         request.getRequestDispatcher("/buyer/product-details.jsp").forward(request, response);
     }

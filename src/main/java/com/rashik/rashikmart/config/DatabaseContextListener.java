@@ -38,6 +38,7 @@ public class DatabaseContextListener implements ServletContextListener {
                     price DECIMAL(12,2) NOT NULL,
                     quantity INT NOT NULL,
                     image_url VARCHAR(255) DEFAULT 'default-product.svg',
+                    active BOOLEAN NOT NULL DEFAULT TRUE,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     CONSTRAINT fk_products_seller
                         FOREIGN KEY (seller_id)
@@ -106,6 +107,10 @@ public class DatabaseContextListener implements ServletContextListener {
                 ALTER TABLE products ADD COLUMN IF NOT EXISTS image_url VARCHAR(255) DEFAULT 'default-product.svg'
                 """;
 
+        String alterProductsActive = """
+                ALTER TABLE products ADD COLUMN IF NOT EXISTS active BOOLEAN NOT NULL DEFAULT TRUE
+                """;
+
         try (
                 Connection connection =
                         DatabaseConfig.getDataSource().getConnection();
@@ -118,6 +123,9 @@ public class DatabaseContextListener implements ServletContextListener {
             statement.executeUpdate(productsTable);
             try {
                 statement.executeUpdate(alterProductsImage);
+            } catch (SQLException ignored) {}
+            try {
+                statement.executeUpdate(alterProductsActive);
             } catch (SQLException ignored) {}
 
             statement.executeUpdate(cartTable);

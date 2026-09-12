@@ -15,6 +15,7 @@ public class Product {
     private BigDecimal price;
     private int quantity;
     private String imageUrl = "default-product.svg";
+    private boolean active = true;
     private Timestamp createdAt;
 
     public Product() {
@@ -199,5 +200,13 @@ public class Product {
 
     public void setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }

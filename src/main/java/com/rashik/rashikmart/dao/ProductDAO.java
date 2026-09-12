@@ -74,6 +74,7 @@ public class ProductDAO {
                        price,
                        quantity,
                        image_url,
+                       active,
                        created_at
                 FROM products
                 WHERE id = ?
@@ -128,6 +129,7 @@ public class ProductDAO {
                        price,
                        quantity,
                        image_url,
+                       active,
                        created_at
                 FROM products
                 WHERE id = ?
@@ -186,9 +188,11 @@ public class ProductDAO {
                        price,
                        quantity,
                        image_url,
+                       active,
                        created_at
                 FROM products
                 WHERE seller_id = ?
+                  AND active = TRUE
                 ORDER BY id DESC
                 """;
 
@@ -244,6 +248,7 @@ public class ProductDAO {
                        price,
                        quantity,
                        image_url,
+                       active,
                        created_at
                 FROM products
                 ORDER BY id DESC
@@ -298,9 +303,11 @@ public class ProductDAO {
                        price,
                        quantity,
                        image_url,
+                       active,
                        created_at
                 FROM products
                 WHERE quantity > 0
+                  AND active = TRUE
                 ORDER BY id DESC
                 """;
 
@@ -388,32 +395,132 @@ public class ProductDAO {
     }
 
     // =========================================================
-    // DELETE PRODUCT
+    // DELETE PRODUCT (SAFE)
     // =========================================================
 
-    public boolean deleteProduct(
+    public enum DeletionResult {
+        DELETED,
+        DEACTIVATED,
+        NOT_FOUND,
+        ERROR
+    }
+
+    public DeletionResult deleteProduct(
             int id,
             int sellerId
     ) {
 
-        String sql = """
+        String selectOwnershipSql = """
+                SELECT id
+                FROM products
+                WHERE id = ?
+                  AND seller_id = ?
+                FOR UPDATE
+                """;
+
+        String countOrderReferencesSql = """
+                SELECT COUNT(*) AS reference_count
+                FROM order_items
+                WHERE product_id = ?
+                """;
+
+        String deactivateSql = """
+                UPDATE products
+                SET active = FALSE
+                WHERE id = ?
+                  AND seller_id = ?
+                """;
+
+        String deleteSql = """
                 DELETE FROM products
                 WHERE id = ?
                   AND seller_id = ?
                 """;
 
-        try (
-                Connection connection =
-                        DatabaseConfig.getDataSource().getConnection();
+        Connection connection = null;
 
-                PreparedStatement statement =
-                        connection.prepareStatement(sql)
-        ) {
+        try {
 
-            statement.setInt(1, id);
-            statement.setInt(2, sellerId);
+            connection =
+                    DatabaseConfig.getDataSource().getConnection();
 
-            return statement.executeUpdate() > 0;
+            connection.setAutoCommit(false);
+
+            // Step 1: verify the product exists and belongs to the seller.
+            boolean owned;
+
+            try (PreparedStatement ownershipStatement =
+                         connection.prepareStatement(selectOwnershipSql)) {
+
+                ownershipStatement.setInt(1, id);
+                ownershipStatement.setInt(2, sellerId);
+
+                try (ResultSet resultSet =
+                             ownershipStatement.executeQuery()) {
+
+                    owned = resultSet.next();
+                }
+            }
+
+            if (!owned) {
+                connection.rollback();
+                return DeletionResult.NOT_FOUND;
+            }
+
+            // Step 2: check whether historical order records reference it.
+            boolean referencedByOrders;
+
+            try (PreparedStatement referenceStatement =
+                         connection.prepareStatement(countOrderReferencesSql)) {
+
+                referenceStatement.setInt(1, id);
+
+                try (ResultSet resultSet =
+                             referenceStatement.executeQuery()) {
+
+                    resultSet.next();
+
+                    referencedByOrders =
+                            resultSet.getInt("reference_count") > 0;
+                }
+            }
+
+            // Step 3: remove the active listing, preserving order history.
+            if (referencedByOrders) {
+
+                try (PreparedStatement deactivateStatement =
+                             connection.prepareStatement(deactivateSql)) {
+
+                    deactivateStatement.setInt(1, id);
+                    deactivateStatement.setInt(2, sellerId);
+
+                    int updated =
+                            deactivateStatement.executeUpdate();
+
+                    connection.commit();
+
+                    return updated > 0
+                            ? DeletionResult.DEACTIVATED
+                            : DeletionResult.NOT_FOUND;
+                }
+            }
+
+            // No order references: physical delete is safe.
+            try (PreparedStatement deleteStatement =
+                         connection.prepareStatement(deleteSql)) {
+
+                deleteStatement.setInt(1, id);
+                deleteStatement.setInt(2, sellerId);
+
+                int updated =
+                        deleteStatement.executeUpdate();
+
+                connection.commit();
+
+                return updated > 0
+                        ? DeletionResult.DELETED
+                        : DeletionResult.NOT_FOUND;
+            }
 
         } catch (SQLException e) {
 
@@ -424,7 +531,28 @@ public class ProductDAO {
 
             e.printStackTrace();
 
-            return false;
+            if (connection != null) {
+
+                try {
+                    connection.rollback();
+                } catch (SQLException rollbackException) {
+                    rollbackException.printStackTrace();
+                }
+            }
+
+            return DeletionResult.ERROR;
+
+        } finally {
+
+            if (connection != null) {
+
+                try {
+                    connection.setAutoCommit(true);
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
@@ -505,7 +633,17 @@ public class ProductDAO {
         } catch (SQLException ignored) {
         }
 
-        return new Product(
+        boolean active = true;
+
+        try {
+
+            active =
+                    resultSet.getBoolean("active");
+
+        } catch (SQLException ignored) {
+        }
+
+        Product product = new Product(
                 resultSet.getInt("id"),
                 resultSet.getInt("seller_id"),
                 resultSet.getString("name"),
@@ -516,5 +654,9 @@ public class ProductDAO {
                 imageUrl,
                 createdAt
         );
+
+        product.setActive(active);
+
+        return product;
     }
 }

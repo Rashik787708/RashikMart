@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 @WebServlet("/seller/delete-product")
 public class DeleteProductServlet extends HttpServlet {
@@ -64,17 +66,43 @@ public class DeleteProductServlet extends HttpServlet {
         }
 
         User user = (User) session.getAttribute("user");
-        boolean deleted = productDAO.deleteProduct(id, user.getId());
+        ProductDAO.DeletionResult result = productDAO.deleteProduct(id, user.getId());
 
         String redirectUrl = request.getParameter("redirect");
         if (redirectUrl == null || redirectUrl.trim().isEmpty()) {
             redirectUrl = "/seller/dashboard.jsp";
         }
 
-        if (deleted) {
-            response.sendRedirect(request.getContextPath() + redirectUrl + (redirectUrl.contains("?") ? "&" : "?") + "success=Product+deleted+successfully");
-        } else {
-            response.sendRedirect(request.getContextPath() + redirectUrl + (redirectUrl.contains("?") ? "&" : "?") + "error=Unable+to+delete+product");
+        String separator = redirectUrl.contains("?") ? "&" : "?";
+        String messageParam;
+
+        switch (result) {
+            case DELETED:
+                messageParam = "success=Product+deleted+successfully";
+                break;
+
+            case DEACTIVATED:
+                messageParam = "success=" + URLEncoder.encode(
+                        "Product removed from marketplace. Existing order history has been preserved.",
+                        StandardCharsets.UTF_8
+                );
+                break;
+
+            case NOT_FOUND:
+                messageParam = "error=Product+not+found+or+unauthorized";
+                break;
+
+            case ERROR:
+            default:
+                messageParam = "error=Unable+to+delete+product.+Please+try+again";
+                break;
         }
+
+        response.sendRedirect(
+                request.getContextPath()
+                        + redirectUrl
+                        + separator
+                        + messageParam
+        );
     }
 }
