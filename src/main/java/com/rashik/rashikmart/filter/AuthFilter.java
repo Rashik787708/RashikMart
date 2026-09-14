@@ -9,7 +9,11 @@ import java.io.IOException;
 @WebFilter(urlPatterns = {
         "/buyer/*",
         "/seller/*",
-        "/admin/*"
+        "/admin/*",
+        "/CartServlet",
+        "/OrderServlet",
+        "/ProductDetailsServlet",
+        "/AddToCartServlet"
 })
 public class AuthFilter implements Filter {
 
@@ -103,7 +107,11 @@ public class AuthFilter implements Filter {
          * ========================================================
          */
 
-        if (path.startsWith("/buyer/")) {
+        if (path.startsWith("/buyer/")
+                || path.equals("/CartServlet")
+                || path.equals("/OrderServlet")
+                || path.equals("/ProductDetailsServlet")
+                || path.equals("/AddToCartServlet")) {
 
             if (!"BUYER".equalsIgnoreCase(role)) {
 

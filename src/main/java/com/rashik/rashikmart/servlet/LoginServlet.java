@@ -113,6 +113,12 @@ public class LoginServlet extends HttpServlet {
 
         HttpSession session = request.getSession();
 
+        // Prevent Session Fixation by regenerating the session identifier upon authentication
+        try {
+            request.changeSessionId();
+        } catch (Exception ignored) {
+        }
+
         session.setAttribute("user", user);
 
         session.setAttribute(

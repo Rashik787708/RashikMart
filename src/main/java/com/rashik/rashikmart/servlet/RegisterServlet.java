@@ -73,7 +73,7 @@ public class RegisterServlet extends HttpServlet {
 
 
         // =====================================================
-        // 4. VALIDATE ROLE
+        // 4. VALIDATE ROLE AND INPUT CONSTRAINTS
         // =====================================================
 
         if (!role.equals("BUYER")
@@ -82,6 +82,33 @@ public class RegisterServlet extends HttpServlet {
             response.sendRedirect(
                     request.getContextPath()
                             + "/register.jsp?error=Invalid+role"
+            );
+
+            return;
+        }
+
+        if (name.length() < 2 || name.length() > 100) {
+            response.sendRedirect(
+                    request.getContextPath()
+                            + "/register.jsp?error=Name+must+be+between+2+and+100+characters"
+            );
+
+            return;
+        }
+
+        if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$") || email.length() > 150) {
+            response.sendRedirect(
+                    request.getContextPath()
+                            + "/register.jsp?error=Invalid+email+format"
+            );
+
+            return;
+        }
+
+        if (password.length() < 6 || password.length() > 100) {
+            response.sendRedirect(
+                    request.getContextPath()
+                            + "/register.jsp?error=Password+must+be+at+least+6+characters"
             );
 
             return;

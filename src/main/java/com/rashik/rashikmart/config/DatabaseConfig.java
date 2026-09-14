@@ -11,9 +11,19 @@ public class DatabaseConfig {
 
         HikariConfig config = new HikariConfig();
 
-        config.setJdbcUrl("jdbc:h2:./data/rashikmart");
-        config.setUsername("sa");
-        config.setPassword("WE");
+        String jdbcUrl = System.getenv("DB_URL") != null 
+                ? System.getenv("DB_URL") 
+                : System.getProperty("db.url", "jdbc:h2:./data/rashikmart");
+        String username = System.getenv("DB_USER") != null 
+                ? System.getenv("DB_USER") 
+                : System.getProperty("db.user", "sa");
+        String password = System.getenv("DB_PASSWORD") != null 
+                ? System.getenv("DB_PASSWORD") 
+                : System.getProperty("db.password", "WE");
+
+        config.setJdbcUrl(jdbcUrl);
+        config.setUsername(username);
+        config.setPassword(password);
         config.setDriverClassName("org.h2.Driver");
 
         dataSource = new HikariDataSource(config);

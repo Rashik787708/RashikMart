@@ -64,6 +64,56 @@ public class UserDAO {
 
 
     // =====================================================
+    // FIND USER BY ID
+    // =====================================================
+
+    public User findById(int id) {
+
+        String sql = """
+                SELECT id, name, email, password, role
+                FROM users
+                WHERE id = ?
+                """;
+
+        try (
+                Connection connection =
+                        DatabaseConfig.getDataSource().getConnection();
+
+                PreparedStatement statement =
+                        connection.prepareStatement(sql)
+        ) {
+
+            statement.setInt(1, id);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+
+                if (resultSet.next()) {
+
+                    return new User(
+                            resultSet.getInt("id"),
+                            resultSet.getString("name"),
+                            resultSet.getString("email"),
+                            resultSet.getString("password"),
+                            resultSet.getString("role")
+                    );
+                }
+            }
+
+        } catch (SQLException e) {
+
+            System.err.println(
+                    "Error finding user by id: "
+                            + e.getMessage()
+            );
+
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+
+    // =====================================================
     // REGISTER USER
     // =====================================================
 
