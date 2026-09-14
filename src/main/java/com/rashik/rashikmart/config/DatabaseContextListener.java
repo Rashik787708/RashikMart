@@ -9,8 +9,8 @@ import javax.servlet.annotation.WebListener;
 
 import java.io.File;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 @WebListener
 public class DatabaseContextListener implements ServletContextListener {
@@ -113,25 +113,26 @@ public class DatabaseContextListener implements ServletContextListener {
 
         try (
                 Connection connection =
-                        DatabaseConfig.getDataSource().getConnection();
-
-                Statement statement =
-                        connection.createStatement()
+                        DatabaseConfig.getDataSource().getConnection()
         ) {
 
-            statement.executeUpdate(usersTable);
-            statement.executeUpdate(productsTable);
-            try {
-                statement.executeUpdate(alterProductsImage);
-            } catch (SQLException ignored) {}
-            try {
-                statement.executeUpdate(alterProductsActive);
-            } catch (SQLException ignored) {}
+            String[] ddlStatements = {
+                    usersTable,
+                    productsTable,
+                    alterProductsImage,
+                    alterProductsActive,
+                    cartTable,
+                    cartItemsTable,
+                    ordersTable,
+                    orderItemsTable
+            };
 
-            statement.executeUpdate(cartTable);
-            statement.executeUpdate(cartItemsTable);
-            statement.executeUpdate(ordersTable);
-            statement.executeUpdate(orderItemsTable);
+            for (String sql : ddlStatements) {
+                try (java.sql.PreparedStatement statement = connection.prepareStatement(sql)) {
+                    statement.execute();
+                } catch (SQLException ignored) {
+                }
+            }
 
             // Ensure images/products directory exists
             String productsImgPath = sce.getServletContext().getRealPath("/images/products");
@@ -151,7 +152,7 @@ public class DatabaseContextListener implements ServletContextListener {
                         "admin123",
                         "ADMIN"
                 ));
-                System.out.println("Default admin user created: admin@rashikmart.com / admin123");
+                System.out.println("Default admin user created: admin@rashikmart.com");
             }
 
             System.out.println("=================================");
