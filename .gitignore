@@ -4,13 +4,13 @@ target/
 !**/src/test/**/target/
 
 ### IntelliJ IDEA ###
-.idea/modules.xml
-.idea/jarRepositories.xml
-.idea/compiler.xml
-.idea/libraries/
+.idea/
 *.iws
 *.iml
 *.ipr
+
+### SmartTomcat (local IDE Tomcat config) ###
+.smarttomcat/
 
 ### Eclipse ###
 .apt_generated
@@ -39,3 +39,10 @@ build/
 
 ### Local runtime DB ###
 data/
+*.db
+*.mv.db
+*.trace.db
+*.lock.db
+
+### Runtime logs ###
+logs/
