@@ -118,6 +118,14 @@ public class EditProductServlet extends HttpServlet {
             return;
         }
 
+        if (name.trim().length() > 150
+                || category.trim().length() > 100
+                || (description != null && description.trim().length() > 1000)) {
+
+            response.sendRedirect(request.getContextPath() + "/seller/dashboard.jsp?error=Input+exceeds+maximum+length");
+            return;
+        }
+
         int id;
         BigDecimal price;
         int quantity;

@@ -86,13 +86,13 @@
 
             <!-- Success / Error Notifications -->
             <% if (success != null && !success.trim().isEmpty()) {
-                String safeSuccess = success.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;");
+                String safeSuccess = HtmlUtil.escape(success);
             %>
                 <div class="message success"><%= safeSuccess %></div>
             <% } %>
 
             <% if (error != null && !error.trim().isEmpty()) {
-                String safeError = error.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;");
+                String safeError = HtmlUtil.escape(error);
             %>
                 <div class="message error"><%= safeError %></div>
             <% } %>

@@ -126,6 +126,18 @@ public class AddProductServlet extends HttpServlet {
             return;
         }
 
+        if (name.trim().length() > 150
+                || category.trim().length() > 100
+                || (description != null && description.trim().length() > 1000)) {
+
+            response.sendRedirect(
+                    request.getContextPath()
+                            + "/seller/add-product.jsp?error=Input+exceeds+maximum+length"
+            );
+
+            return;
+        }
+
         BigDecimal price;
         int quantity;
 

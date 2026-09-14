@@ -67,7 +67,7 @@
         <div class="seller-container" style="max-width: 960px;">
 
             <% if (error != null && !error.trim().isEmpty()) {
-                String safeError = error.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;");
+                String safeError = HtmlUtil.escape(error);
             %>
                 <div class="message error"><%= safeError %></div>
             <% } %>

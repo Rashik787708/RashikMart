@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="com.rashik.rashikmart.util.HtmlUtil" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -31,14 +32,14 @@
                 String error = request.getParameter("error");
                 String success = request.getParameter("success");
                 if (error != null) {
-                    String safeError = error.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;");
+                    String safeError = HtmlUtil.escape(error);
             %>
                 <div class="message error"><%= safeError %></div>
             <% } %>
 
             <%
                 if (success != null) {
-                    String safeSuccess = success.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;");
+                    String safeSuccess = HtmlUtil.escape(success);
             %>
                 <div class="message success"><%= safeSuccess %></div>
             <% } %>
