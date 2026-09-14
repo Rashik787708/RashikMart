@@ -77,6 +77,17 @@
             <scope>test</scope>
         </dependency>
 
+
+        <!-- ========================================= -->
+        <!-- Mockito                                   -->
+        <!-- ========================================= -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>4.11.0</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
 
@@ -111,6 +122,25 @@
 
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
+                </configuration>
+            </plugin>
+
+
+            <!-- Maven Surefire Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+
+                <configuration>
+                    <!-- Isolate tests: each Maven run gets a fresh in-memory H2 database.
+                         Tests bootstrap their own schema; production uses the deployed
+                         webapp + DatabaseConfig defaults/env configuration. -->
+                    <systemPropertyVariables>
+                        <db.url>jdbc:h2:mem:rashikmart_test;DB_CLOSE_DELAY=-1</db.url>
+                        <db.user>sa</db.user>
+                        <db.password></db.password>
+                    </systemPropertyVariables>
                 </configuration>
             </plugin>
 
