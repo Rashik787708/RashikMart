@@ -5,6 +5,7 @@
 <%@ page import="com.rashik.rashikmart.model.Product" %>
 <%@ page import="com.rashik.rashikmart.dao.OrderDAO" %>
 <%@ page import="java.text.SimpleDateFormat" %>
+<%@ page import="com.rashik.rashikmart.util.HtmlUtil" %>
 
 <%
     User user = (User) session.getAttribute("user");
@@ -83,7 +84,7 @@
                         </div>
                         <div>
                             <span style="font-size: 0.72rem; color: #666; text-transform: uppercase; font-weight: 700; display: block;">Status</span>
-                            <span class="category-chip" style="background: #000; color: #fff;"><%= order.getStatus() %></span>
+                            <span class="category-chip" style="background: #000; color: #fff;"><%= HtmlUtil.escape(order.getStatus()) %></span>
                         </div>
                         <div>
                             <span style="font-size: 0.72rem; color: #666; text-transform: uppercase; font-weight: 700; display: block;">Total Paid</span>
@@ -124,14 +125,14 @@
                                         <td>
                                             <div style="display: flex; align-items: center; gap: 10px;">
                                                 <img src="<%= imgSrc %>" 
-                                                     alt="<%= pName %>" 
+                                                     alt="<%= HtmlUtil.escape(pName) %>" 
                                                      class="product-thumb"
                                                      style="width: 38px; height: 38px;"
                                                      onerror="this.src='${pageContext.request.contextPath}/images/default-product.svg';">
                                                 <div>
-                                                    <strong><%= pName %></strong>
+                                                    <strong><%= HtmlUtil.escape(pName) %></strong>
                                                     <% if (p != null && p.getCategory() != null) { %>
-                                                        <span style="display: block; font-size: 0.72rem; color: #666;"><%= p.getCategory() %></span>
+                                                        <span style="display: block; font-size: 0.72rem; color: #666;"><%= HtmlUtil.escape(p.getCategory()) %></span>
                                                     <% } %>
                                                 </div>
                                             </div>

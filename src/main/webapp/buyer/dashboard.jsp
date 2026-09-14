@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="com.rashik.rashikmart.model.User" %>
+<%@ page import="com.rashik.rashikmart.util.HtmlUtil" %>
 
 <%
     User user = (User) session.getAttribute("user");
@@ -56,7 +57,7 @@
             <section class="seller-header">
                 <div class="seller-introduction">
                     <span class="eyebrow">BUYER PANEL</span>
-                    <h1>Welcome, <%= userName %></h1>
+                    <h1>Welcome, <%= HtmlUtil.escape(userName) %></h1>
                     <p>Explore agricultural listings, connect with verified sellers, and manage your orders.</p>
                 </div>
                 <div class="seller-role-badge">

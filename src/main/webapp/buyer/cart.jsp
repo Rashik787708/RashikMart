@@ -5,6 +5,7 @@
 <%@ page import="com.rashik.rashikmart.dao.CartDAO" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.math.BigDecimal" %>
+<%@ page import="com.rashik.rashikmart.util.HtmlUtil" %>
 
 <%
     User user = (User) session.getAttribute("user");
@@ -146,13 +147,13 @@
                                                 <td>
                                                     <div style="display: flex; align-items: center; gap: 12px;">
                                                         <img src="<%= imgSrc %>" 
-                                                             alt="<%= prodName %>" 
+                                                             alt="<%= HtmlUtil.escape(prodName) %>" 
                                                              class="product-thumb"
                                                              onerror="this.src='${pageContext.request.contextPath}/images/default-product.svg';">
                                                         <div>
-                                                            <strong><%= prodName %></strong>
+                                                            <strong><%= HtmlUtil.escape(prodName) %></strong>
                                                             <% if (prod != null && prod.getCategory() != null) { %>
-                                                                <span style="display: block; font-size: 0.75rem; color: #666;"><%= prod.getCategory() %></span>
+                                                                <span style="display: block; font-size: 0.75rem; color: #666;"><%= HtmlUtil.escape(prod.getCategory()) %></span>
                                                             <% } %>
                                                         </div>
                                                     </div>

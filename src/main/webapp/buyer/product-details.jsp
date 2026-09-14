@@ -3,6 +3,7 @@
 <%@ page import="com.rashik.rashikmart.model.Product" %>
 <%@ page import="com.rashik.rashikmart.dao.ProductDAO" %>
 <%@ page import="com.rashik.rashikmart.dao.CartDAO" %>
+<%@ page import="com.rashik.rashikmart.util.HtmlUtil" %>
 
 <%
     User user = (User) session.getAttribute("user");
@@ -56,7 +57,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= product.getName() %> - RashikMart</title>
+    <title><%= HtmlUtil.escape(product.getName()) %> - RashikMart</title>
     <link rel="icon" href="data:,">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=20260828_4">
 </head>
@@ -97,7 +98,7 @@
                 <div style="flex: 1; min-width: 280px; max-width: 380px;">
                     <div style="width: 100%; height: 320px; background: #f0f0f0; border: 2px solid #000; overflow: hidden; display: flex; align-items: center; justify-content: center; box-shadow: 4px 4px 0px #000;">
                         <img src="<%= imgSrc %>"
-                             alt="<%= product.getName() %>"
+                             alt="<%= HtmlUtil.escape(product.getName()) %>"
                              style="width: 100%; height: 100%; object-fit: cover;"
                              onerror="this.src='${pageContext.request.contextPath}/images/default-product.svg';">
                     </div>
@@ -105,8 +106,8 @@
 
                 <!-- Product Info & Order Section -->
                 <div style="flex: 1.2; min-width: 280px;">
-                    <span class="eyebrow"><%= product.getCategory() != null ? product.getCategory().toUpperCase() : "GENERAL" %> &bull; ITEM #<%= product.getId() %></span>
-                    <h1 style="font-size: 2.2rem; font-weight: 800; margin: 0.3rem 0 0.8rem; letter-spacing: -0.5px;"><%= product.getName() %></h1>
+                    <span class="eyebrow"><%= product.getCategory() != null ? HtmlUtil.escape(product.getCategory().toUpperCase()) : "GENERAL" %> &bull; ITEM #<%= product.getId() %></span>
+                    <h1 style="font-size: 2.2rem; font-weight: 800; margin: 0.3rem 0 0.8rem; letter-spacing: -0.5px;"><%= HtmlUtil.escape(product.getName()) %></h1>
 
                     <div style="display: flex; align-items: baseline; gap: 12px; margin-bottom: 1.2rem;">
                         <span style="font-size: 2.2rem; font-weight: 900; color: #000;">₹<%= product.getPrice() %></span>
@@ -124,7 +125,7 @@
                     <div style="margin-bottom: 1.8rem; border-top: 1px solid #ddd; border-bottom: 1px solid #ddd; padding: 1.2rem 0;">
                         <h4 style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: #555; margin-bottom: 0.5rem;">Product Description</h4>
                         <p style="font-size: 0.95rem; line-height: 1.6; color: #333;">
-                            <%= (product.getDescription() != null && !product.getDescription().trim().isEmpty()) ? product.getDescription() : "No detailed description provided by the seller." %>
+                            <%= (product.getDescription() != null && !product.getDescription().trim().isEmpty()) ? HtmlUtil.escape(product.getDescription()) : "No detailed description provided by the seller." %>
                         </p>
                     </div>
 

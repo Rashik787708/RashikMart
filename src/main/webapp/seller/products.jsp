@@ -3,6 +3,7 @@
 <%@ page import="com.rashik.rashikmart.model.Product" %>
 <%@ page import="com.rashik.rashikmart.dao.ProductDAO" %>
 <%@ page import="java.util.List" %>
+<%@ page import="com.rashik.rashikmart.util.HtmlUtil" %>
 
 <%
     User user = (User) session.getAttribute("user");
@@ -124,15 +125,15 @@
                                     <tr>
                                         <td style="width: 50px;">
                                             <img src="<%= imgSrc %>" 
-                                                 alt="<%= p.getName() %>" 
+                                                 alt="<%= HtmlUtil.escape(p.getName()) %>" 
                                                  class="product-thumb"
                                                  onerror="this.src='${pageContext.request.contextPath}/images/default-product.svg';">
                                         </td>
                                         <td>#<%= p.getId() %></td>
-                                        <td><strong><%= p.getName() %></strong></td>
-                                        <td><span class="category-chip"><%= p.getCategory() %></span></td>
+                                        <td><strong><%= HtmlUtil.escape(p.getName()) %></strong></td>
+                                        <td><span class="category-chip"><%= HtmlUtil.escape(p.getCategory()) %></span></td>
                                         <td style="max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                                            <%= (p.getDescription() != null && !p.getDescription().trim().isEmpty()) ? p.getDescription() : "-" %>
+                                            <%= (p.getDescription() != null && !p.getDescription().trim().isEmpty()) ? HtmlUtil.escape(p.getDescription()) : "-" %>
                                         </td>
                                         <td><strong>₹<%= p.getPrice() %></strong></td>
                                         <td><%= p.getQuantity() %> units</td>

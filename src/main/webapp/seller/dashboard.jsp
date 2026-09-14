@@ -7,6 +7,7 @@
 <%@ page import="java.util.Set" %>
 <%@ page import="java.util.HashSet" %>
 <%@ page import="java.math.BigDecimal" %>
+<%@ page import="com.rashik.rashikmart.util.HtmlUtil" %>
 
 <%
     User user = (User) session.getAttribute("user");
@@ -100,7 +101,7 @@
             <section class="seller-header">
                 <div class="seller-introduction">
                     <span class="eyebrow">SELLER PANEL</span>
-                    <h1>Welcome, <%= userName %></h1>
+                    <h1>Welcome, <%= HtmlUtil.escape(userName) %></h1>
                     <p>Manage your products, monitor inventory stock, and grow your marketplace sales.</p>
                 </div>
                 <div class="seller-role-badge">
@@ -202,13 +203,13 @@
                                         <tr>
                                             <td style="width: 50px;">
                                                 <img src="<%= imgSrc %>" 
-                                                     alt="<%= p.getName() %>" 
+                                                     alt="<%= HtmlUtil.escape(p.getName()) %>" 
                                                      class="product-thumb"
                                                      onerror="this.src='${pageContext.request.contextPath}/images/default-product.svg';">
                                             </td>
                                             <td>#<%= p.getId() %></td>
-                                            <td><strong><%= p.getName() %></strong></td>
-                                            <td><span class="category-chip"><%= p.getCategory() %></span></td>
+                                            <td><strong><%= HtmlUtil.escape(p.getName()) %></strong></td>
+                                            <td><span class="category-chip"><%= HtmlUtil.escape(p.getCategory()) %></span></td>
                                             <td><strong>₹<%= p.getPrice() %></strong></td>
                                             <td><%= p.getQuantity() %> units</td>
                                             <td style="text-align: right;">

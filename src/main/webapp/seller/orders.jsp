@@ -5,6 +5,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="java.math.BigDecimal" %>
 <%@ page import="java.text.SimpleDateFormat" %>
+<%@ page import="com.rashik.rashikmart.util.HtmlUtil" %>
 
 <%
     User user = (User) session.getAttribute("user");
@@ -150,19 +151,19 @@
                                         <td><strong>#<%= item.getOrderId() %></strong></td>
                                         <td><%= item.getOrderDate() != null ? sdf.format(item.getOrderDate()) : "Recently" %></td>
                                         <td>
-                                            <strong><%= item.getBuyerName() %></strong>
-                                            <span style="display: block; font-size: 0.75rem; color: #666;"><%= item.getBuyerEmail() %></span>
+                                            <strong><%= HtmlUtil.escape(item.getBuyerName()) %></strong>
+                                            <span style="display: block; font-size: 0.75rem; color: #666;"><%= HtmlUtil.escape(item.getBuyerEmail()) %></span>
                                         </td>
                                         <td>
                                             <div style="display: flex; align-items: center; gap: 10px;">
                                                 <img src="<%= imgSrc %>" 
-                                                     alt="<%= item.getProductName() %>" 
+                                                     alt="<%= HtmlUtil.escape(item.getProductName()) %>" 
                                                      class="product-thumb"
                                                      onerror="this.src='${pageContext.request.contextPath}/images/default-product.svg';">
                                                 <div>
-                                                    <strong><%= item.getProductName() %></strong>
+                                                    <strong><%= HtmlUtil.escape(item.getProductName()) %></strong>
                                                     <% if (item.getProductCategory() != null) { %>
-                                                        <span class="category-chip" style="font-size: 0.7rem; padding: 1px 6px;"><%= item.getProductCategory() %></span>
+                                                        <span class="category-chip" style="font-size: 0.7rem; padding: 1px 6px;"><%= HtmlUtil.escape(item.getProductCategory()) %></span>
                                                     <% } %>
                                                 </div>
                                             </div>
@@ -172,7 +173,7 @@
                                         <td><strong>₹<%= item.getSubtotal() %></strong></td>
                                         <td style="text-align: right;">
                                             <span class="status-badge" style="background: #000; color: #fff;">
-                                                <%= item.getOrderStatus() %>
+                                                <%= HtmlUtil.escape(item.getOrderStatus()) %>
                                             </span>
                                         </td>
                                     </tr>

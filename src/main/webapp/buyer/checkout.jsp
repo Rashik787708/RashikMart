@@ -5,6 +5,7 @@
 <%@ page import="com.rashik.rashikmart.dao.CartDAO" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.math.BigDecimal" %>
+<%@ page import="com.rashik.rashikmart.util.HtmlUtil" %>
 
 <%
     User user = (User) session.getAttribute("user");
@@ -121,14 +122,14 @@
                                             <td>
                                                 <div style="display: flex; align-items: center; gap: 10px;">
                                                     <img src="<%= imgSrc %>" 
-                                                         alt="<%= prodName %>" 
+                                                         alt="<%= HtmlUtil.escape(prodName) %>" 
                                                          class="product-thumb"
                                                          style="width: 38px; height: 38px;"
                                                          onerror="this.src='${pageContext.request.contextPath}/images/default-product.svg';">
                                                     <div>
-                                                        <strong><%= prodName %></strong>
+                                                        <strong><%= HtmlUtil.escape(prodName) %></strong>
                                                         <% if (prod != null && prod.getCategory() != null) { %>
-                                                            <span style="display: block; font-size: 0.72rem; color: #666;"><%= prod.getCategory() %></span>
+                                                            <span style="display: block; font-size: 0.72rem; color: #666;"><%= HtmlUtil.escape(prod.getCategory()) %></span>
                                                         <% } %>
                                                     </div>
                                                 </div>
@@ -153,11 +154,11 @@
                         <div style="background: #fafafa; border: 1.5px solid #eee; padding: 1rem; margin-bottom: 1.5rem; font-size: 0.88rem;">
                             <div style="margin-bottom: 0.4rem;">
                                 <span style="color: #666; font-size: 0.75rem; text-transform: uppercase; display: block; font-weight: 700;">Account Name</span>
-                                <strong><%= user.getName() %></strong>
+                                <strong><%= HtmlUtil.escape(user.getName()) %></strong>
                             </div>
                             <div style="margin-bottom: 0.4rem;">
                                 <span style="color: #666; font-size: 0.75rem; text-transform: uppercase; display: block; font-weight: 700;">Email Address</span>
-                                <span><%= user.getEmail() %></span>
+                                <span><%= HtmlUtil.escape(user.getEmail()) %></span>
                             </div>
                             <div>
                                 <span style="color: #666; font-size: 0.75rem; text-transform: uppercase; display: block; font-weight: 700;">Account Type</span>

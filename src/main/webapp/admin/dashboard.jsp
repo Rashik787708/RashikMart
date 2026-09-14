@@ -9,6 +9,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="java.math.BigDecimal" %>
 <%@ page import="java.text.SimpleDateFormat" %>
+<%@ page import="com.rashik.rashikmart.util.HtmlUtil" %>
 
 <%
     User user = (User) session.getAttribute("user");
@@ -101,7 +102,7 @@
             <section class="seller-header">
                 <div class="seller-introduction">
                     <span class="eyebrow">ADMINISTRATOR CONTROL PANEL</span>
-                    <h1>Welcome, <%= userName %></h1>
+                    <h1>Welcome, <%= HtmlUtil.escape(userName) %></h1>
                     <p>Global oversight of registered users, seller catalogs, orders, and marketplace platform metrics.</p>
                 </div>
                 <div class="seller-role-badge">
@@ -163,11 +164,11 @@
                                 %>
                                     <tr>
                                         <td>#<%= u.getId() %></td>
-                                        <td><strong><%= u.getName() %></strong></td>
-                                        <td><%= u.getEmail() %></td>
+                                        <td><strong><%= HtmlUtil.escape(u.getName()) %></strong></td>
+                                        <td><%= HtmlUtil.escape(u.getEmail()) %></td>
                                         <td>
                                             <span class="category-chip" style="<%= "ADMIN".equalsIgnoreCase(u.getRole()) ? "background: #000; color: #fff;" : "" %>">
-                                                <%= u.getRole() %>
+                                                <%= HtmlUtil.escape(u.getRole()) %>
                                             </span>
                                         </td>
                                     </tr>
@@ -226,14 +227,14 @@
                                     <tr>
                                         <td style="width: 50px;">
                                             <img src="<%= imgSrc %>" 
-                                                 alt="<%= p.getName() %>" 
+                                                 alt="<%= HtmlUtil.escape(p.getName()) %>" 
                                                  class="product-thumb"
                                                  onerror="this.src='${pageContext.request.contextPath}/images/default-product.svg';">
                                         </td>
                                         <td>#<%= p.getId() %></td>
                                         <td>Seller #<%= p.getSellerId() %></td>
-                                        <td><strong><%= p.getName() %></strong></td>
-                                        <td><span class="category-chip"><%= p.getCategory() %></span></td>
+                                        <td><strong><%= HtmlUtil.escape(p.getName()) %></strong></td>
+                                        <td><span class="category-chip"><%= HtmlUtil.escape(p.getCategory()) %></span></td>
                                         <td><strong>₹<%= p.getPrice() %></strong></td>
                                         <td><%= p.getQuantity() %> units</td>
                                         <td>

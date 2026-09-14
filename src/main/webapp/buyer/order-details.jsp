@@ -6,6 +6,7 @@
 <%@ page import="com.rashik.rashikmart.dao.OrderDAO" %>
 <%@ page import="com.rashik.rashikmart.dao.CartDAO" %>
 <%@ page import="java.text.SimpleDateFormat" %>
+<%@ page import="com.rashik.rashikmart.util.HtmlUtil" %>
 
 <%
     User user = (User) session.getAttribute("user");
@@ -95,7 +96,7 @@
                         </div>
                         <div>
                             <span style="font-size: 0.72rem; color: #666; text-transform: uppercase; font-weight: 700; display: block;">Status</span>
-                            <span class="category-chip" style="background: #000; color: #fff; padding: 2px 8px;"><%= order.getStatus() %></span>
+                            <span class="category-chip" style="background: #000; color: #fff; padding: 2px 8px;"><%= HtmlUtil.escape(order.getStatus()) %></span>
                         </div>
                     </div>
                     <div>
@@ -125,11 +126,11 @@
                                     <td>
                                         <div style="display: flex; align-items: center; gap: 10px;">
                                             <img src="<%= imgSrc %>" 
-                                                 alt="<%= pName %>" 
+                                                 alt="<%= HtmlUtil.escape(pName) %>" 
                                                  class="product-thumb"
                                                  style="width: 32px; height: 32px;"
                                                  onerror="this.src='${pageContext.request.contextPath}/images/default-product.svg';">
-                                            <span><strong><%= pName %></strong></span>
+                                            <span><strong><%= HtmlUtil.escape(pName) %></strong></span>
                                         </div>
                                     </td>
                                     <td>₹<%= item.getPrice() %></td>

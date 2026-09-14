@@ -2,6 +2,7 @@
 <%@ page import="com.rashik.rashikmart.model.User" %>
 <%@ page import="com.rashik.rashikmart.model.Product" %>
 <%@ page import="com.rashik.rashikmart.dao.ProductDAO" %>
+<%@ page import="com.rashik.rashikmart.util.HtmlUtil" %>
 
 <%
     User user = (User) session.getAttribute("user");
@@ -92,12 +93,12 @@
 
                 <div class="form-group">
                     <label for="name">Product Name</label>
-                    <input type="text" id="name" name="name" value="<%= product.getName() != null ? product.getName() : "" %>" placeholder="e.g. Organic Turmeric" maxlength="150" required>
+                    <input type="text" id="name" name="name" value="<%= product.getName() != null ? HtmlUtil.escape(product.getName()) : "" %>" placeholder="e.g. Organic Turmeric" maxlength="150" required>
                 </div>
 
                 <div class="form-group">
                     <label for="description">Description</label>
-                    <textarea id="description" name="description" placeholder="Describe your product" maxlength="1000" rows="4"><%= product.getDescription() != null ? product.getDescription() : "" %></textarea>
+                    <textarea id="description" name="description" placeholder="Describe your product" maxlength="1000" rows="4"><%= product.getDescription() != null ? HtmlUtil.escape(product.getDescription()) : "" %></textarea>
                 </div>
 
                 <div class="form-group">
@@ -131,11 +132,11 @@
                     <label>Product Photo</label>
                     <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 10px; padding: 10px; background: #fafafa; border: 1px solid #ddd;">
                         <img src="<%= currentImage.startsWith("default-") ? request.getContextPath() + "/images/" + currentImage : request.getContextPath() + "/images/products/" + currentImage %>" 
-                             alt="<%= product.getName() %>" 
+                             alt="<%= HtmlUtil.escape(product.getName()) %>" 
                              style="width: 50px; height: 50px; object-fit: cover; border: 1.5px solid #000;"
                              onerror="this.src='${pageContext.request.contextPath}/images/default-product.svg';">
                         <div>
-                            <span style="font-size: 0.8rem; font-weight: 700; display: block;">Current Photo: <%= currentImage %></span>
+                            <span style="font-size: 0.8rem; font-weight: 700; display: block;">Current Photo: <%= HtmlUtil.escape(currentImage) %></span>
                             <span style="font-size: 0.75rem; color: #666;">Upload a new image below to replace it.</span>
                         </div>
                     </div>

@@ -4,6 +4,7 @@
 <%@ page import="com.rashik.rashikmart.dao.ProductDAO" %>
 <%@ page import="com.rashik.rashikmart.dao.CartDAO" %>
 <%@ page import="java.util.List" %>
+<%@ page import="com.rashik.rashikmart.util.HtmlUtil" %>
 
 <%
     User user = (User) session.getAttribute("user");
@@ -111,7 +112,7 @@
                             <!-- Product Image -->
                             <div style="height: 180px; background: #f0f0f0; border-bottom: 2px solid #000; overflow: hidden; display: flex; align-items: center; justify-content: center;">
                                 <img src="<%= imgSrc %>"
-                                     alt="<%= p.getName() %>"
+                                     alt="<%= HtmlUtil.escape(p.getName()) %>"
                                      style="width: 100%; height: 100%; object-fit: cover;"
                                      onerror="this.src='${pageContext.request.contextPath}/images/default-product.svg';">
                             </div>
@@ -119,11 +120,11 @@
                             <!-- Product Info -->
                             <div style="padding: 1.2rem; display: flex; flex-direction: column; flex: 1;">
                                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.7rem;">
-                                    <span class="category-chip"><%= p.getCategory() %></span>
+                                    <span class="category-chip"><%= HtmlUtil.escape(p.getCategory()) %></span>
                                     <span style="font-size: 0.72rem; color: #888; font-weight: 700;">#<%= p.getId() %></span>
                                 </div>
 
-                                <h3 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 0.3rem;"><%= p.getName() %></h3>
+                                <h3 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 0.3rem;"><%= HtmlUtil.escape(p.getName()) %></h3>
 
                                 <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 0.6rem;">
                                     <span style="font-size: 1.5rem; font-weight: 900; color: #000;">₹<%= p.getPrice() %></span>
@@ -132,7 +133,7 @@
 
                                 <p style="font-size: 0.85rem; color: #555; line-height: 1.5; margin-bottom: 1rem; flex: 1;
                                    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
-                                    <%= (p.getDescription() != null && !p.getDescription().trim().isEmpty()) ? p.getDescription() : "No detailed description provided by the seller." %>
+                                    <%= (p.getDescription() != null && !p.getDescription().trim().isEmpty()) ? HtmlUtil.escape(p.getDescription()) : "No detailed description provided by the seller." %>
                                 </p>
 
                                 <% if (inStock) { %>
