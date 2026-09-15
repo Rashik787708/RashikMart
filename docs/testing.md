@@ -17,7 +17,7 @@ Tests run against an isolated **in-memory H2 database** (configured in
 Maven invocation starts from a clean schema. No local `data/` files are
 touched by the test suite.
 
-## Test inventory (94 tests, 0 failures)
+## Test inventory (113 tests, 0 failures)
 
 ### DAO / database layer
 | Class | Coverage |
@@ -26,6 +26,7 @@ touched by the test suite.
 | `ProductDAOTest` | product CRUD, seller ownership filter, availability filtering |
 | `CartDAOTest` | add / update / remove / clear items, cart total, available-stock cap |
 | `OrderDAOTest` | transactional order creation, stock deduction, rollback on failure, buyer-ownership queries, seller-order isolation, cart cleared after order |
+| `ReviewDAOTest` | purchase eligibility, duplicate-review prevention (DB + DAO), rating range 1-5, average rating/review count, XSS and SQL-injection payloads stored as safe inert text |
 
 ### Business rules / model
 | Class | Coverage |
@@ -47,7 +48,8 @@ touched by the test suite.
 | `EditProductServletTest` | seller cannot fetch/edit another seller's product; oversized/malformed input rejected |
 | `DeleteProductServletTest` | seller cannot delete another seller's product (ownership-scoped DAO) |
 | `OrderServletTest` | buyer cannot view another buyer's order; empty-cart checkout rejected; order placement |
-| `ProductDetailsServletTest` | invalid/missing/unknown/inactive product handling |
+| `ProductDetailsServletTest` | invalid/missing/unknown/inactive product handling; active product forwards with review data |
+| `ReviewServletTest` | unauthenticated/non-buyer rejection, missing/invalid/inactive product, rating range 1-5, 500-char review limit, purchase-eligibility and duplicate-review rejection, valid submission |
 | `AdminProductStatusServletTest` | non-admin requests receive 403; status toggle only for admins |
 
 ### End-to-end flow
@@ -110,7 +112,7 @@ the WAR artifact.
 
 ```text
 mvn clean verify  → BUILD SUCCESS
-Tests run: 94, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 113, Failures: 0, Errors: 0, Skipped: 0
 ```
 
 ## Honest status flags (Week 7 checklist)
@@ -132,5 +134,5 @@ Tests run: 94, Failures: 0, Errors: 0, Skipped: 0
 | End-to-end flow test | PASS (`RashikMartFlowTest`) |
 | Load test ≥10 users / 60 s | PASS (EXECUTED — see results above) |
 | Maven build via CI | PASS (`mvn clean verify` green) |
-| Reviews/ratings feature | N/A (feature not implemented) |
+| Reviews/ratings feature | PASS (Review model, ReviewDAO, ReviewServlet, reviews table, purchase eligibility, duplicate protection, rating 1-5, XSS/SQL-injection safe, displayed on product-details.jsp) |
 | DB credentials committed | PASS (none; local defaults via env/system properties, DB files gitignored) |

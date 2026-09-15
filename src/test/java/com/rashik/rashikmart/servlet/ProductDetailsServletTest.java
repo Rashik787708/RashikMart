@@ -1,6 +1,7 @@
 package com.rashik.rashikmart.servlet;
 
 import com.rashik.rashikmart.dao.ProductDAO;
+import com.rashik.rashikmart.dao.ReviewDAO;
 import com.rashik.rashikmart.model.Product;
 import com.rashik.rashikmart.model.User;
 import org.junit.Before;
@@ -12,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 
 import static org.mockito.Mockito.*;
 
@@ -19,6 +21,7 @@ public class ProductDetailsServletTest {
 
     private ProductDetailsServlet servlet;
     private ProductDAO mockProductDAO;
+    private ReviewDAO mockReviewDAO;
     private HttpServletRequest request;
     private HttpServletResponse response;
     private HttpSession session;
@@ -28,10 +31,15 @@ public class ProductDetailsServletTest {
     public void setUp() throws Exception {
         servlet = new ProductDetailsServlet();
         mockProductDAO = mock(ProductDAO.class);
+        mockReviewDAO = mock(ReviewDAO.class);
 
         Field daoField = ProductDetailsServlet.class.getDeclaredField("productDAO");
         daoField.setAccessible(true);
         daoField.set(servlet, mockProductDAO);
+
+        Field reviewDaoField = ProductDetailsServlet.class.getDeclaredField("reviewDAO");
+        reviewDaoField.setAccessible(true);
+        reviewDaoField.set(servlet, mockReviewDAO);
 
         request = mock(HttpServletRequest.class);
         response = mock(HttpServletResponse.class);
@@ -126,9 +134,16 @@ public class ProductDetailsServletTest {
         when(mockProductDAO.findById(5)).thenReturn(product);
         when(request.getRequestDispatcher("/buyer/product-details.jsp")).thenReturn(dispatcher);
 
+        when(mockReviewDAO.findByProductId(5)).thenReturn(new ArrayList<>());
+        when(mockReviewDAO.getReviewCount(5)).thenReturn(0);
+        when(mockReviewDAO.getAverageRating(5)).thenReturn(0.0);
+        when(mockReviewDAO.hasPurchasedProduct(10, 5)).thenReturn(false);
+        when(mockReviewDAO.hasReviewByBuyer(10, 5)).thenReturn(false);
+
         servlet.doGet(request, response);
 
         verify(request).setAttribute("product", product);
+        verify(request).setAttribute("reviews", new ArrayList<>());
         verify(dispatcher).forward(request, response);
     }
 }

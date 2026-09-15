@@ -1,8 +1,11 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="com.rashik.rashikmart.model.User" %>
 <%@ page import="com.rashik.rashikmart.model.Product" %>
+<%@ page import="com.rashik.rashikmart.model.Review" %>
 <%@ page import="com.rashik.rashikmart.dao.ProductDAO" %>
 <%@ page import="com.rashik.rashikmart.dao.CartDAO" %>
+<%@ page import="com.rashik.rashikmart.dao.ReviewDAO" %>
+<%@ page import="java.util.List" %>
 <%@ page import="com.rashik.rashikmart.util.HtmlUtil" %>
 
 <%
@@ -38,6 +41,42 @@
 
     CartDAO cartDAO = new CartDAO();
     int cartCount = cartDAO.getCartItems(user.getId()).size();
+
+    List<Review> reviews = (List<Review>) request.getAttribute("reviews");
+    int reviewCount = 0;
+    double avgRating = 0.0;
+    boolean hasPurchased = false;
+    boolean hasReviewed = false;
+
+    if (reviews == null) {
+        ReviewDAO reviewDAO = new ReviewDAO();
+        reviews = reviewDAO.findByProductId(product.getId());
+        reviewCount = reviewDAO.getReviewCount(product.getId());
+        avgRating = reviewDAO.getAverageRating(product.getId());
+        hasPurchased = reviewDAO.hasPurchasedProduct(user.getId(), product.getId());
+        hasReviewed = reviewDAO.hasReviewByBuyer(user.getId(), product.getId());
+    } else {
+        Object countAttr = request.getAttribute("reviewCount");
+        if (countAttr instanceof Integer) {
+            reviewCount = (Integer) countAttr;
+        }
+        Object avgAttr = request.getAttribute("avgRating");
+        if (avgAttr instanceof Double) {
+            avgRating = (Double) avgAttr;
+        }
+        Object purchasedAttr = request.getAttribute("hasPurchased");
+        if (purchasedAttr instanceof Boolean) {
+            hasPurchased = (Boolean) purchasedAttr;
+        }
+        Object reviewedAttr = request.getAttribute("hasReviewed");
+        if (reviewedAttr instanceof Boolean) {
+            hasReviewed = (Boolean) reviewedAttr;
+        }
+    }
+
+    if (reviews == null) {
+        reviews = new java.util.ArrayList<>();
+    }
 
     String success = request.getParameter("success");
     String error = request.getParameter("error");
@@ -169,6 +208,122 @@
                 </div>
 
             </div>
+
+            <!-- ===================================================== -->
+            <!-- CUSTOMER REVIEWS & RATINGS                              -->
+            <!-- ===================================================== -->
+
+            <div class="products-panel" style="margin-top: 2rem;">
+                <div class="products-panel-header">
+                    <div>
+                        <h3>Customer Reviews (<%= reviews.size() %>)</h3>
+                        <p>Ratings and feedback from verified buyers.</p>
+                    </div>
+                </div>
+
+                <% if (reviews.isEmpty()) { %>
+                    <div class="empty-state" style="padding: 2.5rem 1.5rem;">
+                        <h3 style="font-size: 1.1rem;">No Reviews Yet</h3>
+                        <p>Be the first to share your experience with this product.</p>
+                    </div>
+                <% } else { %>
+                    <!-- Rating Summary -->
+                    <div class="reviews-summary">
+                        <div>
+                            <span class="eyebrow">AVERAGE RATING</span>
+                            <div style="font-size: 2rem; font-weight: 900; letter-spacing: -1px; color: #000;">
+                                <%= String.format("%.1f", avgRating) %> <span style="font-size: 0.9rem; font-weight: 700; color: #666;">/ 5</span>
+                            </div>
+                            <div class="review-stars">
+                                <% for (int s = 1; s <= 5; s++) { %>
+                                    <% if (s <= Math.round(avgRating)) { %>
+                                        <span class="star-filled">★</span>
+                                    <% } else { %>
+                                        <span class="star-empty">★</span>
+                                    <% } %>
+                                <% } %>
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 1.6rem; font-weight: 900; color: #000;"><%= reviewCount %></div>
+                            <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: #666; font-weight: 700;">Reviews</div>
+                        </div>
+                    </div>
+
+                    <!-- Review List -->
+                    <div>
+                        <% for (Review rv : reviews) { %>
+                            <div class="review-card">
+                                <div class="review-card-header">
+                                    <span class="reviewer-name"><%= HtmlUtil.escape(rv.getBuyerName() != null ? rv.getBuyerName() : "Verified Buyer") %></span>
+                                    <span class="review-date"><%= rv.getCreatedAt() != null ? HtmlUtil.escape(rv.getCreatedAt().toString().substring(0, 10)) : "Recently" %></span>
+                                </div>
+                                <div class="review-stars" style="margin-bottom: 0.5rem;">
+                                    <% for (int s = 1; s <= 5; s++) { %>
+                                        <% if (s <= rv.getRating()) { %>
+                                            <span class="star-filled">★</span>
+                                        <% } else { %>
+                                            <span class="star-empty">★</span>
+                                        <% } %>
+                                    <% } %>
+                                </div>
+                                <p class="review-text">
+                                    <%= (rv.getReviewText() != null && !rv.getReviewText().trim().isEmpty()) ? HtmlUtil.escape(rv.getReviewText()) : "No written comment provided." %>
+                                </p>
+                            </div>
+                        <% } %>
+                    </div>
+                <% } %>
+            </div>
+
+            <!-- Review Submission -->
+            <% if (hasPurchased && !hasReviewed) { %>
+                <div class="products-panel" style="margin-top: 2rem;">
+                    <div class="products-panel-header">
+                        <div>
+                            <h3>Write a Review</h3>
+                            <p>Only buyers who have purchased this item can rate it.</p>
+                        </div>
+                    </div>
+                    <form action="${pageContext.request.contextPath}/buyer/review" method="post" style="padding: 1.8rem;">
+                        <input type="hidden" name="productId" value="<%= product.getId() %>">
+                        <div class="form-group" style="max-width: 240px;">
+                            <label for="rating">Your Rating</label>
+                            <select id="rating" name="rating" required>
+                                <option value="">Select a rating</option>
+                                <option value="1">1 Star</option>
+                                <option value="2">2 Stars</option>
+                                <option value="3">3 Stars</option>
+                                <option value="4">4 Stars</option>
+                                <option value="5">5 Stars</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="reviewText">Your Review (optional)</label>
+                            <textarea id="reviewText" name="reviewText" rows="4" maxlength="500" placeholder="Share what you liked or didn't like about this product..."></textarea>
+                        </div>
+                        <button type="submit" class="primary-button" style="max-width: 320px;">Submit Review</button>
+                    </form>
+                </div>
+            <% } else if (hasPurchased && hasReviewed) { %>
+                <div class="products-panel" style="margin-top: 2rem;">
+                    <div class="products-panel-header">
+                        <div>
+                            <h3>Thank You</h3>
+                            <p>You have already reviewed this product. Only one review per purchase is allowed.</p>
+                        </div>
+                    </div>
+                </div>
+            <% } else { %>
+                <div class="products-panel" style="margin-top: 2rem;">
+                    <div class="products-panel-header">
+                        <div>
+                            <h3>Leave a Review</h3>
+                            <p>Purchase this item to unlock the ability to rate and review it.</p>
+                        </div>
+                    </div>
+                </div>
+            <% } %>
 
         </div>
     </main>

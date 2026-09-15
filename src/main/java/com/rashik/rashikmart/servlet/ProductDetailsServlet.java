@@ -1,7 +1,9 @@
 package com.rashik.rashikmart.servlet;
 
 import com.rashik.rashikmart.dao.ProductDAO;
+import com.rashik.rashikmart.dao.ReviewDAO;
 import com.rashik.rashikmart.model.Product;
+import com.rashik.rashikmart.model.Review;
 import com.rashik.rashikmart.model.User;
 
 import javax.servlet.ServletException;
@@ -12,15 +14,18 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.util.List;
 
 @WebServlet({"/buyer/product-details", "/ProductDetailsServlet"})
 public class ProductDetailsServlet extends HttpServlet {
 
     private ProductDAO productDAO;
+    private ReviewDAO reviewDAO;
 
     @Override
     public void init() throws ServletException {
         productDAO = new ProductDAO();
+        reviewDAO = new ReviewDAO();
     }
 
     @Override
@@ -69,6 +74,15 @@ public class ProductDetailsServlet extends HttpServlet {
         }
 
         request.setAttribute("product", product);
+
+        User buyer = (User) session.getAttribute("user");
+        List<Review> reviews = reviewDAO.findByProductId(id);
+        request.setAttribute("reviews", reviews);
+        request.setAttribute("reviewCount", reviewDAO.getReviewCount(id));
+        request.setAttribute("avgRating", reviewDAO.getAverageRating(id));
+        request.setAttribute("hasPurchased", reviewDAO.hasPurchasedProduct(buyer.getId(), id));
+        request.setAttribute("hasReviewed", reviewDAO.hasReviewByBuyer(buyer.getId(), id));
+
         request.getRequestDispatcher("/buyer/product-details.jsp").forward(request, response);
     }
 }
