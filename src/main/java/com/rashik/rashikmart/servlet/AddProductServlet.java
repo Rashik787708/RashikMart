@@ -1,8 +1,10 @@
 package com.rashik.rashikmart.servlet;
 
+import com.rashik.rashikmart.config.DatabaseConfig;
 import com.rashik.rashikmart.dao.ProductDAO;
 import com.rashik.rashikmart.model.Product;
 import com.rashik.rashikmart.model.User;
+import com.rashik.rashikmart.util.CsrfUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -52,6 +54,20 @@ public class AddProductServlet extends HttpServlet {
             HttpServletResponse response
     ) throws ServletException, IOException {
 
+        // =========================
+        // CSRF CHECK
+        // =========================
+
+        if (!CsrfUtil.isValid(request)) {
+
+            response.sendRedirect(
+                    request.getContextPath()
+                            + "/seller/add-product.jsp?error=Invalid+or+missing+CSRF+token"
+            );
+
+            return;
+        }
+
         HttpSession session = request.getSession(false);
 
         // =========================
@@ -78,6 +94,20 @@ public class AddProductServlet extends HttpServlet {
             response.sendRedirect(
                     request.getContextPath()
                             + "/login.jsp?error=Seller+access+required"
+            );
+
+            return;
+        }
+
+        // =========================
+        // CSRF CHECK
+        // =========================
+
+        if (!CsrfUtil.isValid(request)) {
+
+            response.sendError(
+                    HttpServletResponse.SC_FORBIDDEN,
+                    "Invalid or missing CSRF token"
             );
 
             return;
@@ -221,15 +251,19 @@ public class AddProductServlet extends HttpServlet {
 
                     if (extension.equals(".jpg") || extension.equals(".jpeg") || extension.equals(".png") || extension.equals(".webp") || extension.equals(".svg")) {
                         String uniqueFileName = UUID.randomUUID().toString() + extension;
-                        String uploadPath = getServletContext().getRealPath("/images/products");
+                        File uploadDir = new File(DatabaseConfig.getUploadDir());
+                        if (!uploadDir.isAbsolute()) {
+                            uploadDir = uploadDir.getAbsoluteFile();
+                        }
+                        if (!uploadDir.exists()) {
+                            uploadDir.mkdirs();
+                        }
 
-                        if (uploadPath != null) {
-                            File uploadDir = new File(uploadPath);
-                            if (!uploadDir.exists()) {
-                                uploadDir.mkdirs();
+                        File targetFile = new File(uploadDir, uniqueFileName);
+                        if (targetFile.toPath().normalize().startsWith(uploadDir.toPath().normalize())) {
+                            try (java.io.InputStream in = filePart.getInputStream()) {
+                                java.nio.file.Files.copy(in, targetFile.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
                             }
-
-                            filePart.write(uploadPath + File.separator + uniqueFileName);
                             imageUrl = uniqueFileName;
                         }
                     }

@@ -4,6 +4,7 @@
 <%@ page import="com.rashik.rashikmart.dao.ProductDAO" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.rashik.rashikmart.util.HtmlUtil" %>
+<%@ page import="com.rashik.rashikmart.util.CsrfUtil" %>
 
 <%
     User user = (User) session.getAttribute("user");
@@ -18,6 +19,8 @@
         response.sendRedirect(request.getContextPath() + "/login.jsp?error=Seller+access+required");
         return;
     }
+
+    CsrfUtil.getOrCreateToken(session);
 
     String success = request.getParameter("success");
     String error = request.getParameter("error");
@@ -143,6 +146,7 @@
                                                     Edit
                                                 </a>
                                                 <form action="${pageContext.request.contextPath}/seller/delete-product" method="post" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this product?');">
+                                                    <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
                                                     <input type="hidden" name="id" value="<%= p.getId() %>">
                                                     <input type="hidden" name="redirect" value="/seller/products.jsp">
                                                     <button type="submit" class="action-btn delete-btn">

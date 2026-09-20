@@ -6,6 +6,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="java.math.BigDecimal" %>
 <%@ page import="com.rashik.rashikmart.util.HtmlUtil" %>
+<%@ page import="com.rashik.rashikmart.util.CsrfUtil" %>
 
 <%
     User user = (User) session.getAttribute("user");
@@ -20,6 +21,8 @@
         response.sendRedirect(request.getContextPath() + "/login.jsp?error=Buyer+access+required");
         return;
     }
+
+    CsrfUtil.getOrCreateToken(session);
 
     List<CartItem> cartItems = (List<CartItem>) request.getAttribute("cartItems");
     BigDecimal cartTotal = (BigDecimal) request.getAttribute("cartTotal");
@@ -182,6 +185,7 @@
                         </div>
 
                         <form action="${pageContext.request.contextPath}/buyer/place-order" method="post">
+                            <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
                             <button type="submit" 
                                     class="primary-button" 
                                     style="width: 100%; padding: 1rem; font-size: 1rem; box-shadow: 4px 4px 0px #000;"

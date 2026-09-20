@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="com.rashik.rashikmart.util.HtmlUtil" %>
+<%@ page import="com.rashik.rashikmart.util.CsrfUtil" %>
 
 <%
     if (session.getAttribute("user") == null) {
@@ -13,6 +14,7 @@
         return;
     }
 
+    CsrfUtil.getOrCreateToken(session);
     String error = request.getParameter("error");
 %>
 
@@ -57,6 +59,7 @@
             <% } %>
 
             <form action="${pageContext.request.contextPath}/seller/add-product" method="post" enctype="multipart/form-data" class="register-form">
+                <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
 
                 <div class="form-group">
                     <label for="name">Product Name</label>

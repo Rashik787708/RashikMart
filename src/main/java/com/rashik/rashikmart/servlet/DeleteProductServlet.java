@@ -2,6 +2,7 @@ package com.rashik.rashikmart.servlet;
 
 import com.rashik.rashikmart.dao.ProductDAO;
 import com.rashik.rashikmart.model.User;
+import com.rashik.rashikmart.util.CsrfUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -48,6 +49,11 @@ public class DeleteProductServlet extends HttpServlet {
         String role = (String) session.getAttribute("role");
         if (role == null || !"SELLER".equalsIgnoreCase(role)) {
             response.sendRedirect(request.getContextPath() + "/login.jsp?error=Seller+access+required");
+            return;
+        }
+
+        if (!CsrfUtil.isValid(request)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Invalid or missing CSRF token");
             return;
         }
 

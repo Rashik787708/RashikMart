@@ -50,6 +50,8 @@ public class ReviewServletTest {
         when(request.getSession(false)).thenReturn(session);
         when(session.getAttribute("user")).thenReturn(BUYER);
         when(session.getAttribute("role")).thenReturn("BUYER");
+        when(session.getAttribute("csrfToken")).thenReturn("valid-csrf-token");
+        when(request.getParameter("csrfToken")).thenReturn("valid-csrf-token");
     }
 
     private void mockActiveProduct(int productId) {

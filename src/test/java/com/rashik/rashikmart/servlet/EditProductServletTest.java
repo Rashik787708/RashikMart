@@ -39,6 +39,8 @@ public class EditProductServletTest {
         dispatcher = mock(RequestDispatcher.class);
 
         when(request.getContextPath()).thenReturn("/RashikMart");
+        when(session.getAttribute("csrfToken")).thenReturn("valid-csrf-token");
+        when(request.getParameter("csrfToken")).thenReturn("valid-csrf-token");
     }
 
     @Test

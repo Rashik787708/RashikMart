@@ -3,6 +3,7 @@
 <%@ page import="com.rashik.rashikmart.model.Product" %>
 <%@ page import="com.rashik.rashikmart.dao.ProductDAO" %>
 <%@ page import="com.rashik.rashikmart.util.HtmlUtil" %>
+<%@ page import="com.rashik.rashikmart.util.CsrfUtil" %>
 
 <%
     User user = (User) session.getAttribute("user");
@@ -17,6 +18,8 @@
         response.sendRedirect(request.getContextPath() + "/login.jsp?error=Seller+access+required");
         return;
     }
+
+    CsrfUtil.getOrCreateToken(session);
 
     Product product = (Product) request.getAttribute("product");
     if (product == null) {
@@ -88,6 +91,7 @@
             <% } %>
 
             <form action="${pageContext.request.contextPath}/seller/edit-product" method="post" enctype="multipart/form-data" class="register-form">
+                <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
                 <input type="hidden" name="id" value="<%= product.getId() %>">
                 <input type="hidden" name="currentImageUrl" value="<%= currentImage %>">
 

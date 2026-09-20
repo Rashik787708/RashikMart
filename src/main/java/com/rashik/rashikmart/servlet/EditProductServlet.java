@@ -1,8 +1,10 @@
 package com.rashik.rashikmart.servlet;
 
+import com.rashik.rashikmart.config.DatabaseConfig;
 import com.rashik.rashikmart.dao.ProductDAO;
 import com.rashik.rashikmart.model.Product;
 import com.rashik.rashikmart.model.User;
+import com.rashik.rashikmart.util.CsrfUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -16,7 +18,10 @@ import javax.servlet.http.Part;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
 @WebServlet("/seller/edit-product")
@@ -98,6 +103,11 @@ public class EditProductServlet extends HttpServlet {
             return;
         }
 
+        if (!CsrfUtil.isValid(request)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Invalid or missing CSRF token");
+            return;
+        }
+
         User user = (User) session.getAttribute("user");
 
         String idText = request.getParameter("id");
@@ -163,6 +173,9 @@ public class EditProductServlet extends HttpServlet {
                 ? currentImageUrl.trim()
                 : "default-product.svg";
 
+        String oldImageToDelete = null;
+        boolean newImageUploaded = false;
+
         // Check if a new photo is uploaded
         try {
             Part filePart = request.getPart("image");
@@ -177,16 +190,22 @@ public class EditProductServlet extends HttpServlet {
 
                     if (extension.equals(".jpg") || extension.equals(".jpeg") || extension.equals(".png") || extension.equals(".webp") || extension.equals(".svg")) {
                         String uniqueFileName = UUID.randomUUID().toString() + extension;
-                        String uploadPath = getServletContext().getRealPath("/images/products");
+                        File uploadDir = new File(DatabaseConfig.getUploadDir());
+                        if (!uploadDir.isAbsolute()) {
+                            uploadDir = uploadDir.getAbsoluteFile();
+                        }
+                        if (!uploadDir.exists()) {
+                            uploadDir.mkdirs();
+                        }
 
-                        if (uploadPath != null) {
-                            File uploadDir = new File(uploadPath);
-                            if (!uploadDir.exists()) {
-                                uploadDir.mkdirs();
+                        File targetFile = new File(uploadDir, uniqueFileName);
+                        if (targetFile.toPath().normalize().startsWith(uploadDir.toPath().normalize())) {
+                            try (java.io.InputStream in = filePart.getInputStream()) {
+                                Files.copy(in, targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
                             }
-
-                            filePart.write(uploadPath + File.separator + uniqueFileName);
+                            oldImageToDelete = imageUrl;
                             imageUrl = uniqueFileName;
+                            newImageUploaded = true;
                         }
                     }
                 }
@@ -209,9 +228,48 @@ public class EditProductServlet extends HttpServlet {
         boolean updated = productDAO.updateProduct(product);
 
         if (updated) {
+            if (newImageUploaded && oldImageToDelete != null && !oldImageToDelete.equals(imageUrl)) {
+                deleteOldImageIfSafe(oldImageToDelete);
+            }
             response.sendRedirect(request.getContextPath() + "/seller/dashboard.jsp?success=Product+updated+successfully");
         } else {
             response.sendRedirect(request.getContextPath() + "/seller/edit-product?id=" + id + "&error=Unable+to+update+product");
+        }
+    }
+
+    static void deleteOldImageIfSafe(String oldImageName) {
+        if (oldImageName == null || oldImageName.trim().isEmpty()) {
+            return;
+        }
+        String name = oldImageName.trim();
+        // Never delete default or bundled images
+        if (name.equalsIgnoreCase("default-product.svg")
+                || name.toLowerCase().startsWith("default-")
+                || !name.matches("^[A-Za-z0-9][A-Za-z0-9._-]{0,200}$")) {
+            return;
+        }
+
+        File uploadDir = new File(DatabaseConfig.getUploadDir());
+        if (!uploadDir.isAbsolute()) {
+            uploadDir = uploadDir.getAbsoluteFile();
+        }
+
+        File oldFile = new File(uploadDir, name);
+        try {
+            if (!uploadDir.exists()) {
+                return;
+            }
+            Path basePath = uploadDir.toPath().toRealPath();
+            Path oldPath = oldFile.toPath().normalize();
+            if (Files.exists(oldPath)) {
+                Path realOldPath = oldPath.toRealPath();
+                // Ensure old file is strictly within uploadDir and not the directory itself
+                if (realOldPath.startsWith(basePath) && !realOldPath.equals(basePath)) {
+                    Files.deleteIfExists(realOldPath);
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Could not safely delete old product image: " + e.getMessage());
         }
     }
 }

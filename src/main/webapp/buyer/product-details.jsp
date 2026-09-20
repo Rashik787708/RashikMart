@@ -7,6 +7,7 @@
 <%@ page import="com.rashik.rashikmart.dao.ReviewDAO" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.rashik.rashikmart.util.HtmlUtil" %>
+<%@ page import="com.rashik.rashikmart.util.CsrfUtil" %>
 
 <%
     User user = (User) session.getAttribute("user");
@@ -21,6 +22,8 @@
         response.sendRedirect(request.getContextPath() + "/login.jsp?error=Buyer+access+required");
         return;
     }
+
+    CsrfUtil.getOrCreateToken(session);
 
     Product product = (Product) request.getAttribute("product");
     if (product == null) {
@@ -170,6 +173,7 @@
 
                     <% if (inStock) { %>
                         <form action="${pageContext.request.contextPath}/buyer/cart" method="post">
+                            <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
                             <input type="hidden" name="action" value="add">
                             <input type="hidden" name="productId" value="<%= product.getId() %>">
 
@@ -286,6 +290,7 @@
                         </div>
                     </div>
                     <form action="${pageContext.request.contextPath}/buyer/review" method="post" style="padding: 1.8rem;">
+                        <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
                         <input type="hidden" name="productId" value="<%= product.getId() %>">
                         <div class="form-group" style="max-width: 240px;">
                             <label for="rating">Your Rating</label>

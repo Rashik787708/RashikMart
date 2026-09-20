@@ -5,14 +5,12 @@ import com.rashik.rashikmart.model.User;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import javax.servlet.annotation.WebListener;
 
 import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-@WebListener
 public class DatabaseContextListener implements ServletContextListener {
 
     @Override
@@ -154,13 +152,19 @@ public class DatabaseContextListener implements ServletContextListener {
                 }
             }
 
-            // Ensure images/products directory exists
-            String productsImgPath = sce.getServletContext().getRealPath("/images/products");
-            if (productsImgPath != null) {
-                File dir = new File(productsImgPath);
-                if (!dir.exists()) {
-                    dir.mkdirs();
-                }
+            // Ensure the external product-images upload directory exists
+            File uploadDir =
+                    new File(
+                            DatabaseConfig.getUploadDir()
+                    );
+
+            if (!uploadDir.exists()
+                    && !uploadDir.mkdirs()) {
+
+                System.err.println(
+                        "WARNING: Could not create product image upload directory: "
+                                + uploadDir.getAbsolutePath()
+                );
             }
 
             // Seed default admin account if not exists

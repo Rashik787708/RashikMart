@@ -171,6 +171,8 @@ public class AuthFilter implements Filter {
          * ========================================================
          */
 
+        com.rashik.rashikmart.util.CsrfUtil.getOrCreateToken(session);
+
         chain.doFilter(request, response);
     }
 

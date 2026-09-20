@@ -6,6 +6,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="java.math.BigDecimal" %>
 <%@ page import="com.rashik.rashikmart.util.HtmlUtil" %>
+<%@ page import="com.rashik.rashikmart.util.CsrfUtil" %>
 
 <%
     User user = (User) session.getAttribute("user");
@@ -20,6 +21,8 @@
         response.sendRedirect(request.getContextPath() + "/login.jsp?error=Buyer+access+required");
         return;
     }
+
+    CsrfUtil.getOrCreateToken(session);
 
     List<CartItem> cartItems = (List<CartItem>) request.getAttribute("cartItems");
     BigDecimal cartTotal = (BigDecimal) request.getAttribute("cartTotal");
@@ -111,6 +114,7 @@
                                     <p>Manage your product selections</p>
                                 </div>
                                 <form action="${pageContext.request.contextPath}/buyer/cart" method="post" onsubmit="return confirm('Clear entire cart?');">
+                                    <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
                                     <input type="hidden" name="action" value="clear">
                                     <button type="submit" class="action-btn delete-btn" style="height: 26px; padding: 4px 8px; font-size: 0.7rem;">
                                         Clear Cart
@@ -161,6 +165,7 @@
                                                 <td><strong>₹<%= unitPrice %></strong></td>
                                                 <td>
                                                     <form action="${pageContext.request.contextPath}/buyer/cart" method="post" style="display: flex; align-items: center; gap: 6px;">
+                                                        <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
                                                         <input type="hidden" name="action" value="update">
                                                         <input type="hidden" name="productId" value="<%= item.getProductId() %>">
                                                         <input type="number" 
@@ -178,6 +183,7 @@
                                                 <td><strong>₹<%= item.getSubtotal() %></strong></td>
                                                 <td style="text-align: right;">
                                                     <form action="${pageContext.request.contextPath}/buyer/cart" method="post" style="display: inline;">
+                                                        <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
                                                         <input type="hidden" name="action" value="remove">
                                                         <input type="hidden" name="productId" value="<%= item.getProductId() %>">
                                                         <button type="submit" class="action-btn delete-btn" title="Remove item">

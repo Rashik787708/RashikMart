@@ -2,6 +2,7 @@ package com.rashik.rashikmart.servlet;
 
 import com.rashik.rashikmart.dao.UserDAO;
 import com.rashik.rashikmart.model.User;
+import com.rashik.rashikmart.util.CsrfUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -145,6 +146,8 @@ public class LoginServlet extends HttpServlet {
                 "userRole",
                 user.getRole()
         );
+
+        CsrfUtil.getOrCreateToken(session);
 
         /*
          * -----------------------------

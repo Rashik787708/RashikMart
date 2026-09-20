@@ -10,6 +10,7 @@
 <%@ page import="java.math.BigDecimal" %>
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="com.rashik.rashikmart.util.HtmlUtil" %>
+<%@ page import="com.rashik.rashikmart.util.CsrfUtil" %>
 
 <%
     User user = (User) session.getAttribute("user");
@@ -24,6 +25,8 @@
         response.sendRedirect(request.getContextPath() + "/login.jsp?error=Admin+access+required");
         return;
     }
+
+    CsrfUtil.getOrCreateToken(session);
 
     String userName = user.getName();
     if (userName == null || userName.trim().isEmpty()) {
@@ -244,6 +247,7 @@
                                         </td>
                                         <td style="text-align: right;">
                                             <form action="${pageContext.request.contextPath}/admin/product-status" method="post" style="display: inline;">
+                                                <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
                                                 <input type="hidden" name="id" value="<%= p.getId() %>">
                                                 <input type="hidden" name="active" value="<%= !p.isActive() %>">
                                                 <button type="submit" class="action-btn <%= p.isActive() ? "delete-btn" : "" %>" style="padding: 4px 8px; font-size: 0.72rem;">

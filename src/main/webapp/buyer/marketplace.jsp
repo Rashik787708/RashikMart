@@ -5,6 +5,7 @@
 <%@ page import="com.rashik.rashikmart.dao.CartDAO" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.rashik.rashikmart.util.HtmlUtil" %>
+<%@ page import="com.rashik.rashikmart.util.CsrfUtil" %>
 
 <%
     User user = (User) session.getAttribute("user");
@@ -19,6 +20,8 @@
         response.sendRedirect(request.getContextPath() + "/login.jsp?error=Buyer+access+required");
         return;
     }
+
+    CsrfUtil.getOrCreateToken(session);
 
     List<Product> products = (List<Product>) request.getAttribute("products");
     if (products == null) {
@@ -150,6 +153,7 @@
                                     </a>
                                     <% if (inStock) { %>
                                         <form action="${pageContext.request.contextPath}/buyer/cart" method="post" style="flex: 1; display: flex;">
+                                            <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
                                             <input type="hidden" name="action" value="add">
                                             <input type="hidden" name="productId" value="<%= p.getId() %>">
                                             <input type="hidden" name="quantity" value="1">
