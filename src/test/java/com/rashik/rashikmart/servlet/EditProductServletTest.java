@@ -13,7 +13,7 @@ import javax.servlet.http.HttpSession;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 
-import static org.mockito.Mockito.*;
+import static org.mockito   .Mockito.*;
 
 public class EditProductServletTest {
 

@@ -7,6 +7,9 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -179,6 +182,9 @@ public class DatabaseContextListener implements ServletContextListener {
                 System.out.println("Default admin user created: admin@rashikmart.com");
             }
 
+            // Seed the demo seller and product catalog (idempotent).
+            seedCatalog(connection);
+
             System.out.println("=================================");
             System.out.println("H2 DATABASE INITIALIZED");
             System.out.println("Users table ready");
@@ -209,6 +215,59 @@ public class DatabaseContextListener implements ServletContextListener {
             System.out.println(
                     "HikariCP connection pool closed."
             );
+        }
+    }
+
+    /**
+     * Applies the bundled catalog seed (seed_catalog.sql) using H2's
+     * RunScript, reusing the same pooled connection. The script is fully
+     * idempotent - it creates the demo seller only when the email is
+     * missing and only inserts products whose seller/name/category combo
+     * does not already exist - so it is safe to run on every startup.
+     */
+    private void seedCatalog(Connection connection) {
+
+        String resource = "seed_catalog.sql";
+
+        try (InputStream in =
+                     getClass().getClassLoader()
+                             .getResourceAsStream(resource)) {
+
+            if (in == null) {
+
+                System.out.println(
+                        "Catalog seed skipped: " + resource
+                                + " not found on classpath"
+                );
+
+                return;
+            }
+
+            try (InputStreamReader reader =
+                         new InputStreamReader(
+                                 in,
+                                 StandardCharsets.UTF_8
+                         )) {
+
+                org.h2.tools.RunScript.execute(
+                        connection,
+                        reader
+                );
+            }
+
+            System.out.println(
+                    "Catalog seed applied "
+                            + "(seller + product catalog)."
+            );
+
+        } catch (Exception e) {
+
+            System.err.println(
+                    "Catalog seed failed: "
+                            + e.getMessage()
+            );
+
+            e.printStackTrace();
         }
     }
 }
