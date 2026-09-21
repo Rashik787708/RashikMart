@@ -44,5 +44,16 @@ data/
 *.trace.db
 *.lock.db
 
+### Local DB backups inside database/ ###
+/database/*.mv.db
+/database/*.trace.db
+
+### Local dev / tunnel artifacts (do NOT commit) ###
+/cloudflared.exe
+/config.yml
+/java
+/scripts/
+/h2-classpath.txt
+
 ### Runtime logs ###
 logs/

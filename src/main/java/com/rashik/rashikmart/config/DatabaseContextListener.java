@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class DatabaseContextListener implements ServletContextListener {
@@ -219,13 +220,45 @@ public class DatabaseContextListener implements ServletContextListener {
     }
 
     /**
-     * Applies the bundled catalog seed (seed_catalog.sql) using H2's
-     * RunScript, reusing the same pooled connection. The script is fully
-     * idempotent - it creates the demo seller only when the email is
-     * missing and only inserts products whose seller/name/category combo
-     * does not already exist - so it is safe to run on every startup.
+     * Applies the bundled catalog seed (seed_catalog.sql, identical to the
+     * committed database/seed.sql export) using H2's RunScript, reusing the
+     * same pooled connection.
+     *
+     * The seed only runs on a FRESH database: if the products table already
+     * contains rows, the seed is skipped entirely so existing data is never
+     * modified and no duplicate products/seller are ever created on restart.
+     * As an extra safety net the script itself is also fully idempotent.
      */
     private void seedCatalog(Connection connection) {
+
+        try (PreparedStatement check =
+                     connection.prepareStatement(
+                             "SELECT COUNT(*) FROM products"
+                     )) {
+
+            try (ResultSet resultSet = check.executeQuery()) {
+
+                if (resultSet.next()
+                        && resultSet.getInt(1) > 0) {
+
+                    System.out.println(
+                            "Catalog seed skipped: "
+                                    + "products already present ("
+                                    + resultSet.getInt(1)
+                                    + " existing)."
+                    );
+
+                    return;
+                }
+            }
+
+        } catch (SQLException e) {
+
+            System.err.println(
+                    "Catalog seed check failed: "
+                            + e.getMessage()
+            );
+        }
 
         String resource = "seed_catalog.sql";
 
