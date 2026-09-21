@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RashikMart - Modern Marketplace</title>
     <link rel="icon" href="data:,">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=20260824">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=20260921_1">
     <style>
         /* Specific hero & grid layout for index page */
         .hero {
@@ -17,7 +17,7 @@
         }
 
         .hero h1 {
-            font-size: 3rem;
+            font-size: clamp(2rem, 8vw, 3rem);
             font-weight: 700;
             letter-spacing: -1px;
             margin-bottom: 1rem;
@@ -35,7 +35,7 @@
             display: flex;
             gap: 1rem;
             justify-content: center;
-            max-width: 360px;
+            max-width: min(360px, 100%);
             margin: 0 auto;
         }
 

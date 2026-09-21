@@ -46,7 +46,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Shopping Cart - RashikMart</title>
     <link rel="icon" href="data:,">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=20260828_4">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=20260921_1">
 </head>
 <body>
 
@@ -106,7 +106,7 @@
                 <div style="display: flex; gap: 2rem; align-items: flex-start; flex-wrap: wrap;">
 
                     <!-- Cart Items Table -->
-                    <div style="flex: 2; min-width: 320px;">
+                    <div style="flex: 2 1 320px; min-width: 0;">
                         <div class="products-panel">
                             <div class="products-panel-header">
                                 <div>
@@ -200,8 +200,8 @@
                     </div>
 
                     <!-- Order Summary Card -->
-                    <div style="flex: 1; min-width: 280px; max-width: 380px;">
-                        <div class="seller-stat-card" style="padding: 1.8rem;">
+                    <div style="flex: 1 1 280px; min-width: 0; max-width: 380px; width: 100%;">
+                        <div class="seller-stat-card" style="padding: clamp(1.25rem, 4vw, 1.8rem);">
                             <span class="eyebrow">CHECKOUT SUMMARY</span>
                             <h3 style="font-size: 1.3rem; margin: 0.4rem 0 1.2rem; border-bottom: 1.5px solid #eee; padding-bottom: 0.6rem;">Order Details</h3>
 

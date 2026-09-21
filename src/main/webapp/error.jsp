@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Error - RashikMart</title>
     <link rel="icon" href="data:,">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=20260828_4">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=20260921_1">
 </head>
 <body>
 
@@ -31,11 +31,11 @@
                 The request could not be completed as expected. An error was encountered while processing your request. Please return to the homepage or try again shortly.
             </p>
 
-            <div style="display: flex; gap: 1rem; justify-content: center;">
-                <a href="${pageContext.request.contextPath}/" class="primary-button" style="display: inline-block; text-decoration: none; padding: 0.85rem 1.5rem;">
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <a href="${pageContext.request.contextPath}/" class="primary-button" style="display: inline-block; text-decoration: none; padding: 0.85rem 1.5rem; max-width: 100%;">
                     Go to Homepage
                 </a>
-                <a href="javascript:history.back()" class="secondary-button" style="display: inline-block; text-decoration: none; padding: 0.85rem 1.5rem;">
+                <a href="javascript:history.back()" class="secondary-button" style="display: inline-block; text-decoration: none; padding: 0.85rem 1.5rem; max-width: 100%;">
                     Go Back
                 </a>
             </div>

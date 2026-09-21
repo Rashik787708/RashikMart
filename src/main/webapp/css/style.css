@@ -515,6 +515,7 @@ a {
 
 .products-table-wrapper {
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .products-table {
@@ -743,11 +744,44 @@ a.action-btn.delete-btn:hover,
 }
 
 /* --- Responsive --- */
+/* Tablets / small laptops */
+@media (max-width: 1024px) {
+    .seller-page {
+        padding: 2rem 1.25rem 3.5rem;
+    }
+
+    .seller-introduction h1 {
+        font-size: 2.1rem;
+    }
+
+    .seller-stats-grid, .stats-grid,
+    .seller-feature-grid, .feature-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Navigation switches to stacked, wrapping layout */
 @media (max-width: 860px) {
     .navbar {
-        padding: 1rem 1.2rem;
+        padding: 1rem 1.25rem;
         flex-direction: column;
-        gap: 1rem;
+        align-items: stretch;
+        gap: 0.9rem;
+    }
+
+    .navbar .brand {
+        text-align: center;
+    }
+
+    .nav-links {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.4rem 0.6rem;
+    }
+
+    .nav-link {
+        padding: 0.6rem 0.9rem;
+        font-size: 0.9rem;
     }
 
     .seller-header {
@@ -755,13 +789,120 @@ a.action-btn.delete-btn:hover,
         align-items: flex-start;
     }
 
-    .seller-stats-grid, .stats-grid,
-    .seller-feature-grid, .feature-grid {
-        grid-template-columns: 1fr;
+    .seller-header .seller-primary-button,
+    .seller-header .seller-secondary-button,
+    .section-heading .seller-primary-button,
+    .section-heading .seller-secondary-button {
+        width: 100%;
     }
 
     .form-row {
         flex-direction: column;
         gap: 0;
+    }
+}
+
+/* Phones (large) */
+@media (max-width: 640px) {
+    .page, .page-wrapper {
+        padding: 1.75rem 0.9rem;
+    }
+
+    .seller-page {
+        padding: 1.5rem 1rem 2.5rem;
+    }
+
+    .auth-card, .register-card {
+        padding: 1.6rem;
+        box-shadow: 4px 4px 0px #000000;
+    }
+
+    .auth-header h2, .card-header h2 {
+        font-size: 1.6rem;
+    }
+
+    .seller-introduction h1 {
+        font-size: 1.85rem;
+        letter-spacing: -0.5px;
+    }
+
+    .section-heading h2 {
+        font-size: 1.4rem;
+    }
+
+    .seller-stats-grid, .stats-grid,
+    .seller-feature-grid, .feature-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .seller-status-card {
+        padding: 1.25rem;
+        gap: 1rem;
+    }
+
+    .seller-stat-card, .stat-card {
+        padding: 1.2rem;
+    }
+
+    .seller-stat-value, .stat-value {
+        font-size: 2rem;
+    }
+
+    .products-panel-header {
+        padding: 1rem 1.15rem;
+    }
+
+    .products-table th {
+        padding: 0.75rem 0.9rem;
+    }
+
+    .products-table td {
+        padding: 0.8rem 0.9rem;
+    }
+
+    .footer {
+        padding: 1.25rem 1rem;
+    }
+}
+
+/* Phones (small) */
+@media (max-width: 480px) {
+    .navbar {
+        padding: 0.8rem 0.85rem;
+    }
+
+    .brand, .nav-brand {
+        font-size: 1.25rem;
+    }
+
+    .nav-link {
+        font-size: 0.85rem;
+        padding: 0.55rem 0.7rem;
+    }
+
+    .seller-introduction h1 {
+        font-size: 1.6rem;
+    }
+
+    .auth-header h2, .card-header h2 {
+        font-size: 1.45rem;
+    }
+
+    .products-table th {
+        font-size: 0.68rem;
+        letter-spacing: 1px;
+    }
+
+    .products-table td {
+        font-size: 0.85rem;
+    }
+
+    .seller-primary-button,
+    .seller-secondary-button {
+        padding: 0.75rem 1.1rem;
+    }
+
+    .seller-role-badge {
+        padding: 7px 12px;
     }
 }

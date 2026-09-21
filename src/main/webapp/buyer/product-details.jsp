@@ -101,7 +101,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= HtmlUtil.escape(product.getName()) %> - RashikMart</title>
     <link rel="icon" href="data:,">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=20260828_4">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=20260921_1">
 </head>
 <body>
 
@@ -134,11 +134,11 @@
                 <div class="message error"><%= safeError %></div>
             <% } %>
 
-            <div class="seller-status-card" style="padding: 2.5rem; display: flex; gap: 2.5rem; align-items: flex-start; flex-wrap: wrap;">
+            <div class="seller-status-card" style="padding: clamp(1.25rem, 4vw, 2.5rem); display: flex; gap: clamp(1rem, 3vw, 2.5rem); align-items: flex-start; flex-wrap: wrap;">
 
                 <!-- Product Image Section -->
-                <div style="flex: 1; min-width: 280px; max-width: 380px;">
-                    <div style="width: 100%; height: 320px; background: #f0f0f0; border: 2px solid #000; overflow: hidden; display: flex; align-items: center; justify-content: center; box-shadow: 4px 4px 0px #000;">
+                <div style="flex: 1 1 280px; min-width: 0; max-width: 380px; width: 100%;">
+                    <div style="width: 100%; height: clamp(220px, 50vw, 320px); background: #f0f0f0; border: 2px solid #000; overflow: hidden; display: flex; align-items: center; justify-content: center; box-shadow: 4px 4px 0px #000;">
                         <img src="<%= imgSrc %>"
                              alt="<%= HtmlUtil.escape(product.getName()) %>"
                              style="width: 100%; height: 100%; object-fit: cover;"
@@ -147,12 +147,12 @@
                 </div>
 
                 <!-- Product Info & Order Section -->
-                <div style="flex: 1.2; min-width: 280px;">
+                <div style="flex: 1.2 1 280px; min-width: 0;">
                     <span class="eyebrow"><%= product.getCategory() != null ? HtmlUtil.escape(product.getCategory().toUpperCase()) : "GENERAL" %> &bull; ITEM #<%= product.getId() %></span>
-                    <h1 style="font-size: 2.2rem; font-weight: 800; margin: 0.3rem 0 0.8rem; letter-spacing: -0.5px;"><%= HtmlUtil.escape(product.getName()) %></h1>
+                    <h1 style="font-size: clamp(1.5rem, 5vw, 2.2rem); font-weight: 800; margin: 0.3rem 0 0.8rem; letter-spacing: -0.5px;"><%= HtmlUtil.escape(product.getName()) %></h1>
 
-                    <div style="display: flex; align-items: baseline; gap: 12px; margin-bottom: 1.2rem;">
-                        <span style="font-size: 2.2rem; font-weight: 900; color: #000;">₹<%= product.getPrice() %></span>
+                    <div style="display: flex; align-items: baseline; gap: 12px; margin-bottom: 1.2rem; flex-wrap: wrap;">
+                        <span style="font-size: clamp(1.6rem, 5vw, 2.2rem); font-weight: 900; color: #000;">₹<%= product.getPrice() %></span>
                         <span style="color: #666; font-size: 0.9rem;">/ unit</span>
                     </div>
 
@@ -203,7 +203,7 @@
                         </div>
                     <% } %>
 
-                    <div style="display: flex; gap: 15px; font-size: 0.85rem; font-weight: 700;">
+                    <div style="display: flex; gap: 15px; font-size: 0.85rem; font-weight: 700; flex-wrap: wrap;">
                         <a href="${pageContext.request.contextPath}/buyer/marketplace" style="color: #000; text-decoration: underline;">← Back to Marketplace</a>
                         <span style="color: #ccc;">|</span>
                         <a href="${pageContext.request.contextPath}/buyer/cart" style="color: #000; text-decoration: underline;">Go to My Cart →</a>

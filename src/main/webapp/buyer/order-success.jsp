@@ -42,7 +42,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Order Confirmation - RashikMart</title>
     <link rel="icon" href="data:,">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=20260828_4">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=20260921_1">
 </head>
 <body>
 
@@ -64,16 +64,16 @@
         <div class="seller-container" style="max-width: 800px;">
 
             <!-- Success Banner Card -->
-            <div class="seller-status-card" style="padding: 2.5rem; text-align: center; display: block; background: #fff; margin-bottom: 2rem;">
+            <div class="seller-status-card" style="padding: clamp(1.5rem, 5vw, 2.5rem); text-align: center; display: block; background: #fff; margin-bottom: 2rem;">
                 <div style="font-size: 3.5rem; margin-bottom: 0.5rem;">🎉</div>
                 <span class="eyebrow" style="color: #2e7d32;">PAYMENT & ORDER CONFIRMED</span>
-                <h1 style="font-size: 2.2rem; font-weight: 900; margin: 0.3rem 0 0.8rem;">Thank You For Your Order!</h1>
+                <h1 style="font-size: clamp(1.6rem, 5vw, 2.2rem); font-weight: 900; margin: 0.3rem 0 0.8rem;">Thank You For Your Order!</h1>
                 <p style="color: #666; max-width: 480px; margin: 0 auto 1.5rem; font-size: 0.95rem;">
                     Your order has been successfully placed with the sellers and the inventory has been updated.
                 </p>
 
                 <% if (order != null) { %>
-                    <div style="display: inline-flex; gap: 2rem; background: #fafafa; border: 2px solid #000; padding: 1rem 2rem; margin-bottom: 1.5rem; text-align: left; flex-wrap: wrap;">
+                    <div style="display: inline-flex; gap: 1rem 2rem; background: #fafafa; border: 2px solid #000; padding: clamp(0.75rem, 3vw, 1rem) clamp(1rem, 4vw, 2rem); margin-bottom: 1.5rem; text-align: left; flex-wrap: wrap;">
                         <div>
                             <span style="font-size: 0.72rem; color: #666; text-transform: uppercase; font-weight: 700; display: block;">Order Reference</span>
                             <strong style="font-size: 1.1rem;">#<%= order.getId() %></strong>
@@ -148,7 +148,7 @@
                 </div>
             <% } %>
 
-            <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem;">
+            <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem; flex-wrap: wrap;">
                 <a href="${pageContext.request.contextPath}/buyer/marketplace" class="seller-primary-button" style="padding: 0.95rem 1.8rem;">
                     Continue Shopping
                 </a>

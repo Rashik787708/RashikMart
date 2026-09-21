@@ -32,7 +32,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Buyer Dashboard - RashikMart</title>
     <link rel="icon" href="data:,">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=20260828">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=20260921_1">
 </head>
 <body>
 

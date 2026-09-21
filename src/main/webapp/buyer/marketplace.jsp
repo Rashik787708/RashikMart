@@ -43,7 +43,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Marketplace - RashikMart</title>
     <link rel="icon" href="data:,">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=20260828_5">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=20260921_1">
 </head>
 <body>
 
@@ -100,7 +100,7 @@
                     </a>
                 </div>
             <% } else { %>
-                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.5rem;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr)); gap: 1.5rem;">
                     <% for (Product p : products) {
                         String pImg = "default-product.svg";
                         try {

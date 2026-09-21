@@ -48,7 +48,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout - RashikMart</title>
     <link rel="icon" href="data:,">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=20260828_4">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=20260921_1">
 </head>
 <body>
 
@@ -89,7 +89,7 @@
             <div style="display: flex; gap: 2rem; align-items: flex-start; flex-wrap: wrap;">
 
                 <!-- Order Items Review Table -->
-                <div style="flex: 1.8; min-width: 320px;">
+                <div style="flex: 1.8 1 320px; min-width: 0;">
                     <div class="products-panel">
                         <div class="products-panel-header">
                             <div>
@@ -149,8 +149,8 @@
                 </div>
 
                 <!-- Buyer Details & Place Order -->
-                <div style="flex: 1.2; min-width: 280px;">
-                    <div class="seller-stat-card" style="padding: 1.8rem;">
+                <div style="flex: 1.2 1 280px; min-width: 0;">
+                    <div class="seller-stat-card" style="padding: clamp(1.25rem, 4vw, 1.8rem);">
                         <span class="eyebrow">BUYER & SHIPPING</span>
                         <h3 style="font-size: 1.2rem; margin: 0.3rem 0 1rem;">Customer Info</h3>
 
