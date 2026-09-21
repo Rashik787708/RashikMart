@@ -48,12 +48,22 @@
 
 
         <!-- ========================================= -->
-        <!-- H2 Database                               -->
+        <!-- H2 Database (LOCAL development)          -->
         <!-- ========================================= -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <version>2.3.232</version>
+        </dependency>
+
+
+        <!-- ========================================= -->
+        <!-- PostgreSQL Driver (Render production)    -->
+        <!-- ========================================= -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.7.3</version>
         </dependency>
 
 
@@ -133,10 +143,12 @@
                 <version>3.2.5</version>
 
                 <configuration>
-                    <!-- Isolate tests: each Maven run gets a fresh in-memory H2 database.
+                    <!-- Isolate tests: each Maven run gets a fresh in-memory H2 database,
+                         regardless of any DB_TYPE/DATABASE_URL set in the shell environment.
                          Tests bootstrap their own schema; production uses the deployed
                          webapp + DatabaseConfig defaults/env configuration. -->
                     <systemPropertyVariables>
+                        <db.type>h2</db.type>
                         <db.url>jdbc:h2:mem:rashikmart_test;DB_CLOSE_DELAY=-1</db.url>
                         <db.user>sa</db.user>
                         <db.password></db.password>

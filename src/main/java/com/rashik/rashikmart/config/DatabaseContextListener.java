@@ -2,6 +2,7 @@ package com.rashik.rashikmart.config;
 
 import com.rashik.rashikmart.dao.UserDAO;
 import com.rashik.rashikmart.model.User;
+import com.rashik.rashikmart.util.SqlScriptRunner;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -276,16 +277,28 @@ public class DatabaseContextListener implements ServletContextListener {
                 return;
             }
 
-            try (InputStreamReader reader =
-                         new InputStreamReader(
-                                 in,
-                                 StandardCharsets.UTF_8
-                         )) {
+            if (DatabaseConfig.isPostgres()) {
 
-                org.h2.tools.RunScript.execute(
+                // The seed script is standard SQL; PostgreSQL cannot use H2's
+                // RunScript tool, so execute it through plain JDBC instead.
+                SqlScriptRunner.execute(
                         connection,
-                        reader
+                        in
                 );
+
+            } else {
+
+                try (InputStreamReader reader =
+                             new InputStreamReader(
+                                     in,
+                                     StandardCharsets.UTF_8
+                             )) {
+
+                    org.h2.tools.RunScript.execute(
+                            connection,
+                            reader
+                    );
+                }
             }
 
             System.out.println(
