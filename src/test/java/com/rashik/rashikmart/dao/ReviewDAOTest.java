@@ -1,6 +1,7 @@
 package com.rashik.rashikmart.dao;
 
 import com.rashik.rashikmart.config.DatabaseConfig;
+import com.rashik.rashikmart.model.Order;
 import com.rashik.rashikmart.model.Product;
 import com.rashik.rashikmart.model.Review;
 import com.rashik.rashikmart.model.User;
@@ -141,7 +142,8 @@ public class ReviewDAOTest {
         Product product = productDAO.findBySellerId(seller.getId()).get(0);
 
         cartDAO.addItem(buyer.getId(), product.getId(), 2);
-        orderDAO.createOrderFromCart(buyer.getId());
+        Order order = orderDAO.createOrderFromCart(buyer.getId());
+        orderDAO.updateOrderStatus(order.getId(), "DELIVERED");
 
         return new PurchasedFixture(seller, buyer, product);
     }
@@ -301,10 +303,12 @@ public class ReviewDAOTest {
         Product product = productDAO.findBySellerId(seller.getId()).get(0);
 
         cartDAO.addItem(buyer1.getId(), product.getId(), 1);
-        orderDAO.createOrderFromCart(buyer1.getId());
+        Order o1 = orderDAO.createOrderFromCart(buyer1.getId());
+        orderDAO.updateOrderStatus(o1.getId(), "DELIVERED");
 
         cartDAO.addItem(buyer2.getId(), product.getId(), 1);
-        orderDAO.createOrderFromCart(buyer2.getId());
+        Order o2 = orderDAO.createOrderFromCart(buyer2.getId());
+        orderDAO.updateOrderStatus(o2.getId(), "DELIVERED");
 
         reviewDAO.addReview(buyer1.getId(), product.getId(), 4, "Very good");
         reviewDAO.addReview(buyer2.getId(), product.getId(), 2, "Could be better");
@@ -318,5 +322,29 @@ public class ReviewDAOTest {
         Review newest = reviews.get(0);
         Assert.assertEquals(buyer2.getId(), newest.getBuyerId());
         Assert.assertEquals(2, newest.getRating());
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testUndeliveredOrderCannotReview() throws Exception {
+        User seller = newUser("Seller Undeliv", "SELLER");
+        User buyer = newUser("Buyer Undeliv", "BUYER");
+
+        productDAO.addProduct(new Product(
+                seller.getId(),
+                "Basmati Rice",
+                "desc",
+                "General",
+                new BigDecimal("50.00"),
+                10
+        ));
+        Product product = productDAO.findBySellerId(seller.getId()).get(0);
+
+        cartDAO.addItem(buyer.getId(), product.getId(), 1);
+        Order order = orderDAO.createOrderFromCart(buyer.getId());
+        // Order remains CONFIRMED, not DELIVERED
+        Assert.assertEquals("CONFIRMED", order.getStatus());
+
+        // Attempting to add review must throw IllegalStateException
+        reviewDAO.addReview(buyer.getId(), product.getId(), 5, "Should fail because not delivered");
     }
 }

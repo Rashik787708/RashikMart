@@ -301,6 +301,84 @@ public class OrderDAO {
         return null;
     }
 
+    public Order findById(int orderId) {
+        String sql = """
+                SELECT id, buyer_id, total_amount, status, created_at
+                FROM orders
+                WHERE id = ?
+                """;
+
+        try (
+                Connection connection =
+                        DatabaseConfig.getDataSource().getConnection();
+                PreparedStatement statement =
+                        connection.prepareStatement(sql)
+        ) {
+            statement.setInt(1, orderId);
+            try (ResultSet rs = statement.executeQuery()) {
+                if (rs.next()) {
+                    Order order = new Order(
+                            rs.getInt("id"),
+                            rs.getInt("buyer_id"),
+                            rs.getBigDecimal("total_amount"),
+                            rs.getString("status"),
+                            rs.getTimestamp("created_at")
+                    );
+                    order.setItems(findOrderItems(order.getId()));
+                    return order;
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error finding order by id: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public boolean updateOrderStatus(int orderId, String newStatus) {
+        String sql = "UPDATE orders SET status = ? WHERE id = ?";
+        try (
+                Connection connection =
+                        DatabaseConfig.getDataSource().getConnection();
+                PreparedStatement statement =
+                        connection.prepareStatement(sql)
+        ) {
+            statement.setString(1, newStatus);
+            statement.setInt(2, orderId);
+            return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Error updating order status: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean isSellerForOrder(int orderId, int sellerId) {
+        String sql = """
+                SELECT 1
+                FROM order_items oi
+                JOIN products p ON oi.product_id = p.id
+                WHERE oi.order_id = ? AND p.seller_id = ?
+                LIMIT 1
+                """;
+        try (
+                Connection connection =
+                        DatabaseConfig.getDataSource().getConnection();
+                PreparedStatement statement =
+                        connection.prepareStatement(sql)
+        ) {
+            statement.setInt(1, orderId);
+            statement.setInt(2, sellerId);
+            try (ResultSet rs = statement.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            System.err.println("Error verifying seller for order: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     // =====================================================
     // 4. FIND ALL ORDERS (FOR ADMIN)
     // =====================================================
