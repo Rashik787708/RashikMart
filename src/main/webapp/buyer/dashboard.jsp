@@ -33,6 +33,8 @@
     <title>Buyer Dashboard - RashikMart</title>
     <link rel="icon" href="data:,">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=20260921_1">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/chat-widget.css">
+    <meta name="csrf-token" content="${sessionScope.csrfToken}">
 </head>
 <body>
 
@@ -87,5 +89,6 @@
         <p>© 2026 RashikMart. All rights reserved.</p>
     </footer>
 
+    <script src="${pageContext.request.contextPath}/js/chat-widget.js" defer></script>
 </body>
 </html>
