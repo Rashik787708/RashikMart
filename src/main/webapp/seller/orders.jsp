@@ -21,6 +21,8 @@
         return;
     }
 
+    com.rashik.rashikmart.util.CsrfUtil.getOrCreateToken(session);
+
     List<SellerOrderItem> sellerOrders = (List<SellerOrderItem>) request.getAttribute("sellerOrders");
     BigDecimal totalRevenue = (BigDecimal) request.getAttribute("totalRevenue");
     Integer totalOrders = (Integer) request.getAttribute("totalOrders");
@@ -172,9 +174,37 @@
                                         <td>₹<%= item.getPrice() %></td>
                                         <td><strong>₹<%= item.getSubtotal() %></strong></td>
                                         <td style="text-align: right;">
-                                            <span class="status-badge" style="background: #000; color: #fff;">
-                                                <%= HtmlUtil.escape(item.getOrderStatus()) %>
-                                            </span>
+                                            <%
+                                                String oStatus = item.getOrderStatus() != null ? item.getOrderStatus().toUpperCase() : "CONFIRMED";
+                                                String sBadgeColor = "#2563eb";
+                                                if ("PENDING".equals(oStatus)) sBadgeColor = "#d97706";
+                                                else if ("SHIPPED".equals(oStatus)) sBadgeColor = "#7c3aed";
+                                                else if ("DELIVERED".equals(oStatus)) sBadgeColor = "#16a34a";
+                                            %>
+                                            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
+                                                <span class="status-badge" style="background: <%= sBadgeColor %>; color: #fff;">
+                                                    <%= HtmlUtil.escape(oStatus) %>
+                                                </span>
+                                                <% if ("CONFIRMED".equals(oStatus)) { %>
+                                                    <form action="${pageContext.request.contextPath}/seller/order-status" method="POST" style="margin: 0;">
+                                                        <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
+                                                        <input type="hidden" name="orderId" value="<%= item.getOrderId() %>">
+                                                        <input type="hidden" name="status" value="SHIPPED">
+                                                        <button type="submit" class="seller-secondary-button" style="padding: 3px 8px; font-size: 0.72rem; cursor: pointer;">
+                                                            Mark Shipped →
+                                                        </button>
+                                                    </form>
+                                                <% } else if ("SHIPPED".equals(oStatus)) { %>
+                                                    <form action="${pageContext.request.contextPath}/seller/order-status" method="POST" style="margin: 0;">
+                                                        <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
+                                                        <input type="hidden" name="orderId" value="<%= item.getOrderId() %>">
+                                                        <input type="hidden" name="status" value="DELIVERED">
+                                                        <button type="submit" class="seller-primary-button" style="padding: 3px 8px; font-size: 0.72rem; cursor: pointer;">
+                                                            Mark Delivered ✓
+                                                        </button>
+                                                    </form>
+                                                <% } %>
+                                            </div>
                                         </td>
                                     </tr>
                                 <% } %>
