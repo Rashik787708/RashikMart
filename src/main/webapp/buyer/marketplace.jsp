@@ -43,7 +43,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Marketplace - RashikMart</title>
     <link rel="icon" href="data:,">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=20260921_1">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=20261009_1">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/chat-widget.css">
     <meta name="csrf-token" content="${sessionScope.csrfToken}">
 </head>
@@ -147,10 +147,10 @@
                                     <span class="status-badge" style="background: #c62828; color: #fff; align-self: flex-start; margin-bottom: 1rem;">OUT OF STOCK</span>
                                 <% } %>
 
-                                <div style="display: flex; gap: 10px; align-items: stretch;">
+                                <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: stretch;">
                                     <a href="${pageContext.request.contextPath}/buyer/product-details?id=<%= p.getId() %>"
                                        class="seller-secondary-button"
-                                       style="flex: 1; display: inline-flex; align-items: center; justify-content: center; text-align: center; padding: 0.65rem 0.6rem; font-size: 0.72rem;">
+                                       style="flex: 1 1 120px; display: inline-flex; align-items: center; justify-content: center; text-align: center; padding: 0.65rem 0.6rem; font-size: 0.72rem;">
                                         View Details
                                     </a>
                                     <% if (inStock) { %>
@@ -160,7 +160,7 @@
                                             <input type="hidden" name="productId" value="<%= p.getId() %>">
                                             <input type="hidden" name="quantity" value="1">
                                             <input type="hidden" name="redirect" value="marketplace">
-                                            <button type="submit" class="seller-primary-button" style="flex: 1; padding: 0.65rem 0.6rem; font-size: 0.72rem; white-space: nowrap;">
+                                            <button type="submit" class="seller-primary-button" style="flex: 1 1 120px; padding: 0.65rem 0.6rem; font-size: 0.72rem;">
                                                 + Add to Cart
                                             </button>
                                         </form>

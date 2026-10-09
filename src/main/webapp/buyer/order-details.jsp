@@ -51,7 +51,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Order #<%= order.getId() %> Details - RashikMart</title>
     <link rel="icon" href="data:,">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=20260921_1">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=20261009_1">
 </head>
 <body>
 
@@ -111,7 +111,7 @@
                     </div>
                 </div>
 
-                <div class="products-table-wrapper" style="padding: 1rem 1.5rem;">
+                <div class="products-table-wrapper">
                     <table class="products-table">
                         <thead>
                             <tr>

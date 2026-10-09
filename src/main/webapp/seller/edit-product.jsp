@@ -57,7 +57,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Product - RashikMart</title>
     <link rel="icon" href="data:,">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=20260921_1">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=20261009_1">
 </head>
 <body>
 
@@ -134,13 +134,13 @@
                 <!-- Current Photo and Upload New -->
                 <div class="form-group">
                     <label>Product Photo</label>
-                    <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 10px; padding: 10px; background: #fafafa; border: 1px solid #ddd;">
+                    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-bottom: 10px; padding: 10px; background: #fafafa; border: 1px solid #ddd;">
                         <img src="<%= currentImage.startsWith("default-") ? request.getContextPath() + "/images/" + HtmlUtil.escape(currentImage) : request.getContextPath() + "/images/products/" + HtmlUtil.escape(currentImage) %>" 
                              alt="<%= HtmlUtil.escape(product.getName()) %>" 
-                             style="width: 50px; height: 50px; object-fit: cover; border: 1.5px solid #000;"
+                             style="width: 50px; height: 50px; flex: 0 0 auto; object-fit: cover; border: 1.5px solid #000;"
                              onerror="this.src='${pageContext.request.contextPath}/images/default-product.svg';">
-                        <div>
-                            <span style="font-size: 0.8rem; font-weight: 700; display: block;">Current Photo: <%= HtmlUtil.escape(currentImage) %></span>
+                        <div style="min-width: 0; flex: 1 1 160px;">
+                            <span style="font-size: 0.8rem; font-weight: 700; display: block; overflow-wrap: anywhere;">Current Photo: <%= HtmlUtil.escape(currentImage) %></span>
                             <span style="font-size: 0.75rem; color: #666;">Upload a new image below to replace it.</span>
                         </div>
                     </div>

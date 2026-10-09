@@ -51,7 +51,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Customer Orders - RashikMart</title>
     <link rel="icon" href="data:,">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=20260921_1">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=20261009_1">
 </head>
 <body>
 
@@ -124,11 +124,10 @@
                     </div>
                 <% } else { %>
                     <div class="products-table-wrapper">
-                        <table class="products-table">
+                        <table class="products-table products-table-wide">
                             <thead>
                                 <tr>
                                     <th>Order #</th>
-                                    <th>Date</th>
                                     <th>Buyer Details</th>
                                     <th>Product</th>
                                     <th>Qty</th>

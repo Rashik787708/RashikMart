@@ -101,7 +101,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= HtmlUtil.escape(product.getName()) %> - RashikMart</title>
     <link rel="icon" href="data:,">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=20260921_1">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=20261009_1">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/chat-widget.css">
     <meta name="csrf-token" content="${sessionScope.csrfToken}">
 </head>
@@ -179,7 +179,7 @@
                             <input type="hidden" name="action" value="add">
                             <input type="hidden" name="productId" value="<%= product.getId() %>">
 
-                            <div style="display: flex; align-items: flex-end; gap: 14px; margin-bottom: 1.5rem;">
+                            <div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 14px; margin-bottom: 1.5rem;">
                                 <div style="width: 110px;">
                                     <label for="quantity" style="display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">Quantity</label>
                                     <input type="number"
@@ -192,7 +192,7 @@
                                            required>
                                 </div>
 
-                                <div style="flex: 1;">
+                                <div style="flex: 1 1 180px; min-width: 0;">
                                     <button type="submit" class="primary-button" style="padding: 0.85rem; width: 100%; box-shadow: 4px 4px 0px #000;">
                                         + Add to Cart
                                     </button>

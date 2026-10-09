@@ -170,6 +170,13 @@ a {
     transition: background-color 0.15s ease;
 }
 
+.form-group input[type="file"] {
+    width: 100%;
+    max-width: 100%;
+    font-size: 0.9rem;
+    color: #333333;
+}
+
 .form-group textarea {
     resize: vertical;
 }
@@ -520,8 +527,13 @@ a {
 
 .products-table {
     width: 100%;
+    min-width: 480px;
     border-collapse: collapse;
     text-align: left;
+}
+
+.products-table-wide {
+    min-width: 760px;
 }
 
 .products-table th {
@@ -904,5 +916,46 @@ a.action-btn.delete-btn:hover,
 
     .seller-role-badge {
         padding: 7px 12px;
+    }
+}
+
+/* --- Mobile overflow safeguards --- */
+.products-table th {
+    white-space: nowrap;
+}
+
+.products-table-wrapper {
+    max-width: 100%;
+}
+
+.seller-introduction h1,
+.seller-stat-hint,
+.seller-stat-value,
+.stat-value,
+.message,
+.review-text,
+.reviewer-name,
+.review-date {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+@media (max-width: 640px) {
+    .products-panel,
+    .products-panel-header,
+    .seller-stat-card,
+    .seller-feature-card,
+    .reviews-summary {
+        max-width: 100%;
+    }
+
+    .seller-header,
+    .section-heading {
+        gap: 1rem;
+    }
+
+    .table-actions {
+        flex-wrap: wrap;
+        justify-content: flex-start;
     }
 }

@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RashikMart - Modern Marketplace</title>
     <link rel="icon" href="data:,">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=20260921_1">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=20261009_1">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/chat-widget.css">
     <style>
         /* Specific hero & grid layout for index page */
@@ -34,6 +34,7 @@
 
         .hero-actions {
             display: flex;
+            flex-wrap: wrap;
             gap: 1rem;
             justify-content: center;
             max-width: min(360px, 100%);
@@ -94,6 +95,16 @@
             font-size: 0.9rem;
             color: #444444;
             line-height: 1.4;
+        }
+
+        @media (max-width: 480px) {
+            .hero {
+                padding: 2rem 0.5rem;
+            }
+
+            .hero-actions {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
