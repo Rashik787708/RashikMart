@@ -128,11 +128,45 @@ DB_USER=sa
 DB_PASSWORD=WE
 ```
 
-### Render Web Service
+### Render Web Service (free tier) — H2 in-memory
+
+The `Dockerfile` ships with these defaults, so a fresh Render Web Service runs
+on H2 with **no database environment variables required**:
+
+```text
+DB_TYPE=h2
+DB_URL=jdbc:h2:mem:rashikmart;DB_CLOSE_DELAY=-1
+DB_USER=sa
+DB_PASSWORD=WE
+```
+
+The schema and the seeded catalog are created automatically on every boot
+(`DatabaseContextListener`). Because Render's free filesystem is ephemeral and
+in-memory H2 lives only as long as the JVM:
+
+- Data written at runtime (new users, orders, reviews) is **lost** on every
+  deploy, restart, or after the free instance spins down from inactivity.
+- Product images uploaded by sellers are likewise ephemeral.
+- The seeded seller and 48-product catalog always reappear on boot.
+
+This is fine for a demo/portfolio deployment. For durable live data, either set
+`DB_TYPE=postgres` with a `DATABASE_URL`, or attach a Render Disk and point a
+**file** H2 database at it:
+
+```text
+DB_TYPE=h2
+DB_URL=jdbc:h2:/var/data/rashikmart
+RASHIKMART_UPLOAD_DIR=/var/data/product-images
+```
+
+> Note: Render dashboard environment variables override the `Dockerfile`
+> defaults. If the service still has `DB_TYPE=postgres`, either delete that
+> variable or set `DB_TYPE=h2` explicitly.
+
+### Render Web Service (production) — PostgreSQL
 
 ```text
 DB_TYPE=postgres
-DATABASE_URL=<Render internal database URL>
 ```
 
 Create a Render PostgreSQL database and paste its **Internal Database URL**
