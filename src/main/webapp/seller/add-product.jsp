@@ -100,7 +100,7 @@
                 <!-- Product Photo Upload -->
                 <div class="form-group">
                     <label for="image">Product Photo</label>
-                    <input type="file" id="image" name="image" accept="image/png, image/jpeg, image/webp, image/svg+xml">
+                    <input type="file" id="image" name="image" accept="image/png, image/jpeg, image/webp">
                     <small style="color: #666666; font-size: 0.78rem; display: block; margin-top: 5px;">
                         Accepted: JPG, PNG, WEBP, SVG (Max 5MB). Leave empty to use default photo.
                     </small>

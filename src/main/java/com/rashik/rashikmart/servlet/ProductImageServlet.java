@@ -268,6 +268,17 @@ public class ProductImageServlet extends HttpServlet {
 
         response.setContentType(contentType);
 
+        // Prevent browsers from content-sniffing a harmless-looking upload
+        // (e.g. a text file renamed .jpg) into an executable/HTML type.
+        response.setHeader("X-Content-Type-Options", "nosniff");
+
+        // Uploads are user-supplied; never let an SVG (or any image) execute
+        // scripts/plugins in the application origin if it is ever served.
+        response.setHeader(
+                "Content-Security-Policy",
+                "default-src 'none'; style-src 'unsafe-inline'; sandbox"
+        );
+
         byte[] buffer = new byte[8192];
         int read;
 

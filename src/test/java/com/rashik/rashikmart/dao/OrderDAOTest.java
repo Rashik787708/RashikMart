@@ -15,6 +15,11 @@ import java.sql.Connection;
 import java.sql.Statement;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class OrderDAOTest {
 
@@ -220,5 +225,93 @@ public class OrderDAOTest {
 
         int totalOrders = orderDAO.getPlatformTotalOrders();
         Assert.assertTrue(totalOrders >= 0);
+    }
+
+    @Test
+    public void testCheckoutRejectsInsufficientStockAndKeepsCart() throws Exception {
+        String prefix = UUID.randomUUID().toString().substring(0, 8);
+        userDAO.registerUser(new User("Seller Low", "slow_" + prefix + "@test.com", "pass", "SELLER"));
+        userDAO.registerUser(new User("Buyer Low", "blow_" + prefix + "@test.com", "pass", "BUYER"));
+        User seller = userDAO.findByEmail("slow_" + prefix + "@test.com");
+        User buyer = userDAO.findByEmail("blow_" + prefix + "@test.com");
+
+        productDAO.addProduct(new Product(seller.getId(), "Scarce Item", "d", "Other",
+                new BigDecimal("10.00"), 5));
+        Product product = productDAO.findBySellerId(seller.getId()).get(0);
+
+        Assert.assertTrue(cartDAO.addItem(buyer.getId(), product.getId(), 5));
+
+        // Stock drops behind the buyer's back after the item is in the cart.
+        productDAO.updateStock(product.getId(), 2);
+
+        try {
+            orderDAO.createOrderFromCart(buyer.getId());
+            Assert.fail("Checkout must fail when live stock is insufficient");
+        } catch (IllegalStateException expected) {
+            Assert.assertTrue(expected.getMessage().toLowerCase().contains("stock"));
+        }
+
+        // Stock must be untouched and the cart preserved for the buyer to fix.
+        Assert.assertEquals(2, productDAO.findById(product.getId()).getQuantity());
+        Assert.assertFalse("Cart must not be cleared on a failed checkout",
+                cartDAO.getCartItems(buyer.getId()).isEmpty());
+    }
+
+    @Test
+    public void testConcurrentCheckoutNeverOversells() throws Exception {
+        String prefix = UUID.randomUUID().toString().substring(0, 8);
+        userDAO.registerUser(new User("Seller Con", "scon_" + prefix + "@test.com", "pass", "SELLER"));
+        User seller = userDAO.findByEmail("scon_" + prefix + "@test.com");
+
+        final int stock = 3;
+        final int buyers = 8;
+
+        productDAO.addProduct(new Product(seller.getId(), "Limited Edition", "d", "Other",
+                new BigDecimal("99.00"), stock));
+        final Product product = productDAO.findBySellerId(seller.getId()).get(0);
+
+        final int[] buyerIds = new int[buyers];
+        for (int i = 0; i < buyers; i++) {
+            userDAO.registerUser(new User("Con Buyer " + i,
+                    "cbuyer" + i + "_" + prefix + "@test.com", "pass", "BUYER"));
+            User buyer = userDAO.findByEmail("cbuyer" + i + "_" + prefix + "@test.com");
+            buyerIds[i] = buyer.getId();
+            Assert.assertTrue(cartDAO.addItem(buyer.getId(), product.getId(), 1));
+        }
+
+        final AtomicInteger successes = new AtomicInteger(0);
+        final AtomicInteger failures = new AtomicInteger(0);
+        final CountDownLatch startGate = new CountDownLatch(1);
+        final CountDownLatch doneGate = new CountDownLatch(buyers);
+        ExecutorService pool = Executors.newFixedThreadPool(buyers);
+
+        for (int i = 0; i < buyers; i++) {
+            final int buyerId = buyerIds[i];
+            pool.submit(() -> {
+                try {
+                    startGate.await();
+                    orderDAO.createOrderFromCart(buyerId);
+                    successes.incrementAndGet();
+                } catch (Exception e) {
+                    failures.incrementAndGet();
+                } finally {
+                    doneGate.countDown();
+                }
+            });
+        }
+
+        startGate.countDown();
+        Assert.assertTrue("Concurrent checkouts did not finish in time",
+                doneGate.await(30, TimeUnit.SECONDS));
+        pool.shutdownNow();
+
+        int finalStock = productDAO.findById(product.getId()).getQuantity();
+
+        Assert.assertEquals("Every buyer must either succeed or fail cleanly",
+                buyers, successes.get() + failures.get());
+        Assert.assertEquals("Only the available units may be sold", stock, successes.get());
+        Assert.assertEquals("Remaining stock must match successful orders",
+                stock - successes.get(), finalStock);
+        Assert.assertTrue("Stock must never go negative", finalStock >= 0);
     }
 }

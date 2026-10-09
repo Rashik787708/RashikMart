@@ -49,10 +49,14 @@ public class OrderDAO {
                 VALUES (?, ?, ?, ?)
                 """;
 
+        // Conditional decrement: the "quantity >= ?" guard makes the stock
+        // deduction atomic at the database level so two concurrent checkouts
+        // can never oversell the same units or drive stock negative.
         String updateStockSql = """
                 UPDATE products
                 SET quantity = quantity - ?
                 WHERE id = ?
+                  AND quantity >= ?
                 """;
 
         String clearCartSql = """
@@ -161,13 +165,21 @@ public class OrderDAO {
                     itemStmt.executeUpdate();
                 }
 
-                // Deduct stock
+                // Deduct stock (fails atomically if another checkout already
+                // consumed the remaining units).
                 try (PreparedStatement stockStmt = connection.prepareStatement(updateStockSql)) {
                     stockStmt.setInt(1, item.getQuantity());
                     stockStmt.setInt(2, item.getProductId());
+                    stockStmt.setInt(3, item.getQuantity());
                     int updated = stockStmt.executeUpdate();
                     if (updated == 0) {
-                        throw new SQLException("Failed to update stock for product ID: " + item.getProductId());
+                        String productName = item.getProduct() != null
+                                ? item.getProduct().getName()
+                                : "ID " + item.getProductId();
+                        throw new IllegalStateException(
+                                "Product '" + productName
+                                        + "' does not have enough stock to complete your order."
+                        );
                     }
                 }
             }

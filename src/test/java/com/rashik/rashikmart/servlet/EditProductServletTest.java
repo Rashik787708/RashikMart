@@ -3,8 +3,10 @@ package com.rashik.rashikmart.servlet;
 import com.rashik.rashikmart.dao.ProductDAO;
 import com.rashik.rashikmart.model.Product;
 import com.rashik.rashikmart.model.User;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
@@ -141,6 +143,56 @@ public class EditProductServletTest {
 
         servlet.doPost(request, response);
         verify(response).sendRedirect("/RashikMart/seller/edit-product?id=5&error=Invalid+price");
+        verify(mockProductDAO, never()).updateProduct(any(Product.class));
+    }
+
+    @Test
+    public void testClientSuppliedImageUrlIsIgnoredToPreventStoredXss() throws Exception {
+        User seller = new User(1, "Seller A", "a@test.com", "pass", "SELLER");
+        when(request.getSession(false)).thenReturn(session);
+        when(session.getAttribute("user")).thenReturn(seller);
+        when(session.getAttribute("role")).thenReturn("SELLER");
+
+        when(request.getParameter("id")).thenReturn("5");
+        when(request.getParameter("name")).thenReturn("Apples");
+        when(request.getParameter("category")).thenReturn("Produce");
+        when(request.getParameter("price")).thenReturn("10.00");
+        when(request.getParameter("quantity")).thenReturn("20");
+        when(request.getParameter("currentImageUrl"))
+                .thenReturn("\"><script>alert('xss')</script>");
+
+        // The current image comes from the database, scoped to the seller.
+        Product existing = new Product(5, 1, "Apples", "Fresh", "Produce",
+                new BigDecimal("10.00"), 20, "safe-existing.jpg");
+        when(mockProductDAO.findByIdAndSellerId(5, 1)).thenReturn(existing);
+        when(mockProductDAO.updateProduct(any(Product.class))).thenReturn(true);
+
+        servlet.doPost(request, response);
+
+        ArgumentCaptor<Product> captor = ArgumentCaptor.forClass(Product.class);
+        verify(mockProductDAO).updateProduct(captor.capture());
+        Assert.assertEquals("Client-supplied image URL must be ignored",
+                "safe-existing.jpg", captor.getValue().getImageUrl());
+        Assert.assertFalse(captor.getValue().getImageUrl().contains("<script>"));
+    }
+
+    @Test
+    public void testPostRejectedWhenProductNotOwned() throws Exception {
+        User seller = new User(1, "Seller A", "a@test.com", "pass", "SELLER");
+        when(request.getSession(false)).thenReturn(session);
+        when(session.getAttribute("user")).thenReturn(seller);
+        when(session.getAttribute("role")).thenReturn("SELLER");
+
+        when(request.getParameter("id")).thenReturn("99");
+        when(request.getParameter("name")).thenReturn("Apples");
+        when(request.getParameter("category")).thenReturn("Produce");
+        when(request.getParameter("price")).thenReturn("10.00");
+        when(request.getParameter("quantity")).thenReturn("20");
+
+        when(mockProductDAO.findByIdAndSellerId(99, 1)).thenReturn(null);
+
+        servlet.doPost(request, response);
+        verify(response).sendRedirect("/RashikMart/seller/dashboard.jsp?error=Product+not+found+or+unauthorized");
         verify(mockProductDAO, never()).updateProduct(any(Product.class));
     }
 

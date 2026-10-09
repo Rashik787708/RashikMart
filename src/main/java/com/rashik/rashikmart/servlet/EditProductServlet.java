@@ -116,7 +116,6 @@ public class EditProductServlet extends HttpServlet {
         String category = request.getParameter("category");
         String priceText = request.getParameter("price");
         String quantityText = request.getParameter("quantity");
-        String currentImageUrl = request.getParameter("currentImageUrl");
 
         if (idText == null || idText.trim().isEmpty()
                 || name == null || name.trim().isEmpty()
@@ -169,8 +168,18 @@ public class EditProductServlet extends HttpServlet {
             return;
         }
 
-        String imageUrl = (currentImageUrl != null && !currentImageUrl.trim().isEmpty())
-                ? currentImageUrl.trim()
+        // The existing image is read from the database (scoped to this seller),
+        // never from a client-supplied parameter. Trusting the form value would
+        // let a seller persist an arbitrary string (e.g. an XSS payload) as the
+        // product image URL.
+        Product existingProduct = productDAO.findByIdAndSellerId(id, user.getId());
+        if (existingProduct == null) {
+            response.sendRedirect(request.getContextPath() + "/seller/dashboard.jsp?error=Product+not+found+or+unauthorized");
+            return;
+        }
+
+        String imageUrl = (existingProduct.getImageUrl() != null && !existingProduct.getImageUrl().trim().isEmpty())
+                ? existingProduct.getImageUrl().trim()
                 : "default-product.svg";
 
         String oldImageToDelete = null;
@@ -188,7 +197,7 @@ public class EditProductServlet extends HttpServlet {
                         extension = submittedName.substring(dotIndex).toLowerCase();
                     }
 
-                    if (extension.equals(".jpg") || extension.equals(".jpeg") || extension.equals(".png") || extension.equals(".webp") || extension.equals(".svg")) {
+                    if (com.rashik.rashikmart.util.UploadUtil.isAllowedImageExtension(extension)) {
                         String uniqueFileName = UUID.randomUUID().toString() + extension;
                         File uploadDir = new File(DatabaseConfig.getUploadDir());
                         if (!uploadDir.isAbsolute()) {
