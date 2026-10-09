@@ -1,0 +1,71 @@
+erDiagram
+    USERS ||--o{ PRODUCTS : "sells"
+    USERS ||--o| CART : "owns"
+    USERS ||--o{ ORDERS : "places"
+    USERS ||--o{ REVIEWS : "writes"
+
+    PRODUCTS ||--o{ CART_ITEMS : "referenced_by"
+    PRODUCTS ||--o{ ORDER_ITEMS : "included_in"
+    PRODUCTS ||--o{ REVIEWS : "receives"
+
+    CART ||--o{ CART_ITEMS : "contains"
+    ORDERS ||--|{ ORDER_ITEMS : "contains"
+
+    USERS {
+        int id PK
+        string name
+        string email UK
+        string password
+        string role "BUYER | SELLER | ADMIN"
+    }
+
+    PRODUCTS {
+        int id PK
+        int seller_id FK
+        string name
+        string description
+        string category
+        decimal price
+        int quantity
+        string image_url
+        boolean active
+        timestamp created_at
+    }
+
+    CART {
+        int id PK
+        int buyer_id FK,UK
+        timestamp created_at
+    }
+
+    CART_ITEMS {
+        int id PK
+        int cart_id FK
+        int product_id FK
+        int quantity
+    }
+
+    ORDERS {
+        int id PK
+        int buyer_id FK
+        decimal total_amount
+        string status "PENDING | CONFIRMED | SHIPPED | DELIVERED"
+        timestamp created_at
+    }
+
+    ORDER_ITEMS {
+        int id PK
+        int order_id FK
+        int product_id FK
+        int quantity
+        decimal price
+    }
+
+    REVIEWS {
+        int id PK
+        int product_id FK
+        int buyer_id FK
+        int rating "1 to 5"
+        string review_text
+        timestamp created_at
+    }
