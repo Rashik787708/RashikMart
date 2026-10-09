@@ -57,6 +57,8 @@ data/
 
 ### Secrets and local configs ###
 .env
+.env.*
+!.env.example
 config.properties
 
 ### Runtime logs ###
