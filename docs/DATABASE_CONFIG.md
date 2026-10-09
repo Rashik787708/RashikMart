@@ -84,8 +84,9 @@ startup and:
 2. Applies `ALTER TABLE ... ADD COLUMN IF NOT EXISTS` for legacy columns.
 3. Seeds the default admin (`admin@rashikmart.com`) only if the email is
    absent.
-4. Seeds the demo seller + 48-product catalog **only when the products table
-   is empty** (a fresh database), via `src/main/resources/seed_catalog.sql`.
+4. Seeds the demo seller + 48-product catalog + demo buyer **only when the
+   products table is empty** (a fresh database), via
+   `src/main/resources/seed_catalog.sql`.
 
 No `DROP TABLE` on application tables, no `DROP ALL OBJECTS`, no `TRUNCATE`,
 and no `DROP DATABASE` is ever executed during normal startup.
@@ -163,7 +164,43 @@ RASHIKMART_UPLOAD_DIR=/var/data/product-images
 > defaults. If the service still has `DB_TYPE=postgres`, either delete that
 > variable or set `DB_TYPE=h2` explicitly.
 
-### Render Web Service (production) — PostgreSQL
+### Free durable database — Neon / Supabase (recommended for Render)
+
+Render's own PostgreSQL free tier expires, but you can point `DATABASE_URL` at a
+**free, externally-hosted PostgreSQL** instead. The app is provider-agnostic —
+it only needs a standard `postgresql://` connection string.
+
+**Neon (https://neon.tech)**
+
+1. Sign up, create a project (choose the region closest to your Render service).
+2. Copy the **connection string** from the dashboard, e.g.:
+   ```text
+   postgresql://neondb_owner:YOUR_PASSWORD@ep-cool-name-123456.us-east-2.aws.neon.tech/neondb?sslmode=require
+   ```
+3. On Render → Web Service → **Environment**, set:
+   ```text
+   DB_TYPE=postgres
+   DATABASE_URL=postgresql://neondb_owner:YOUR_PASSWORD@ep-...neon.tech/neondb?sslmode=require
+   ```
+4. Redeploy. Tables are created and the catalog is seeded automatically on first
+   boot; all later registrations, orders and reviews persist across restarts.
+
+**Supabase (https://supabase.com)** — same steps; use the **Connection pooling**
+URI (port `6543`). If the password contains special characters, percent-encode
+them (e.g. `@` → `%40`).
+
+Notes:
+
+- The app parses the username/password out of the URL (percent-decoded) and
+  preserves `sslmode=require`, so the exact string shown by the provider works.
+- Free-tier databases may suspend when idle; the first request after a pause is
+  slower while the database wakes.
+- If you previously set `DB_TYPE=h2`, change it to `postgres` — dashboard values
+  override the `Dockerfile` defaults.
+- `/api/v1/health` returns the live database status if you need to confirm the
+  connection after deploying.
+
+### Render-managed PostgreSQL (legacy)
 
 ```text
 DB_TYPE=postgres

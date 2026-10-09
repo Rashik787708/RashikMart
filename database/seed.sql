@@ -5,7 +5,7 @@
 --   Local H2 DB : ./data/rashikmart.mv.db  (URL: jdbc:h2:./data/rashikmart)
 --   Backup      : database/rashikmart-local-backup.mv.db
 --   H2 version  : 2.3.232 (see pom.xml)
---   Exported    : seller + 48 products for mohammed786rashik@gmail.com
+--   Exported    : demo seller + 48 products, and demo buyer
 --
 -- The application schema (users/products/etc.) is created automatically by
 -- DatabaseContextListener. This script only ADDS data using the existing
@@ -32,6 +32,18 @@ SELECT 'Mohammed Rashik',
        'SELLER'
 WHERE NOT EXISTS (
     SELECT 1 FROM users WHERE email = 'mohammed786rashik@gmail.com'
+);
+
+-- ---------------------------------------------------------------------
+-- 1b. DEMO BUYER (created only if the email does not exist yet)
+-- ---------------------------------------------------------------------
+INSERT INTO users (name, email, password, role)
+SELECT 'Mohamed Rashik',
+       'mohamed786rashik@gmail.com',
+       '$2a$12$3NQAIaUBM/UNYN/zimSa4OC5bFSN/z01T/npCsSukKiRWv2/08IK2',
+       'BUYER'
+WHERE NOT EXISTS (
+    SELECT 1 FROM users WHERE email = 'mohamed786rashik@gmail.com'
 );
 
 -- ---------------------------------------------------------------------
@@ -133,6 +145,8 @@ DROP TABLE seed_catalog;
 -- 5. VERIFICATION QUERIES
 -- ---------------------------------------------------------------------
 SELECT 'SELLER' AS check_name, id, name, email, role FROM users WHERE email = 'mohammed786rashik@gmail.com';
+
+SELECT 'BUYER' AS check_name, id, name, email, role FROM users WHERE email = 'mohamed786rashik@gmail.com';
 
 SELECT 'CATEGORIES' AS check_name, category, COUNT(*) AS product_count
 FROM products

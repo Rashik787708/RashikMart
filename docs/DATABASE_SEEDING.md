@@ -9,10 +9,10 @@
 
 ## Seed file location
 
-- **`database/seed.sql`** — committed, auditable export of the local demo data (1 seller + 48 products, 6 categories).
+- **`database/seed.sql`** — committed, auditable export of the local demo data (1 seller + 1 buyer + 48 products, 6 categories).
 - The exact same bytes are packaged in the WAR as `WEB-INF/classes/seed_catalog.sql` (from `src/main/resources/seed_catalog.sql`) so the container can find it on the classpath. `database/seed.sql` is also safe to import manually against an empty H2 schema with Schema 2 already created by the app.
 
-Excluded on purpose: the local DB contained ~77 auto-generated test/load-test users (`*@test.com`) plus test orders/carts. Only the real demo data (seller **Mohammed Rashik** + 48-product catalog) is seeded.
+Excluded on purpose: the local DB contained ~77 auto-generated test/load-test users (`*@test.com`) plus test orders/carts. Only the real demo data (seller **Mohammed Rashik**, buyer **Mohamed Rashik**, + 48-product catalog) is seeded.
 
 ## How seeding works
 
@@ -25,14 +25,14 @@ On every startup, `DatabaseContextListener.contextInitialized` does:
 
 The seed itself is also idempotent:
 
-- the seller is inserted only when the email does not exist;
+- the seller and the buyer are each inserted only when their email does not exist;
 - each product is inserted only when the same seller + product name + category is missing.
 
 ### Result
 
 | Scenario | Behavior |
 |----------|----------|
-| Fresh database (new Render deploy) | schema created → seed runs → seller + 48 products appear |
+| Fresh database (new Render deploy) | schema created → seed runs → seller + buyer + 48 products appear |
 | Restart (same data) | seed skipped → no duplicates |
 | Local database with data | seed skipped → local data untouched |
 
