@@ -12,6 +12,8 @@
         /* Specific hero & grid layout for index page */
         .hero {
             text-align: center;
+            width: 100%;
+            min-width: 0;
             max-width: 650px;
             margin: 0 auto;
             padding: 3rem 1rem;
@@ -70,10 +72,11 @@
 
         .features-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr));
             gap: 1.5rem;
             max-width: 900px;
             width: 100%;
+            min-width: 0;
             margin: 3rem auto 0 auto;
         }
 
@@ -95,6 +98,12 @@
             font-size: 0.9rem;
             color: #444444;
             line-height: 1.4;
+        }
+
+        @media (max-width: 600px) {
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         @media (max-width: 480px) {
