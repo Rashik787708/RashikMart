@@ -21,6 +21,28 @@
     </listener>
 
 
+    <!-- ============================= -->
+    <!-- Filters                         -->
+    <!-- ============================= -->
+
+    <filter>
+        <filter-name>EncodingFilter</filter-name>
+        <filter-class>com.rashik.rashikmart.filter.EncodingFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>EncodingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>RequestIdFilter</filter-name>
+        <filter-class>com.rashik.rashikmart.filter.RequestIdFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>RequestIdFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
     <!-- Note: AuthFilter is registered via @WebFilter annotation -->
 
 

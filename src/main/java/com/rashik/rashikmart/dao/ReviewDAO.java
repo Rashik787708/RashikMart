@@ -28,6 +28,7 @@ public class ReviewDAO {
                 JOIN orders o ON oi.order_id = o.id
                 WHERE o.buyer_id = ?
                   AND oi.product_id = ?
+                  AND o.status = 'DELIVERED'
                 """;
 
         try (

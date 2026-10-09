@@ -1,0 +1,53 @@
+sequenceDiagram
+    autonumber
+    actor Buyer as Buyer Browser
+    participant Filter as AuthFilter / RequestIdFilter
+    participant Servlet as OrderServlet (doPost)
+    participant Csrf as CsrfUtil
+    participant DAO as OrderDAO
+    participant Pool as HikariCP DataSource
+    participant DB as Database (H2 / Postgres)
+
+    Buyer->>Filter: POST /buyer/checkout (with csrfToken & Session)
+    Filter->>Filter: Generate X-Request-Id & set MDC
+    Filter->>Filter: Verify BUYER role in session
+    Filter->>Servlet: forward request
+
+    Servlet->>Csrf: isValid(request)
+    Csrf-->>Servlet: true (token match)
+
+    Servlet->>DAO: createOrderFromCart(buyerId)
+    activate DAO
+    DAO->>Pool: getConnection()
+    Pool-->>DAO: Connection (conn)
+    DAO->>conn: conn.setAutoCommit(false)
+
+    Note over DAO,DB: 1. Fetch Cart Items
+    DAO->>DB: SELECT ci.* FROM cart_items WHERE buyer_id = ?
+    DB-->>DAO: List of Cart Items [productId, quantity]
+
+    Note over DAO,DB: 2. Check live stock & compute total
+    DAO->>DB: SELECT quantity, price FROM products WHERE id = ?
+    DB-->>DAO: Stock Available & Unit Price
+
+    Note over DAO,DB: 3. Insert into orders table
+    DAO->>DB: INSERT INTO orders (buyer_id, total_amount, status='CONFIRMED')
+    DB-->>DAO: Generated Order ID
+
+    Note over DAO,DB: 4. Insert items & deduct inventory
+    loop For each cart item
+        DAO->>DB: INSERT INTO order_items (order_id, product_id, quantity, price)
+        DAO->>DB: UPDATE products SET quantity = quantity - ? WHERE id = ?
+    end
+
+    Note over DAO,DB: 5. Empty buyer cart
+    DAO->>DB: DELETE FROM cart_items WHERE cart_id = ?
+
+    DAO->>conn: conn.commit()
+    DAO->>conn: conn.close()
+    DAO-->>Servlet: Order object (ID, items, status='CONFIRMED')
+    deactivate DAO
+
+    Servlet-->>Buyer: HTTP 302 Redirect to /buyer/order-success?orderId={id}
+    Buyer->>Servlet: GET /buyer/order-success?orderId={id}
+    Servlet-->>Buyer: Render order confirmation page with status badge

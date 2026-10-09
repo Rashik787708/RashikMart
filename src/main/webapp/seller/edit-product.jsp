@@ -93,7 +93,7 @@
             <form action="${pageContext.request.contextPath}/seller/edit-product" method="post" enctype="multipart/form-data" class="register-form">
                 <input type="hidden" name="csrfToken" value="${sessionScope.csrfToken}">
                 <input type="hidden" name="id" value="<%= product.getId() %>">
-                <input type="hidden" name="currentImageUrl" value="<%= currentImage %>">
+                <input type="hidden" name="currentImageUrl" value="<%= HtmlUtil.escape(currentImage) %>">
 
                 <div class="form-group">
                     <label for="name">Product Name</label>
@@ -135,7 +135,7 @@
                 <div class="form-group">
                     <label>Product Photo</label>
                     <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 10px; padding: 10px; background: #fafafa; border: 1px solid #ddd;">
-                        <img src="<%= currentImage.startsWith("default-") ? request.getContextPath() + "/images/" + currentImage : request.getContextPath() + "/images/products/" + currentImage %>" 
+                        <img src="<%= currentImage.startsWith("default-") ? request.getContextPath() + "/images/" + HtmlUtil.escape(currentImage) : request.getContextPath() + "/images/products/" + HtmlUtil.escape(currentImage) %>" 
                              alt="<%= HtmlUtil.escape(product.getName()) %>" 
                              style="width: 50px; height: 50px; object-fit: cover; border: 1.5px solid #000;"
                              onerror="this.src='${pageContext.request.contextPath}/images/default-product.svg';">
@@ -144,7 +144,7 @@
                             <span style="font-size: 0.75rem; color: #666;">Upload a new image below to replace it.</span>
                         </div>
                     </div>
-                    <input type="file" id="image" name="image" accept="image/png, image/jpeg, image/webp, image/svg+xml">
+                    <input type="file" id="image" name="image" accept="image/png, image/jpeg, image/webp">
                 </div>
 
                 <button type="submit" class="primary-button register-button">Save Changes</button>

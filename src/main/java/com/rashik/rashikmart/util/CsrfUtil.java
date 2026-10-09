@@ -96,6 +96,11 @@ public final class CsrfUtil {
             HttpServletRequest request
     ) {
 
+        String headerToken = request.getHeader("X-CSRF-Token");
+        if (headerToken != null && !headerToken.isBlank()) {
+            return headerToken.trim();
+        }
+
         try {
 
             Part part = request.getPart(FIELD_NAME);

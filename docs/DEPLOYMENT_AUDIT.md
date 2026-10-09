@@ -93,7 +93,7 @@ Source images come from Wikimedia Commons / Open Library covers (freely licensed
 ## 7. Diagnostics & Run-time Secrets
 
 - No plaintext passwords stored: admin uses BCrypt via listener; seller uses a BCrypt hash in seed SQL.
-- Demo admin login (`admin@rashikmart.com` / `admin123`) and demo seller are intentional demo accounts, already present in repository source.
+- Demo admin login (`admin@rashikmart.com` / configured via `ADMIN_PASSWORD` environment variable) and demo seller are intentional demo accounts.
 - The default DB password `WE` is a local dev password already committed; it is overridable through env vars for Render.
 - Untracked dev-local files that must remain out of Git: `cloudflared.exe`, `config.yml`, `java` (empty), `scripts/`, `data/`, `logs/`.
 

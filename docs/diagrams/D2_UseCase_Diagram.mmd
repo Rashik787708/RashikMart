@@ -1,0 +1,62 @@
+flowchart TD
+    %% Actors
+    Guest(["Guest Visitor"])
+    Buyer(["Registered Buyer"])
+    Seller(["Registered Seller"])
+    Admin(["System Administrator"])
+
+    %% Guest Use Cases
+    subgraph UC_Public["Public / Guest Services"]
+        UC_Reg["Register Account (Buyer/Seller)"]
+        UC_Login["Login & Authenticate (BCrypt)"]
+        UC_BrowsePublic["Browse Public Catalog"]
+        UC_ChatGuest["Ask AI Chatbot (FAQ / Shopping Assistant)"]
+    end
+
+    %% Buyer Use Cases
+    subgraph UC_Buyer["Buyer Operations (F1, F4, F5, F6, F8)"]
+        UC_BrowseMarket["Browse & Search Marketplace"]
+        UC_ManageCart["Manage Cart (Add, Update, Remove)"]
+        UC_Checkout["Checkout & Place Order (Mock Payment)"]
+        UC_TrackOrders["View Order History & Status Badges"]
+        UC_Review["Submit Review (Delivered Orders Only)"]
+    end
+
+    %% Seller Use Cases
+    subgraph UC_Seller["Seller Operations (F2, F3, F7, O2)"]
+        UC_AddProd["Add Product with Photo Upload"]
+        UC_EditProd["Edit Product & Stock Level"]
+        UC_DeleteProd["Safe Product Delete / Deactivation"]
+        UC_SellerOrders["View Incoming Customer Orders"]
+        UC_AdvanceOrder["Advance Order Status (Confirmed &rarr; Shipped &rarr; Delivered)"]
+    end
+
+    %% Admin Use Cases
+    subgraph UC_Admin["Admin Operations (F7, Moderation)"]
+        UC_ModProd["Moderate Products (Toggle Active Status)"]
+        UC_AdminMetrics["View Platform Total Revenue & Orders"]
+        UC_AdminOrders["View All Orders & Update Status"]
+    end
+
+    %% Relationships
+    Guest --> UC_Reg
+    Guest --> UC_Login
+    Guest --> UC_BrowsePublic
+    Guest --> UC_ChatGuest
+
+    Buyer --> UC_BrowseMarket
+    Buyer --> UC_ManageCart
+    Buyer --> UC_Checkout
+    Buyer --> UC_TrackOrders
+    Buyer --> UC_Review
+    Buyer --> UC_ChatGuest
+
+    Seller --> UC_AddProd
+    Seller --> UC_EditProd
+    Seller --> UC_DeleteProd
+    Seller --> UC_SellerOrders
+    Seller --> UC_AdvanceOrder
+
+    Admin --> UC_ModProd
+    Admin --> UC_AdminMetrics
+    Admin --> UC_AdminOrders

@@ -55,5 +55,9 @@ data/
 /scripts/
 /h2-classpath.txt
 
+### Secrets and local configs ###
+.env
+config.properties
+
 ### Runtime logs ###
 logs/

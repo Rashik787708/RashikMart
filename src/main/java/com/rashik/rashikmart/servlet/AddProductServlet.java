@@ -54,20 +54,6 @@ public class AddProductServlet extends HttpServlet {
             HttpServletResponse response
     ) throws ServletException, IOException {
 
-        // =========================
-        // CSRF CHECK
-        // =========================
-
-        if (!CsrfUtil.isValid(request)) {
-
-            response.sendRedirect(
-                    request.getContextPath()
-                            + "/seller/add-product.jsp?error=Invalid+or+missing+CSRF+token"
-            );
-
-            return;
-        }
-
         HttpSession session = request.getSession(false);
 
         // =========================
@@ -249,7 +235,7 @@ public class AddProductServlet extends HttpServlet {
                         extension = submittedName.substring(dotIndex).toLowerCase();
                     }
 
-                    if (extension.equals(".jpg") || extension.equals(".jpeg") || extension.equals(".png") || extension.equals(".webp") || extension.equals(".svg")) {
+                    if (com.rashik.rashikmart.util.UploadUtil.isAllowedImageExtension(extension)) {
                         String uniqueFileName = UUID.randomUUID().toString() + extension;
                         File uploadDir = new File(DatabaseConfig.getUploadDir());
                         if (!uploadDir.isAbsolute()) {

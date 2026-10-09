@@ -175,10 +175,14 @@ public class DatabaseContextListener implements ServletContextListener {
             // Seed default admin account if not exists
             UserDAO userDAO = new UserDAO();
             if (userDAO.findByEmail("admin@rashikmart.com") == null) {
+                String adminPassword = System.getenv("ADMIN_PASSWORD");
+                if (adminPassword == null || adminPassword.isBlank()) {
+                    adminPassword = "admin123";
+                }
                 userDAO.registerUser(new User(
                         "System Administrator",
                         "admin@rashikmart.com",
-                        "admin123",
+                        adminPassword,
                         "ADMIN"
                 ));
                 System.out.println("Default admin user created: admin@rashikmart.com");

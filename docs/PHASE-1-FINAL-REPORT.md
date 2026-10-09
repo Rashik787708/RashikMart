@@ -48,7 +48,7 @@ Skipped: 0
 - **SQL parameterization:** PASS — DAOs use `PreparedStatement` exclusively for user input; no string-concatenated SQL or `createStatement` usage found.
 - **Upload handling:** PASS — uploads written to the configured external dir; filename sanitized (UUID + allow-listed extension); `Files.copy` used; path-containment check before write.
 - **Path traversal:** PASS — `ProductImageServlet` rejects separator/`..`/non-allow-listed names (400) and validates the resolved real path stays inside the upload dir before streaming.
-- **Secrets:** PASS — no API keys, passwords, private keys, or credential files present in tracked or to-be-staged content. Only pre-existing, documented dev defaults (H2 `sa`, seeded `admin@rashikmart.com`/`admin123`) exist in code.
+- **Secrets:** PASS — no API keys, passwords, private keys, or credential files present in tracked or to-be-staged content. Only pre-existing, documented dev defaults (H2 `sa`, seeded `admin@rashikmart.com` configured via `ADMIN_PASSWORD`) exist in code.
 
 ## 7. Known Non-Blocking Warnings
 - **orphan-image cleanup** — product deletion (`DeleteProductServlet`) does not remove the product's image file from the external dir (image replacement DOES clean up via `EditProductServlet.deleteOldImageIfSafe`). Guide for Phase 2 hardening.

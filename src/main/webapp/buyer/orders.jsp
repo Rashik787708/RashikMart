@@ -101,7 +101,14 @@
                                     </div>
                                     <div>
                                         <span style="font-size: 0.72rem; color: #666; text-transform: uppercase; font-weight: 700; display: block;">Status</span>
-                                        <span class="category-chip" style="background: #000; color: #fff; padding: 2px 8px;"><%= HtmlUtil.escape(order.getStatus()) %></span>
+                                        <%
+                                            String boStatus = order.getStatus() != null ? order.getStatus().toUpperCase() : "CONFIRMED";
+                                            String boBadgeColor = "#2563eb";
+                                            if ("PENDING".equals(boStatus)) boBadgeColor = "#d97706";
+                                            else if ("SHIPPED".equals(boStatus)) boBadgeColor = "#7c3aed";
+                                            else if ("DELIVERED".equals(boStatus)) boBadgeColor = "#16a34a";
+                                        %>
+                                        <span class="category-chip" style="background: <%= boBadgeColor %>; color: #fff; padding: 2px 8px; font-weight: 600;"><%= HtmlUtil.escape(boStatus) %></span>
                                     </div>
                                 </div>
                                 <div>

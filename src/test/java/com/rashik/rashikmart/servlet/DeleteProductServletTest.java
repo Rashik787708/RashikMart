@@ -86,6 +86,39 @@ public class DeleteProductServletTest {
     }
 
     @Test
+    public void testExternalRedirectParameterIsIgnored() throws Exception {
+        User seller = new User(1, "Seller A", "a@test.com", "pass", "SELLER");
+        when(request.getSession(false)).thenReturn(session);
+        when(session.getAttribute("user")).thenReturn(seller);
+        when(session.getAttribute("role")).thenReturn("SELLER");
+        when(request.getParameter("id")).thenReturn("5");
+        when(request.getParameter("redirect")).thenReturn("https://evil.example/phish");
+
+        when(mockProductDAO.deleteProduct(5, 1)).thenReturn(ProductDAO.DeletionResult.DELETED);
+
+        servlet.doPost(request, response);
+
+        // Must land on the internal dashboard, never the attacker-supplied URL.
+        verify(response).sendRedirect("/RashikMart/seller/dashboard.jsp?success=Product+deleted+successfully");
+        verify(response, never()).sendRedirect(contains("evil.example"));
+    }
+
+    @Test
+    public void testProtocolRelativeRedirectParameterIsIgnored() throws Exception {
+        User seller = new User(1, "Seller A", "a@test.com", "pass", "SELLER");
+        when(request.getSession(false)).thenReturn(session);
+        when(session.getAttribute("user")).thenReturn(seller);
+        when(session.getAttribute("role")).thenReturn("SELLER");
+        when(request.getParameter("id")).thenReturn("5");
+        when(request.getParameter("redirect")).thenReturn("//evil.example");
+
+        when(mockProductDAO.deleteProduct(5, 1)).thenReturn(ProductDAO.DeletionResult.DELETED);
+
+        servlet.doPost(request, response);
+        verify(response, never()).sendRedirect(contains("evil.example"));
+    }
+
+    @Test
     public void testPostOwnProductDeleted() throws Exception {
         User seller = new User(1, "Seller A", "a@test.com", "pass", "SELLER");
         when(request.getSession(false)).thenReturn(session);

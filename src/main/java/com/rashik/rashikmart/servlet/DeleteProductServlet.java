@@ -74,10 +74,7 @@ public class DeleteProductServlet extends HttpServlet {
         User user = (User) session.getAttribute("user");
         ProductDAO.DeletionResult result = productDAO.deleteProduct(id, user.getId());
 
-        String redirectUrl = request.getParameter("redirect");
-        if (redirectUrl == null || redirectUrl.trim().isEmpty()) {
-            redirectUrl = "/seller/dashboard.jsp";
-        }
+        String redirectUrl = safeRedirectTarget(request.getParameter("redirect"));
 
         String separator = redirectUrl.contains("?") ? "&" : "?";
         String messageParam;
@@ -110,5 +107,26 @@ public class DeleteProductServlet extends HttpServlet {
                         + separator
                         + messageParam
         );
+    }
+
+    /**
+     * Restricts the post-delete landing page to a small allow-list of internal
+     * seller pages so a crafted {@code redirect} parameter cannot be used as an
+     * open redirect (e.g. {@code //evil.example} or {@code https://evil.example}).
+     */
+    static String safeRedirectTarget(String redirectUrl) {
+
+        if (redirectUrl == null) {
+            return "/seller/dashboard.jsp";
+        }
+
+        String candidate = redirectUrl.trim();
+
+        if (candidate.equals("/seller/dashboard.jsp")
+                || candidate.equals("/seller/products.jsp")) {
+            return candidate;
+        }
+
+        return "/seller/dashboard.jsp";
     }
 }
