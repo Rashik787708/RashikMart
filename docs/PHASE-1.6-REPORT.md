@@ -38,7 +38,7 @@ Verify the packaged `target/RashikMart.war` deploys and runs correctly on the lo
 ## 8. Registration & Login
 - Registered `p16.buyer@local.test` (BUYER) and `p16.seller@local.test` (SELLER) → redirect to login.jsp with success.
 - Attempt to register with role `ADMIN` → rejected server-side (`Invalid role`); correct security guard (role cannot be elevated at registration).
-- Admin seeded account `admin@rashikmart.com` / `admin123` login → 302 to `/RashikMart/admin/dashboard.jsp` (HTTP 200).
+- Admin seeded account `admin@rashikmart.com` (password configured via `ADMIN_PASSWORD`) login → 302 to `/RashikMart/admin/dashboard.jsp` (HTTP 200).
 - `p16.admin@local.test` (created during earlier iterations) → login fails. Not a defect; the seeded admin account is the supported one. App functions correctly via seeded admin.
 - Login sets HttpOnly JSESSIONID.
 
